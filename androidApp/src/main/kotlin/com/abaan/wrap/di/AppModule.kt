@@ -18,5 +18,5 @@ val appModule = module {
     viewModel { (jobId: Long, finished: Boolean) ->
         JobEditViewModel(jobId, finished, get(), get(), get(), get(), get())
     }
-    viewModel { (jobId: Long) -> JobDetailViewModel(jobId, get(), get(), get(), get()) }
+    viewModel { (jobId: Long) -> JobDetailViewModel(jobId, get(), get(), get(), get(), get()) }
 }

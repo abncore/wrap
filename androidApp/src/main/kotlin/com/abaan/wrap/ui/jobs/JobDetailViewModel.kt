@@ -5,15 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.abaan.wrap.shared.data.JobRepository
 import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.SettingsRepository
+import com.abaan.wrap.shared.data.TimeLogRepository
 import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.model.JobSummary
+import com.abaan.wrap.shared.money.Shifts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 
 data class JobDetailUiState(
@@ -21,6 +25,7 @@ data class JobDetailUiState(
     val summary: JobSummary? = null,
     val currency: String = AppSettings.DEFAULT_CURRENCY,
     val timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    val today: LocalDate = LocalDate(1970, 1, 1),
     val deleted: Boolean = false,
 )
 
@@ -28,6 +33,7 @@ class JobDetailViewModel(
     private val jobId: Long,
     ledger: LedgerRepository,
     private val jobs: JobRepository,
+    private val timeLogs: TimeLogRepository,
     settings: SettingsRepository,
     private val today: Today,
 ) : ViewModel() {
@@ -43,12 +49,31 @@ class JobDetailViewModel(
             summary = summary,
             currency = appSettings.currency,
             timeZone = today.timeZone,
+            today = today.date(),
             deleted = isDeleted,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), JobDetailUiState())
 
     fun setWorkDone(done: Boolean) {
         viewModelScope.launch { jobs.setWorkDone(jobId, done) }
+    }
+
+    fun clockIn() {
+        viewModelScope.launch { timeLogs.clockIn(jobId) }
+    }
+
+    fun clockOut() {
+        viewModelScope.launch { timeLogs.clockOut() }
+    }
+
+    /** Adds a shift on [date]; a [to] at or before [from] means it ran past midnight. */
+    fun addTimeLog(date: LocalDate, from: LocalTime, to: LocalTime) {
+        val (clockIn, clockOut) = Shifts.single(date, from, to, today.timeZone)
+        viewModelScope.launch { timeLogs.addLog(jobId, clockIn, clockOut) }
+    }
+
+    fun deleteTimeLog(id: Long) {
+        viewModelScope.launch { timeLogs.delete(id) }
     }
 
     fun delete() {

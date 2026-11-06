@@ -51,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.R
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.model.RateType
+import com.abaan.wrap.ui.components.ClockButton
 import com.abaan.wrap.ui.components.ConfirmDialog
 import com.abaan.wrap.ui.components.StatusChip
 import com.abaan.wrap.ui.components.formatDateRange
@@ -117,6 +118,20 @@ fun JobDetailScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 JobHeader(summary)
+                if (summary.isOnToday || summary.openLog != null) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        ClockButton(
+                            openLog = summary.openLog,
+                            timeZone = state.timeZone,
+                            onClockIn = viewModel::clockIn,
+                            onClockOut = viewModel::clockOut,
+                            modifier = Modifier.padding(16.dp),
+                        )
+                    }
+                }
                 MoneyCard(summary, state.currency)
                 OutlinedButton(
                     onClick = { viewModel.setWorkDone(!summary.workDone) },
@@ -124,6 +139,14 @@ fun JobDetailScreen(
                 ) {
                     Text(stringResource(if (summary.workDone) R.string.job_mark_not_done else R.string.job_mark_done))
                 }
+                TimeLogsSection(
+                    logs = summary.timeLogs,
+                    defaultDate = if (summary.isOnToday) state.today else summary.job.startDate,
+                    defaultStart = summary.job.callTime,
+                    timeZone = state.timeZone,
+                    onAdd = viewModel::addTimeLog,
+                    onDelete = viewModel::deleteTimeLog,
+                )
                 if (summary.job.notes.isNotBlank()) {
                     DetailSection(stringResource(R.string.job_notes)) {
                         Text(summary.job.notes, style = MaterialTheme.typography.bodyMedium)
