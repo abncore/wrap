@@ -3,12 +3,15 @@ package com.abaan.wrap.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 
 private val LightColors = lightColorScheme(
     primary = Teal40,
@@ -20,6 +23,17 @@ private val DarkColors = darkColorScheme(
     primary = Teal80,
     secondary = Sand80,
     tertiary = Slate80,
+)
+
+private val baseTypography = Typography()
+
+/** Slightly heavier headings than the Material default so amounts read at a glance. */
+private val WrapTypography = baseTypography.copy(
+    displaySmall = baseTypography.displaySmall.copy(fontWeight = FontWeight.SemiBold),
+    headlineMedium = baseTypography.headlineMedium.copy(fontWeight = FontWeight.SemiBold),
+    headlineSmall = baseTypography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+    titleLarge = baseTypography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+    titleMedium = baseTypography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
 )
 
 @Composable
@@ -37,8 +51,11 @@ fun WrapTheme(
         else -> LightColors
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content,
-    )
+    CompositionLocalProvider(LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = WrapTypography,
+            content = content,
+        )
+    }
 }

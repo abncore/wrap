@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Banknote: outlined rectangle with a coin in the middle. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?android:attr/colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:fillType="evenOdd"
+        android:pathData="M2,6h20v12H2Z M4,8v8h16V8Z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,9.5a2.5,2.5 0,1 0,0 5a2.5,2.5 0,1 0,0 -5z" />
+</vector>

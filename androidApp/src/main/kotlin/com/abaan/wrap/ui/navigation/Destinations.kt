@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.abaan.wrap.R
+import com.abaan.wrap.shared.model.NEW_ID
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -21,6 +22,20 @@ data object ClientsRoute
 
 @Serializable
 data object SettingsRoute
+
+@Serializable
+data class JobDetailRoute(val jobId: Long)
+
+/** Add ([jobId] = [NEW_ID]) or edit a job; [finished] opens the "log finished job" form. */
+@Serializable
+data class JobEditRoute(val jobId: Long = NEW_ID, val finished: Boolean = false)
+
+/** Record a payment, optionally for a fixed [jobId], or edit [paymentId]. */
+@Serializable
+data class PaymentEditRoute(val jobId: Long = NEW_ID, val paymentId: Long = NEW_ID)
+
+@Serializable
+data class ClientEditRoute(val clientId: Long = NEW_ID)
 
 /** The four top-level tabs shown in the bottom bar. */
 enum class TopLevelDestination(

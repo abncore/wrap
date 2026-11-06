@@ -9,6 +9,25 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_add">Add</string>
 
+    <!-- Common -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_ok">OK</string>
+    <string name="action_back">Back</string>
+    <string name="action_more">More options</string>
+    <string name="action_clear">Clear</string>
+    <string name="field_optional">Optional</string>
+    <string name="error_required">Required</string>
+    <string name="error_invalid_amount">Enter an amount like 1500 or 1500.50</string>
+    <string name="error_invalid_number">Enter a number</string>
+    <string name="error_end_before_start">Ends before it starts</string>
+    <string name="error_amount_positive">Must be more than zero</string>
+    <string name="duration_hours_minutes">%1$dh %2$02dm</string>
+    <string name="date_range">%1$s – %2$s</string>
+    <string name="separator_dot">%1$s · %2$s</string>
+
     <!-- Add sheet -->
     <string name="add_sheet_title">What would you like to add?</string>
     <string name="add_upcoming_job">Add upcoming job</string>
@@ -18,13 +37,229 @@
     <string name="add_payment">Record payment</string>
     <string name="add_payment_desc">Money you\'ve received for a job</string>
 
-    <!-- Empty states -->
+    <!-- Statuses -->
+    <string name="status_upcoming">Upcoming</string>
+    <string name="status_done_unpaid">Unpaid</string>
+    <string name="status_part_paid">Part paid</string>
+    <string name="status_paid">Paid</string>
+    <string name="status_overdue">Overdue</string>
+
+    <!-- Rate types -->
+    <string name="rate_day">Day</string>
+    <string name="rate_half_day">Half day</string>
+    <string name="rate_hour">Hourly</string>
+    <string name="rate_fixed">Fixed</string>
+    <string name="rate_label_day">Day rate</string>
+    <string name="rate_label_half_day">Full day rate (half is charged)</string>
+    <string name="rate_label_hour">Hourly rate</string>
+    <string name="rate_label_fixed">Fixed fee</string>
+
+    <!-- Payment methods -->
+    <string name="method_cash">Cash</string>
+    <string name="method_bank">Bank</string>
+    <string name="method_cheque">Cheque</string>
+
+    <!-- Home -->
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_owed_to_you">Owed to you</string>
+    <plurals name="home_owed_jobs">
+        <item quantity="one">across %d unpaid job</item>
+        <item quantity="other">across %d unpaid jobs</item>
+    </plurals>
+    <string name="home_all_paid">You\'re all paid up</string>
+    <string name="home_received_month">Received this month</string>
+    <string name="home_overdue">Overdue</string>
+    <plurals name="home_overdue_count">
+        <item quantity="one">%d job</item>
+        <item quantity="other">%d jobs</item>
+    </plurals>
+    <string name="home_today">Today</string>
+    <string name="home_next_job">Next up</string>
+    <string name="home_no_next_job">No upcoming jobs booked</string>
+    <string name="home_clock_in">Clock in</string>
+    <string name="home_clock_out">Clock out</string>
+    <string name="home_on_clock_since">On the clock since %1$s</string>
+    <string name="home_elapsed">%1$s elapsed</string>
+    <string name="home_call_time">Call %1$s</string>
+    <string name="home_in_days_zero">Today</string>
+    <string name="home_in_days_one">Tomorrow</string>
+    <plurals name="home_in_days">
+        <item quantity="one">In %d day</item>
+        <item quantity="other">In %d days</item>
+    </plurals>
     <string name="home_empty_title">Nothing on the books yet</string>
-    <string name="home_empty_body">Tap + to add your first job. Money owed, payments and your next call time will show up here.</string>
-    <string name="jobs_empty_title">No jobs yet</string>
-    <string name="jobs_empty_body">Upcoming bookings and finished work you log will be listed here.</string>
+    <string name="home_empty_body">Add your first job to start tracking call times, hours and what you\'re owed.</string>
+    <string name="home_empty_action">Add a job</string>
+
+    <!-- Jobs list -->
+    <string name="jobs_title">Jobs</string>
+    <string name="jobs_tab_upcoming">Upcoming</string>
+    <string name="jobs_tab_unpaid">Unpaid</string>
+    <string name="jobs_tab_paid">Paid</string>
+    <string name="jobs_filter_client">Client</string>
+    <string name="jobs_filter_month">Month</string>
+    <string name="jobs_filter_all_clients">All clients</string>
+    <string name="jobs_filter_all_months">All months</string>
+    <string name="jobs_empty_upcoming">No upcoming jobs. Tap + to add a booking.</string>
+    <string name="jobs_empty_unpaid">Nothing waiting on payment. Nice.</string>
+    <string name="jobs_empty_paid">Paid jobs will show up here.</string>
+    <string name="jobs_empty_filtered">No jobs match these filters.</string>
+    <string name="jobs_owed">%1$s owed</string>
+    <string name="jobs_due">Due %1$s</string>
+    <string name="jobs_overdue_since">Overdue since %1$s</string>
+
+    <!-- Job detail -->
+    <string name="job_detail_title">Job</string>
+    <string name="job_not_found">This job no longer exists.</string>
+    <string name="job_money">Money</string>
+    <string name="job_base_days">Base · %1$d × %2$s</string>
+    <string name="job_base_half_days">Base · %1$d × half day</string>
+    <string name="job_base_hours">Base · %1$s</string>
+    <string name="job_base_hours_estimated">Base · %1$s (estimated)</string>
+    <string name="job_base_fixed">Fixed fee</string>
+    <string name="job_overtime">Overtime · %1$s × %2$s</string>
+    <string name="job_kit_rental">Kit rental</string>
+    <string name="job_expenses">Expenses</string>
+    <string name="job_total">Total</string>
+    <string name="job_paid">Paid</string>
+    <string name="job_owed">Owed</string>
+    <string name="job_credit">Overpaid</string>
+    <string name="job_due_date">Due date</string>
+    <string name="job_no_due_date">No due date</string>
+    <string name="job_add_payment">Add payment</string>
+    <string name="job_chase">Chase</string>
+    <string name="job_mark_done">Mark as done</string>
+    <string name="job_mark_not_done">Mark as not done</string>
+    <string name="job_time_logs">Time logs</string>
+    <string name="job_no_time_logs">No time logged yet.</string>
+    <string name="job_add_time">Add time</string>
+    <string name="job_on_clock">On the clock</string>
+    <string name="job_payments">Payments</string>
+    <string name="job_no_payments">No payments yet.</string>
+    <string name="job_notes">Notes</string>
+    <string name="job_delete_title">Delete this job?</string>
+    <string name="job_delete_body">Its time logs and payments will be deleted too. This can\'t be undone.</string>
+    <string name="job_delete_log_title">Delete this time log?</string>
+    <string name="job_delete_payment_title">Delete this payment?</string>
+    <string name="job_add_time_title">Add time</string>
+    <string name="job_add_time_date">Date</string>
+    <string name="job_add_time_start">Start</string>
+    <string name="job_add_time_end">Finish</string>
+    <string name="job_add_time_error">Finish must be after start</string>
+    <string name="job_time_log_overnight">%1$s → %2$s (next day)</string>
+    <string name="job_time_log_range">%1$s → %2$s</string>
+
+    <!-- Job edit -->
+    <string name="job_new_upcoming">New booking</string>
+    <string name="job_new_finished">Log finished job</string>
+    <string name="job_edit">Edit job</string>
+    <string name="job_section_client">Client</string>
+    <string name="job_section_details">Details</string>
+    <string name="job_section_when">When</string>
+    <string name="job_section_rate">Rate</string>
+    <string name="job_section_extras">Extras</string>
+    <string name="job_section_hours">Hours worked</string>
+    <string name="job_section_payment">Payment</string>
+    <string name="job_field_client">Client</string>
+    <string name="job_field_new_client">New client…</string>
+    <string name="job_field_title">Job title</string>
+    <string name="job_field_title_hint">e.g. Desert car commercial</string>
+    <string name="job_field_role">Your role</string>
+    <string name="job_field_role_hint">e.g. DIT, 1st AC, Gaffer</string>
+    <string name="job_field_location">Location</string>
+    <string name="job_field_start">Start date</string>
+    <string name="job_field_end">End date</string>
+    <string name="job_field_call_time">Call time</string>
+    <string name="job_field_no_call_time">Not set</string>
+    <string name="job_field_day_length">Day length (hours)</string>
+    <string name="job_field_ot_multiplier">Overtime multiplier</string>
+    <string name="job_field_kit_rental">Kit rental</string>
+    <string name="job_field_expenses">Expenses</string>
+    <string name="job_field_due_date">Payment due</string>
+    <string name="job_field_due_auto">%1$s (%2$d days after wrap)</string>
+    <string name="job_field_notes">Notes</string>
+    <string name="job_field_hours_per_day">Hours per day</string>
+    <string name="job_field_hours_per_day_hint">Leave empty if you don\'t track hours</string>
+    <string name="job_field_start_time">Start time</string>
+    <string name="job_estimate">Estimated total</string>
+    <string name="job_estimate_detail">%1$s base + %2$s overtime + %3$s extras</string>
+    <string name="job_new_client_title">New client</string>
+    <string name="job_no_clients">Add a client first</string>
+    <string name="job_reset_due">Reset to default</string>
+
+    <!-- Payment edit -->
+    <string name="payment_new">Record payment</string>
+    <string name="payment_edit">Edit payment</string>
+    <string name="payment_field_job">Job</string>
+    <string name="payment_field_amount">Amount</string>
+    <string name="payment_field_date">Date received</string>
+    <string name="payment_field_method">Method</string>
+    <string name="payment_field_note">Note</string>
+    <string name="payment_field_note_hint">e.g. Invoice #1042</string>
+    <string name="payment_owed_hint">%1$s still owed</string>
+    <string name="payment_full_amount">Full amount</string>
+    <string name="payment_no_jobs">There are no jobs to record a payment for yet.</string>
+    <string name="payment_select_job">Choose a job</string>
+
+    <!-- Clients -->
+    <string name="clients_title">Clients</string>
+    <string name="clients_add">Add client</string>
     <string name="clients_empty_title">No clients yet</string>
     <string name="clients_empty_body">Production companies and people you work for will appear here with what they owe you.</string>
-    <string name="settings_empty_title">Settings</string>
-    <string name="settings_empty_body">Your default rate, day length, overtime multiplier, payment terms and currency will live here.</string>
+    <plurals name="clients_job_count">
+        <item quantity="one">%d job</item>
+        <item quantity="other">%d jobs</item>
+    </plurals>
+    <string name="clients_settled">Settled</string>
+    <string name="client_new">New client</string>
+    <string name="client_edit">Edit client</string>
+    <string name="client_field_name">Name</string>
+    <string name="client_field_company">Company</string>
+    <string name="client_field_phone">Phone (WhatsApp)</string>
+    <string name="client_field_email">Email</string>
+    <string name="client_field_terms">Payment terms (days)</string>
+    <string name="client_field_terms_hint">Default: %1$d days</string>
+    <string name="client_field_rate">Default day rate</string>
+    <string name="client_field_rate_hint">Default: %1$s</string>
+    <string name="client_field_notes">Notes</string>
+    <string name="client_delete_title">Delete this client?</string>
+    <string name="client_delete_body">This can\'t be undone.</string>
+    <string name="client_delete_blocked">This client has jobs. Delete their jobs first.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_defaults">Defaults for new jobs</string>
+    <string name="settings_default_rate">Default day rate</string>
+    <string name="settings_day_length">Day length</string>
+    <string name="settings_day_length_value">%1$s hours</string>
+    <string name="settings_ot_multiplier">Overtime multiplier</string>
+    <string name="settings_ot_multiplier_value">× %1$s</string>
+    <string name="settings_payment_terms">Payment terms</string>
+    <plurals name="settings_payment_terms_value">
+        <item quantity="one">%d day after wrap</item>
+        <item quantity="other">%d days after wrap</item>
+    </plurals>
+    <string name="settings_section_app">App</string>
+    <string name="settings_currency">Currency</string>
+    <string name="settings_currency_note">Changing currency only changes how amounts are labelled.</string>
+    <string name="settings_reminders">Job reminders</string>
+    <string name="settings_reminders_desc">A notification at 8 PM the night before each job</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_not_set">Not set</string>
+
+    <!-- Chase -->
+    <string name="chase_message">Hi %1$s, hope you\'re well! Just a friendly reminder about %2$s on %3$s. %4$s is still outstanding. Would you be able to process it when you get a chance? Thank you!</string>
+    <string name="chase_message_due">Hi %1$s, hope you\'re well! Just a friendly reminder about %2$s on %3$s. %4$s is still outstanding (due %5$s). Would you be able to process it when you get a chance? Thank you!</string>
+    <string name="chase_no_whatsapp">WhatsApp isn\'t installed, so the message opened in your browser.</string>
+    <string name="chase_no_app">No app can open WhatsApp links.</string>
+
+    <!-- Reminders -->
+    <string name="reminder_channel_name">Job reminders</string>
+    <string name="reminder_channel_desc">The night before a job</string>
+    <string name="reminder_title">Tomorrow: %1$s</string>
+    <string name="reminder_body_call">Call %1$s · %2$s</string>
+    <string name="reminder_body_no_call">%1$s</string>
+    <string name="reminder_body_location">Call %1$s at %2$s · %3$s</string>
 </resources>

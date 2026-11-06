@@ -1,16 +1,20 @@
 package com.abaan.wrap.ui.screens
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.abaan.wrap.R
-import com.abaan.wrap.ui.navigation.TopLevelDestination
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(onAddJob: () -> Unit, modifier: Modifier = Modifier) {
     EmptyState(
-        icon = TopLevelDestination.HOME.icon,
-        titleRes = R.string.home_empty_title,
-        bodyRes = R.string.home_empty_body,
+        icon = Icons.Filled.Home,
+        title = stringResource(R.string.home_empty_title),
+        body = stringResource(R.string.home_empty_body),
+        actionLabel = stringResource(R.string.home_empty_action),
+        onAction = onAddJob,
         modifier = modifier,
     )
 }

@@ -1,0 +1,250 @@
+package com.abaan.wrap.ui.settings
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.abaan.wrap.BuildConfig
+import com.abaan.wrap.R
+import com.abaan.wrap.shared.model.AppSettings
+import com.abaan.wrap.shared.money.MoneyFormat
+import com.abaan.wrap.ui.components.DecimalInput
+import com.abaan.wrap.ui.components.MoneyInput
+import com.abaan.wrap.ui.components.formatDecimal
+import com.abaan.wrap.ui.components.money
+import org.koin.compose.viewmodel.koinViewModel
+
+private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRENCY }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val settings = state.settings
+    var dialog by rememberSaveable { mutableStateOf<SettingDialog?>(null) }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            SettingsHeader(stringResource(R.string.settings_section_defaults))
+            SettingRow(
+                title = stringResource(R.string.settings_default_rate),
+                value = if (settings.defaultRate > 0) money(settings.defaultRate, settings.currency) else stringResource(R.string.settings_not_set),
+                onClick = { dialog = SettingDialog.RATE },
+            )
+            SettingRow(
+                title = stringResource(R.string.settings_day_length),
+                value = stringResource(R.string.settings_day_length_value, formatDecimal(settings.dayLengthHours)),
+                onClick = { dialog = SettingDialog.DAY_LENGTH },
+            )
+            SettingRow(
+                title = stringResource(R.string.settings_ot_multiplier),
+                value = stringResource(R.string.settings_ot_multiplier_value, formatDecimal(settings.otMultiplier)),
+                onClick = { dialog = SettingDialog.OT_MULTIPLIER },
+            )
+            SettingRow(
+                title = stringResource(R.string.settings_payment_terms),
+                value = pluralStringResource(R.plurals.settings_payment_terms_value, settings.paymentTermsDays, settings.paymentTermsDays),
+                onClick = { dialog = SettingDialog.TERMS },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsHeader(stringResource(R.string.settings_section_app))
+            SettingRow(
+                title = stringResource(R.string.settings_currency),
+                value = settings.currency,
+                onClick = { dialog = SettingDialog.CURRENCY },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_reminders)) },
+                supportingContent = { Text(stringResource(R.string.settings_reminders_desc)) },
+                trailingContent = {
+                    Switch(
+                        checked = settings.remindersEnabled,
+                        onCheckedChange = { checked -> viewModel.update { it.copy(remindersEnabled = checked) } },
+                    )
+                },
+                modifier = Modifier.clickable {
+                    viewModel.update { it.copy(remindersEnabled = !it.remindersEnabled) }
+                },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_version)) },
+                supportingContent = { Text(BuildConfig.VERSION_NAME) },
+            )
+        }
+    }
+
+    when (dialog) {
+        SettingDialog.RATE -> TextSettingDialog(
+            title = stringResource(R.string.settings_default_rate),
+            initial = if (settings.defaultRate > 0) MoneyFormat.toInput(settings.defaultRate) else "",
+            parse = MoneyFormat::parse,
+            errorText = stringResource(R.string.error_invalid_amount),
+            onDismiss = { dialog = null },
+            onSave = { value -> viewModel.update { it.copy(defaultRate = value) } },
+            field = { value, onChange, error ->
+                MoneyInput(value, onChange, stringResource(R.string.settings_default_rate), settings.currency, error = error)
+            },
+        )
+        SettingDialog.DAY_LENGTH -> TextSettingDialog(
+            title = stringResource(R.string.settings_day_length),
+            initial = formatDecimal(settings.dayLengthHours),
+            parse = { it.toDoubleOrNull()?.takeIf { hours -> hours > 0 && hours <= 24 } },
+            errorText = stringResource(R.string.error_invalid_number),
+            onDismiss = { dialog = null },
+            onSave = { value -> viewModel.update { it.copy(dayLengthHours = value) } },
+            field = { value, onChange, error ->
+                DecimalInput(value, onChange, stringResource(R.string.job_field_day_length), error = error)
+            },
+        )
+        SettingDialog.OT_MULTIPLIER -> TextSettingDialog(
+            title = stringResource(R.string.settings_ot_multiplier),
+            initial = formatDecimal(settings.otMultiplier),
+            parse = { it.toDoubleOrNull()?.takeIf { multiplier -> multiplier >= 0 && multiplier <= 10 } },
+            errorText = stringResource(R.string.error_invalid_number),
+            onDismiss = { dialog = null },
+            onSave = { value -> viewModel.update { it.copy(otMultiplier = value) } },
+            field = { value, onChange, error ->
+                DecimalInput(value, onChange, stringResource(R.string.settings_ot_multiplier), error = error, suffix = "×")
+            },
+        )
+        SettingDialog.TERMS -> TextSettingDialog(
+            title = stringResource(R.string.settings_payment_terms),
+            initial = settings.paymentTermsDays.toString(),
+            parse = { it.toIntOrNull()?.takeIf { days -> days in 0..365 } },
+            errorText = stringResource(R.string.error_invalid_number),
+            onDismiss = { dialog = null },
+            onSave = { value -> viewModel.update { it.copy(paymentTermsDays = value) } },
+            field = { value, onChange, error ->
+                DecimalInput(value, onChange, stringResource(R.string.client_field_terms), error = error, integerOnly = true)
+            },
+        )
+        SettingDialog.CURRENCY -> CurrencyDialog(
+            selected = settings.currency,
+            onDismiss = { dialog = null },
+            onSelect = { currency ->
+                viewModel.update { it.copy(currency = currency) }
+                dialog = null
+            },
+        )
+        null -> Unit
+    }
+}
+
+@Composable
+private fun SettingsHeader(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
+    )
+}
+
+@Composable
+private fun SettingRow(title: String, value: String, onClick: () -> Unit) {
+    ListItem(
+        headlineContent = { Text(title) },
+        supportingContent = { Text(value) },
+        modifier = Modifier.clickable(onClick = onClick),
+    )
+}
+
+@Composable
+private fun <T> TextSettingDialog(
+    title: String,
+    initial: String,
+    parse: (String) -> T?,
+    errorText: String,
+    onDismiss: () -> Unit,
+    onSave: (T) -> Unit,
+    field: @Composable (value: String, onChange: (String) -> Unit, error: String?) -> Unit,
+) {
+    var value by rememberSaveable { mutableStateOf(initial) }
+    var showError by rememberSaveable { mutableStateOf(false) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            field(value, { value = it; showError = false }, errorText.takeIf { showError })
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val parsed = parse(value)
+                if (parsed == null) {
+                    showError = true
+                } else {
+                    onSave(parsed)
+                    onDismiss()
+                }
+            }) { Text(stringResource(R.string.action_save)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
+}
+
+@Composable
+private fun CurrencyDialog(selected: String, onDismiss: () -> Unit, onSelect: (String) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_currency)) },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.settings_currency_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+                AppSettings.SUPPORTED_CURRENCIES.forEach { currency ->
+                    ListItem(
+                        headlineContent = { Text(currency) },
+                        leadingContent = { RadioButton(selected = currency == selected, onClick = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(selected = currency == selected, role = Role.RadioButton) { onSelect(currency) },
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
+}
