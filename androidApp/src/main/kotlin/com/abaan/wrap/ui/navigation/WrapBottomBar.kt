@@ -2,7 +2,6 @@ package com.abaan.wrap.ui.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -34,8 +33,10 @@ fun WrapBottomBar(
             TabItem(destination, selected = destination == current, onSelect = onSelect)
         }
 
+        // NavigationBar only sets a minimum height, so the slot must not fill the
+        // available height or the bar stretches to the whole screen.
         Box(
-            modifier = Modifier.weight(1f).fillMaxHeight(),
+            modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
             contentAlignment = Alignment.Center,
         ) {
             SmallFloatingActionButton(
