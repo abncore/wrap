@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 class PaymentRepository(
     private val db: WrapDatabase,
     private val io: CoroutineDispatcher,
+    private val statusUpdater: StatusUpdater,
 ) {
     private val queries get() = db.paymentEntityQueries
 
@@ -22,11 +23,18 @@ class PaymentRepository(
     fun observeForJob(jobId: Long): Flow<List<Payment>> =
         queries.selectByJob(jobId).asFlow().mapToList(io).map { rows -> rows.map { it.toModel() } }
 
-    /** Inserts a new payment (when [Payment.id] is [NEW_ID]) or updates it. Returns its id. */
+    suspend fun getPayment(id: Long): Payment? = withContext(io) {
+        queries.selectById(id).executeAsOneOrNull()?.toModel()
+    }
+
+    /**
+     * Inserts a new payment (when [Payment.id] is [NEW_ID]) or updates it, then updates the
+     * job's status (PART_PAID / PAID). Returns the payment's id.
+     */
     suspend fun save(payment: Payment): Long = withContext(io) {
         require(payment.amount > 0) { "Payment amount must be positive" }
         queries.transactionWithResult {
-            if (payment.id == NEW_ID) {
+            val id = if (payment.id == NEW_ID) {
                 queries.insert(
                     jobId = payment.jobId,
                     amount = payment.amount,
@@ -45,10 +53,16 @@ class PaymentRepository(
                 )
                 payment.id
             }
+            statusUpdater.refresh(payment.jobId)
+            id
         }
     }
 
     suspend fun delete(id: Long) = withContext(io) {
-        queries.deleteById(id)
+        db.transaction {
+            val jobId = queries.selectById(id).executeAsOneOrNull()?.jobId
+            queries.deleteById(id)
+            jobId?.let(statusUpdater::refresh)
+        }
     }
 }

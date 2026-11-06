@@ -3,9 +3,12 @@ package com.abaan.wrap.shared.di
 import app.cash.sqldelight.db.SqlDriver
 import com.abaan.wrap.shared.data.ClientRepository
 import com.abaan.wrap.shared.data.JobRepository
+import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.PaymentRepository
 import com.abaan.wrap.shared.data.SettingsRepository
+import com.abaan.wrap.shared.data.StatusUpdater
 import com.abaan.wrap.shared.data.TimeLogRepository
+import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.db.WrapDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -27,11 +30,15 @@ val sharedModule = module {
     single<Clock> { Clock.System }
     single { TimeZone.currentSystemDefault() }
 
+    single { Today(get(), get()) }
+    single { StatusUpdater(get(), get()) }
+
     single { SettingsRepository(get(), get()) }
     single { ClientRepository(get(), get()) }
-    single { JobRepository(get(), get()) }
-    single { TimeLogRepository(get(), get(), get()) }
-    single { PaymentRepository(get(), get()) }
+    single { JobRepository(get(), get(), get()) }
+    single { TimeLogRepository(get(), get(), get(), get()) }
+    single { PaymentRepository(get(), get(), get()) }
+    single { LedgerRepository(get(), get(), get(), get(), get(), get()) }
 }
 
 /** Starts Koin with the shared modules plus whatever the platform app declares. */

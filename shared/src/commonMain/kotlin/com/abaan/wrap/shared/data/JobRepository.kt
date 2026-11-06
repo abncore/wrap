@@ -5,15 +5,18 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.abaan.wrap.shared.db.WrapDatabase
 import com.abaan.wrap.shared.model.Job
+import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.NEW_ID
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlin.time.Instant
 
 class JobRepository(
     private val db: WrapDatabase,
     private val io: CoroutineDispatcher,
+    private val statusUpdater: StatusUpdater,
 ) {
     private val queries get() = db.jobEntityQueries
 
@@ -27,9 +30,45 @@ class JobRepository(
         queries.selectById(id).executeAsOneOrNull()?.toModel()
     }
 
-    /** Inserts a new job (when [Job.id] is [NEW_ID]) or updates it. Returns the job's id. */
+    /**
+     * Inserts a new job (when [Job.id] is [NEW_ID]) or updates it, then brings its status up to
+     * date. Returns the job's id.
+     */
     suspend fun save(job: Job): Long = withContext(io) {
-        queries.transactionWithResult { saveInTransaction(job) }
+        queries.transactionWithResult {
+            val id = saveInTransaction(job)
+            statusUpdater.refresh(id)
+            id
+        }
+    }
+
+    /**
+     * Saves a job that has already been worked, together with its shifts
+     * (pairs of clock-in / clock-out). Returns the job's id.
+     */
+    suspend fun saveFinished(job: Job, shifts: List<Pair<Instant, Instant>>): Long = withContext(io) {
+        queries.transactionWithResult {
+            val status = if (job.status == JobStatus.UPCOMING) JobStatus.DONE_UNPAID else job.status
+            val id = saveInTransaction(job.copy(status = status))
+            shifts.filter { (start, end) -> end > start }.forEach { (start, end) ->
+                db.timeLogEntityQueries.insert(
+                    jobId = id,
+                    clockIn = start.toEpochMilliseconds(),
+                    clockOut = end.toEpochMilliseconds(),
+                )
+            }
+            statusUpdater.refresh(id)
+            id
+        }
+    }
+
+    /** Marks the work as done (or not yet done) and recalculates the status from payments. */
+    suspend fun setWorkDone(id: Long, done: Boolean) = withContext(io) {
+        db.transaction {
+            val status = if (done) JobStatus.DONE_UNPAID else JobStatus.UPCOMING
+            queries.updateStatus(status = status.name, id = id)
+            statusUpdater.refresh(id)
+        }
     }
 
     /** Deletes the job together with its time logs and payments. */
@@ -41,7 +80,7 @@ class JobRepository(
         }
     }
 
-    internal fun saveInTransaction(job: Job): Long {
+    private fun saveInTransaction(job: Job): Long {
         val title = job.title.trim()
         val role = job.role.trim()
         val location = job.location.trim()

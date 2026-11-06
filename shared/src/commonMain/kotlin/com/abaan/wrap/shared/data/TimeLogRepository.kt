@@ -16,6 +16,7 @@ class TimeLogRepository(
     private val db: WrapDatabase,
     private val io: CoroutineDispatcher,
     private val clock: Clock,
+    private val statusUpdater: StatusUpdater,
 ) {
     private val queries get() = db.timeLogEntityQueries
 
@@ -38,6 +39,7 @@ class TimeLogRepository(
         queries.transactionWithResult {
             queries.selectOpen().executeAsOneOrNull()?.let { open ->
                 queries.closeOpen(clockOut = now.toEpochMilliseconds(), id = open.id)
+                statusUpdater.refresh(open.jobId)
             }
             queries.insert(jobId = jobId, clockIn = now.toEpochMilliseconds(), clockOut = null)
             queries.lastInsertedId().executeAsOne()
@@ -50,6 +52,7 @@ class TimeLogRepository(
         queries.transactionWithResult {
             val open = queries.selectOpen().executeAsOneOrNull() ?: return@transactionWithResult null
             queries.closeOpen(clockOut = now.toEpochMilliseconds(), id = open.id)
+            statusUpdater.refresh(open.jobId)
             open.jobId
         }
     }
@@ -63,11 +66,17 @@ class TimeLogRepository(
                 clockIn = clockIn.toEpochMilliseconds(),
                 clockOut = clockOut.toEpochMilliseconds(),
             )
-            queries.lastInsertedId().executeAsOne()
+            val id = queries.lastInsertedId().executeAsOne()
+            statusUpdater.refresh(jobId)
+            id
         }
     }
 
     suspend fun delete(id: Long) = withContext(io) {
-        queries.deleteById(id)
+        db.transaction {
+            val jobId = queries.selectById(id).executeAsOneOrNull()?.jobId
+            queries.deleteById(id)
+            jobId?.let(statusUpdater::refresh)
+        }
     }
 }

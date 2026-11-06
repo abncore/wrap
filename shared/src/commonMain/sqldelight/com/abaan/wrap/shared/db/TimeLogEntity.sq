@@ -14,6 +14,9 @@ SELECT * FROM TimeLogEntity ORDER BY clockIn;
 selectByJob:
 SELECT * FROM TimeLogEntity WHERE jobId = ? ORDER BY clockIn;
 
+selectById:
+SELECT * FROM TimeLogEntity WHERE id = ?;
+
 selectOpen:
 SELECT * FROM TimeLogEntity WHERE clockOut IS NULL ORDER BY clockIn DESC LIMIT 1;
 
