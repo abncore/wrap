@@ -47,10 +47,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.R
@@ -68,6 +70,7 @@ import com.abaan.wrap.ui.components.formatShort
 import com.abaan.wrap.ui.components.money
 import com.abaan.wrap.ui.screens.EmptyState
 import com.abaan.wrap.ui.theme.LocalStatusColors
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -160,7 +163,10 @@ fun JobDetailScreen(
                     }
                     if (ChaseRules.canChase(summary)) {
                         OutlinedButton(
-                            onClick = { launchChase(context, summary, state.currency) },
+                            onClick = {
+                                launchChase(context, summary, state.currency)
+                                viewModel.recordChase()
+                            },
                             modifier = Modifier.weight(1f),
                         ) {
                             Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -168,6 +174,25 @@ fun JobDetailScreen(
                             Text(stringResource(R.string.job_chase))
                         }
                     }
+                }
+                if (ChaseRules.canChase(summary)) {
+                    val last = state.chases.firstOrNull()
+                    Text(
+                        text = if (last == null) {
+                            stringResource(R.string.chase_never)
+                        } else {
+                            pluralStringResource(
+                                R.plurals.chase_history,
+                                state.chases.size,
+                                state.chases.size,
+                                last.at.toLocalDateTime(state.timeZone).date.formatMedium(),
+                            )
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                    )
                 }
                 if (!summary.workDoneAutomatically) {
                     OutlinedButton(

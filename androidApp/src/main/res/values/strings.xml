@@ -403,4 +403,20 @@
         <item quantity="one">%1$s hour before call</item>
         <item quantity="other">%1$s hours before call</item>
     </plurals>
+
+    <!-- Chasing -->
+    <string name="chase_channel_name">Payment chase reminders</string>
+    <string name="chase_channel_desc">When an overdue payment hasn\'t been chased for a week</string>
+    <string name="chase_nudge_title">Time to chase %1$s</string>
+    <plurals name="chase_nudge_body">
+        <item quantity="one">%1$s for %2$s is %3$d day overdue.</item>
+        <item quantity="other">%1$s for %2$s is %3$d days overdue.</item>
+    </plurals>
+    <string name="chase_never">Not chased yet</string>
+    <plurals name="chase_history">
+        <item quantity="one">Chased once, on %2$s</item>
+        <item quantity="other">Chased %1$d times, last on %2$s</item>
+    </plurals>
+    <string name="settings_chase_reminders">Payment chase reminders</string>
+    <string name="settings_chase_reminders_desc">Remind me when an overdue payment hasn\'t been chased for a week</string>
 </resources>

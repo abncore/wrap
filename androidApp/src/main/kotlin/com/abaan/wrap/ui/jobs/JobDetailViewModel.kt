@@ -2,6 +2,7 @@ package com.abaan.wrap.ui.jobs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abaan.wrap.shared.data.ChaseRepository
 import com.abaan.wrap.shared.data.CrewRepository
 import com.abaan.wrap.shared.data.JobRepository
 import com.abaan.wrap.shared.data.LedgerRepository
@@ -9,6 +10,7 @@ import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.TimeLogRepository
 import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.model.AppSettings
+import com.abaan.wrap.shared.model.ChaseLog
 import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.money.Shifts
@@ -26,6 +28,8 @@ data class JobDetailUiState(
     val loading: Boolean = true,
     val summary: JobSummary? = null,
     val crew: List<CrewContact> = emptyList(),
+    /** Times the client was chased, newest first. */
+    val chases: List<ChaseLog> = emptyList(),
     val currency: String = AppSettings.DEFAULT_CURRENCY,
     val timeZone: TimeZone = TimeZone.currentSystemDefault(),
     val today: LocalDate = LocalDate(1970, 1, 1),
@@ -40,6 +44,7 @@ class JobDetailViewModel(
     settings: SettingsRepository,
     private val today: Today,
     private val crewContacts: CrewRepository,
+    private val chaseLog: ChaseRepository,
 ) : ViewModel() {
     private val deleted = MutableStateFlow(false)
 
@@ -48,11 +53,13 @@ class JobDetailViewModel(
         settings.observeSettings(),
         deleted,
         crewContacts.observeForJob(jobId),
-    ) { summary, appSettings, isDeleted, crew ->
+        chaseLog.observeChases(jobId),
+    ) { summary, appSettings, isDeleted, crew, chases ->
         JobDetailUiState(
             loading = false,
             summary = summary,
             crew = crew,
+            chases = chases,
             currency = appSettings.currency,
             timeZone = today.timeZone,
             today = today.date(),
@@ -80,6 +87,10 @@ class JobDetailViewModel(
 
     fun deleteTimeLog(id: Long) {
         viewModelScope.launch { timeLogs.delete(id) }
+    }
+
+    fun recordChase() {
+        viewModelScope.launch { chaseLog.recordChase(jobId) }
     }
 
     fun addCrew(name: String, role: String, phone: String) {

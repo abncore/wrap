@@ -1,0 +1,11 @@
+-- Version 6 -> 7: a log of payment chases (and of reminders to chase), plus a setting for those reminders.
+CREATE TABLE ChaseLogEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jobId INTEGER NOT NULL,
+    at INTEGER NOT NULL,
+    kind TEXT NOT NULL
+);
+
+CREATE INDEX ChaseLogEntity_jobId ON ChaseLogEntity(jobId);
+
+ALTER TABLE SettingsEntity ADD COLUMN chaseReminders INTEGER NOT NULL DEFAULT 1;

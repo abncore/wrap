@@ -3,6 +3,7 @@ package com.abaan.wrap
 import android.app.Application
 import com.abaan.wrap.di.appModule
 import com.abaan.wrap.reminders.BudgetNotifications
+import com.abaan.wrap.reminders.ChaseNudgeWorker
 import com.abaan.wrap.reminders.ReminderNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
 import com.abaan.wrap.shared.data.RecurringSpendRepository
@@ -28,6 +29,7 @@ class WrapApplication : Application() {
         BudgetNotifications.createChannel(this)
         get<ReminderScheduler>().start(appScope)
         addMonthlyCosts()
+        ChaseNudgeWorker.schedule(this, get(), get())
     }
 
     /** Adds monthly costs as they come due: on launch and whenever the date ticks over. */

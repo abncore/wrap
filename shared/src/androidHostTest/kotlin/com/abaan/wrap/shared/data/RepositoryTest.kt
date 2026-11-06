@@ -49,6 +49,7 @@ class RepositoryTest {
     private val spends = SpendRepository(db, io, statusUpdater)
     private val recurring = RecurringSpendRepository(db, io)
     private val crew = CrewRepository(db, io)
+    private val chases = ChaseRepository(db, io, clock, today)
     private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
     private fun job(clientId: Long) = Job(
@@ -257,6 +258,30 @@ class RepositoryTest {
 
         assertEquals(1_000_00, settings.getSettings().monthlyBudget)
         assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
+    }
+
+    @Test
+    fun overdueJobsAreNudgedWeeklyUnlessChased() = runTest {
+        val clientId = clients.save(Client(name = "Falcon Productions"))
+        // Worked on 10 Feb, due 20 Feb; today is 10 March.
+        val jobId = jobs.save(
+            job(clientId).copy(startDate = LocalDate(2026, 2, 10), endDate = LocalDate(2026, 2, 10), dueDate = LocalDate(2026, 2, 20)),
+        )
+        val summaries = { ledger.observeJobSummaries() }
+        assertEquals(listOf(jobId), chases.jobsToNudge(summaries().first()).map { it.job.id })
+
+        chases.recordNudge(jobId)
+        assertTrue(chases.jobsToNudge(summaries().first()).isEmpty())
+
+        // A week later it is due again, unless the client was chased in the meantime.
+        now = LocalDateTime(2026, 3, 17, 10, 0).toInstant(tz)
+        assertEquals(1, chases.jobsToNudge(summaries().first()).size)
+        chases.recordChase(jobId)
+        assertTrue(chases.jobsToNudge(summaries().first()).isEmpty())
+        assertEquals(1, chases.observeChases(jobId).first().size)
+
+        jobs.delete(jobId)
+        assertTrue(chases.observeChases(jobId).first().isEmpty())
     }
 
     @Test

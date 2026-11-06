@@ -139,6 +139,19 @@ fun SettingsScreen(
                     viewModel.update { it.copy(remindersEnabled = !it.remindersEnabled) }
                 },
             )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_chase_reminders)) },
+                supportingContent = { Text(stringResource(R.string.settings_chase_reminders_desc)) },
+                trailingContent = {
+                    Switch(
+                        checked = settings.chaseRemindersEnabled,
+                        onCheckedChange = { checked -> viewModel.update { it.copy(chaseRemindersEnabled = checked) } },
+                    )
+                },
+                modifier = Modifier.clickable {
+                    viewModel.update { it.copy(chaseRemindersEnabled = !it.chaseRemindersEnabled) }
+                },
+            )
             SettingRow(
                 title = stringResource(R.string.settings_call_reminder),
                 value = callReminderLabel(settings.callReminderMinutes),

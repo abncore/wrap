@@ -78,6 +78,7 @@ class JobRepository(
             db.paymentEntityQueries.deleteByJob(id)
             db.spendEntityQueries.unlinkJob(id)
             db.crewContactEntityQueries.deleteByJob(id)
+            db.chaseLogEntityQueries.deleteByJob(id)
             queries.deleteById(id)
         }
     }

@@ -1,0 +1,22 @@
+-- When the freelancer chased a client for payment (kind CHASED), and when the app reminded them to
+-- (kind NUDGED). at is epoch milliseconds. Added in schema version 7, see migrations/6.sqm.
+CREATE TABLE ChaseLogEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jobId INTEGER NOT NULL,
+    at INTEGER NOT NULL,
+    kind TEXT NOT NULL
+);
+
+CREATE INDEX ChaseLogEntity_jobId ON ChaseLogEntity(jobId);
+
+selectAll:
+SELECT * FROM ChaseLogEntity ORDER BY at DESC, id DESC;
+
+selectByJob:
+SELECT * FROM ChaseLogEntity WHERE jobId = ? ORDER BY at DESC, id DESC;
+
+insert:
+INSERT INTO ChaseLogEntity(jobId, at, kind) VALUES (?, ?, ?);
+
+deleteByJob:
+DELETE FROM ChaseLogEntity WHERE jobId = ?;

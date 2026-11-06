@@ -1,5 +1,6 @@
 package com.abaan.wrap.shared.data
 
+import com.abaan.wrap.shared.db.ChaseLogEntity
 import com.abaan.wrap.shared.db.ClientEntity
 import com.abaan.wrap.shared.db.CrewContactEntity
 import com.abaan.wrap.shared.db.JobEntity
@@ -9,6 +10,8 @@ import com.abaan.wrap.shared.db.SettingsEntity
 import com.abaan.wrap.shared.db.SpendEntity
 import com.abaan.wrap.shared.db.TimeLogEntity
 import com.abaan.wrap.shared.model.AppSettings
+import com.abaan.wrap.shared.model.ChaseKind
+import com.abaan.wrap.shared.model.ChaseLog
 import com.abaan.wrap.shared.model.Client
 import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.Job
@@ -119,4 +122,11 @@ internal fun SettingsEntity.toModel() = AppSettings(
     monthlyBudget = monthlyBudget,
     budgetAlertsEnabled = budgetAlerts != 0L,
     callReminderMinutes = callReminderMinutes.toInt(),
+    chaseRemindersEnabled = chaseReminders != 0L,
+)
+
+internal fun ChaseLogEntity.toModel() = ChaseLog(
+    jobId = jobId,
+    at = Instant.fromEpochMilliseconds(at),
+    kind = ChaseKind.valueOf(kind),
 )

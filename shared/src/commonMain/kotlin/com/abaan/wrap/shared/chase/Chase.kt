@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -45,8 +46,30 @@ object PhoneNumbers {
 }
 
 object ChaseRules {
+    /** Days past the due date before the first reminder to chase. */
+    const val NUDGE_AFTER_DAYS = 3
+    /** A job isn't nudged again within this many days of being chased or nudged. */
+    const val NUDGE_EVERY_DAYS = 7
+
     /** A job can be chased once the work is done and money is still owed. */
     fun canChase(summary: JobSummary): Boolean = summary.workDone && summary.money.owed > 0
+
+    /**
+     * Whether to remind the freelancer to chase [summary] today: it is overdue by at least
+     * [NUDGE_AFTER_DAYS], and they haven't chased it, nor been reminded, in the last [NUDGE_EVERY_DAYS].
+     */
+    fun needsNudge(summary: JobSummary, lastChased: LocalDate?, lastNudged: LocalDate?, today: LocalDate): Boolean {
+        val due = summary.job.dueDate ?: return false
+        fun quietSince(date: LocalDate?) = date == null || date.plus(DatePeriod(days = NUDGE_EVERY_DAYS)) <= today
+        return summary.isOverdue &&
+            due.plus(DatePeriod(days = NUDGE_AFTER_DAYS)) <= today &&
+            quietSince(lastChased) &&
+            quietSince(lastNudged)
+    }
+
+    /** Whole days [summary] is past its due date (0 when it isn't due yet). */
+    fun daysOverdue(summary: JobSummary, today: LocalDate): Int =
+        summary.job.dueDate?.daysUntil(today)?.coerceAtLeast(0) ?: 0
 }
 
 /** When to remind the freelancer about a job: 8 PM the night before. */

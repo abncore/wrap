@@ -31,6 +31,7 @@ class SettingsRepository(
             monthlyBudget = settings.monthlyBudget.coerceAtLeast(0),
             budgetAlerts = if (settings.budgetAlertsEnabled) 1L else 0L,
             callReminderMinutes = settings.callReminderMinutes.coerceAtLeast(0).toLong(),
+            chaseReminders = if (settings.chaseRemindersEnabled) 1L else 0L,
         )
     }
 }

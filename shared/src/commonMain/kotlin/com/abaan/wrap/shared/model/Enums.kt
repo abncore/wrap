@@ -46,6 +46,14 @@ enum class InsightPeriod {
     ALL_TIME,
 }
 
+/** What a chase log entry records. */
+enum class ChaseKind {
+    /** The freelancer sent the client a reminder. */
+    CHASED,
+    /** The app reminded the freelancer to chase. */
+    NUDGED,
+}
+
 /** How this month's spending compares with the monthly budget. */
 enum class BudgetLevel {
     UNDER,

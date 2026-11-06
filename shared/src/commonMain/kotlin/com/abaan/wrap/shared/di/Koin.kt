@@ -1,6 +1,7 @@
 package com.abaan.wrap.shared.di
 
 import app.cash.sqldelight.db.SqlDriver
+import com.abaan.wrap.shared.data.ChaseRepository
 import com.abaan.wrap.shared.data.ClientRepository
 import com.abaan.wrap.shared.data.CrewRepository
 import com.abaan.wrap.shared.data.JobRepository
@@ -44,6 +45,7 @@ val sharedModule = module {
     single { SpendRepository(get(), get(), get()) }
     single { RecurringSpendRepository(get(), get()) }
     single { CrewRepository(get(), get()) }
+    single { ChaseRepository(get(), get(), get(), get()) }
     single { LedgerRepository(get(), get(), get(), get(), get(), get(), get()) }
 }
 

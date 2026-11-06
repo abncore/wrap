@@ -1,6 +1,7 @@
 -- Single-row table holding app-wide defaults. defaultRate and monthlyBudget are minor units (fils);
 -- monthlyBudget 0 means no budget. monthlyBudget and budgetAlerts were added in version 3 (migrations/2.sqm).
 -- callReminderMinutes (version 6) is how long before call time to remind; 0 means off.
+-- chaseReminders (version 7): remind weekly about overdue payments.
 CREATE TABLE SettingsEntity (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     defaultRate INTEGER NOT NULL,
@@ -11,7 +12,8 @@ CREATE TABLE SettingsEntity (
     remindersEnabled INTEGER NOT NULL,
     monthlyBudget INTEGER NOT NULL DEFAULT 0,
     budgetAlerts INTEGER NOT NULL DEFAULT 1,
-    callReminderMinutes INTEGER NOT NULL DEFAULT 60
+    callReminderMinutes INTEGER NOT NULL DEFAULT 60,
+    chaseReminders INTEGER NOT NULL DEFAULT 1
 );
 
 INSERT INTO SettingsEntity(id, defaultRate, dayLengthHours, otMultiplier, paymentTermsDays, currency, remindersEnabled)
@@ -23,5 +25,5 @@ SELECT * FROM SettingsEntity WHERE id = 1;
 update:
 UPDATE SettingsEntity SET
     defaultRate = ?, dayLengthHours = ?, otMultiplier = ?, paymentTermsDays = ?, currency = ?, remindersEnabled = ?,
-    monthlyBudget = ?, budgetAlerts = ?, callReminderMinutes = ?
+    monthlyBudget = ?, budgetAlerts = ?, callReminderMinutes = ?, chaseReminders = ?
 WHERE id = 1;

@@ -52,6 +52,13 @@ data class Job(
     val parking: String = "",
 )
 
+/** One entry in a job's chase log. */
+data class ChaseLog(
+    val jobId: Long,
+    val at: Instant,
+    val kind: ChaseKind,
+)
+
 /** Someone on a job's call sheet. */
 data class CrewContact(
     val id: Long = NEW_ID,
@@ -120,6 +127,8 @@ data class AppSettings(
     val budgetAlertsEnabled: Boolean = true,
     /** Minutes before call time to send a reminder; 0 means off. */
     val callReminderMinutes: Int = 60,
+    /** Remind about overdue payments that haven't been chased for a week. */
+    val chaseRemindersEnabled: Boolean = true,
 ) {
     companion object {
         const val DEFAULT_CURRENCY = "AED"
