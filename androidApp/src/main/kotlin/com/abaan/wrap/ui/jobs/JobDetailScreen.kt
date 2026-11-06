@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -44,12 +45,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.R
+import com.abaan.wrap.shared.chase.ChaseRules
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.model.RateType
 import com.abaan.wrap.ui.components.ClockButton
@@ -77,6 +80,7 @@ fun JobDetailScreen(
     viewModel: JobDetailViewModel = koinViewModel(key = "job-$jobId") { parametersOf(jobId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
@@ -141,6 +145,16 @@ fun JobDetailScreen(
                         Icon(painterResource(R.drawable.ic_payments), contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.job_add_payment))
+                    }
+                    if (ChaseRules.canChase(summary)) {
+                        OutlinedButton(
+                            onClick = { launchChase(context, summary, state.currency) },
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.job_chase))
+                        }
                     }
                 }
                 OutlinedButton(

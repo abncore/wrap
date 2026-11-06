@@ -253,14 +253,10 @@
     <!-- Chase -->
     <string name="chase_message">Hi %1$s, hope you\'re well! Just a friendly reminder about %2$s on %3$s. %4$s is still outstanding. Would you be able to process it when you get a chance? Thank you!</string>
     <string name="chase_message_due">Hi %1$s, hope you\'re well! Just a friendly reminder about %2$s on %3$s. %4$s is still outstanding (due %5$s). Would you be able to process it when you get a chance? Thank you!</string>
-    <string name="chase_no_whatsapp">WhatsApp isn\'t installed, so the message opened in your browser.</string>
     <string name="chase_no_app">No app can open WhatsApp links.</string>
 
     <!-- Reminders -->
     <string name="reminder_channel_name">Job reminders</string>
     <string name="reminder_channel_desc">The night before a job</string>
     <string name="reminder_title">Tomorrow: %1$s</string>
-    <string name="reminder_body_call">Call %1$s · %2$s</string>
-    <string name="reminder_body_no_call">%1$s</string>
-    <string name="reminder_body_location">Call %1$s at %2$s · %3$s</string>
 </resources>
