@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.biometric)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)

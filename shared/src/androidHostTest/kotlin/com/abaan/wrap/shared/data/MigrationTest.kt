@@ -29,6 +29,7 @@ class MigrationTest {
         driver.execute(null, "DROP TABLE ProfileEntity", 0)
         driver.execute(null, "DROP TABLE CalendarEventEntity", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN calendarSync", 0)
+        driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN appLock", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN invoiceNumber", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN vatRate", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN chaseReminders", 0)
@@ -43,7 +44,7 @@ class MigrationTest {
         WrapDatabase.Schema.migrate(driver, 1, WrapDatabase.Schema.version)
 
         val db = WrapDatabase(driver)
-        assertEquals(9L, WrapDatabase.Schema.version)
+        assertEquals(10L, WrapDatabase.Schema.version)
         assertEquals("Sandstorm Films", ClientRepository(db, io).observeClients().first().single().name)
 
         val settings = SettingsRepository(db, io)

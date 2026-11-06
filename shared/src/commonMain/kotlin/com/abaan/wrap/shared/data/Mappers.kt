@@ -141,6 +141,7 @@ internal fun SettingsEntity.toModel() = AppSettings(
     callReminderMinutes = callReminderMinutes.toInt(),
     chaseRemindersEnabled = chaseReminders != 0L,
     calendarSyncEnabled = calendarSync != 0L,
+    appLockEnabled = appLock != 0L,
 )
 
 internal fun ChaseLogEntity.toModel() = ChaseLog(

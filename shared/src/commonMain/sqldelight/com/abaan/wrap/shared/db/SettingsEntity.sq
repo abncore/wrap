@@ -3,6 +3,7 @@
 -- callReminderMinutes (version 6) is how long before call time to remind; 0 means off.
 -- chaseReminders (version 7): remind weekly about overdue payments.
 -- calendarSync (version 9): copy jobs into the phone's calendar.
+-- appLock (version 10): ask for fingerprint or screen lock to open the app.
 CREATE TABLE SettingsEntity (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     defaultRate INTEGER NOT NULL,
@@ -15,7 +16,8 @@ CREATE TABLE SettingsEntity (
     budgetAlerts INTEGER NOT NULL DEFAULT 1,
     callReminderMinutes INTEGER NOT NULL DEFAULT 60,
     chaseReminders INTEGER NOT NULL DEFAULT 1,
-    calendarSync INTEGER NOT NULL DEFAULT 0
+    calendarSync INTEGER NOT NULL DEFAULT 0,
+    appLock INTEGER NOT NULL DEFAULT 0
 );
 
 INSERT INTO SettingsEntity(id, defaultRate, dayLengthHours, otMultiplier, paymentTermsDays, currency, remindersEnabled)
@@ -27,5 +29,5 @@ SELECT * FROM SettingsEntity WHERE id = 1;
 update:
 UPDATE SettingsEntity SET
     defaultRate = ?, dayLengthHours = ?, otMultiplier = ?, paymentTermsDays = ?, currency = ?, remindersEnabled = ?,
-    monthlyBudget = ?, budgetAlerts = ?, callReminderMinutes = ?, chaseReminders = ?, calendarSync = ?
+    monthlyBudget = ?, budgetAlerts = ?, callReminderMinutes = ?, chaseReminders = ?, calendarSync = ?, appLock = ?
 WHERE id = 1;

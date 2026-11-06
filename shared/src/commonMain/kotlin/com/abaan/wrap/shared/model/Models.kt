@@ -154,6 +154,8 @@ data class AppSettings(
     val chaseRemindersEnabled: Boolean = true,
     /** Copy jobs into the phone's calendar. */
     val calendarSyncEnabled: Boolean = false,
+    /** Ask for fingerprint, face or the phone's screen lock to open the app. */
+    val appLockEnabled: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_CURRENCY = "AED"

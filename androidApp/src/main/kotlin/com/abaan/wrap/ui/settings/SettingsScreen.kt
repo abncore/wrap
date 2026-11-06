@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.BuildConfig
 import com.abaan.wrap.R
 import com.abaan.wrap.reminders.CalendarSync
+import com.abaan.wrap.AppLock
 import org.koin.compose.koinInject
 import androidx.compose.ui.platform.LocalContext
 import com.abaan.wrap.shared.model.AppSettings
@@ -148,6 +149,22 @@ fun SettingsScreen(
                 modifier = Modifier.clickable {
                     viewModel.update { it.copy(budgetAlertsEnabled = !it.budgetAlertsEnabled) }
                 },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsHeader(stringResource(R.string.settings_section_privacy))
+            val setAppLock: (Boolean) -> Unit = { on ->
+                if (on && !AppLock.isAvailable(context)) {
+                    Toast.makeText(context, R.string.settings_app_lock_unavailable, Toast.LENGTH_LONG).show()
+                } else {
+                    viewModel.update { it.copy(appLockEnabled = on) }
+                }
+            }
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_app_lock)) },
+                supportingContent = { Text(stringResource(R.string.settings_app_lock_desc)) },
+                trailingContent = { Switch(checked = settings.appLockEnabled, onCheckedChange = setAppLock) },
+                modifier = Modifier.clickable { setAppLock(!settings.appLockEnabled) },
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

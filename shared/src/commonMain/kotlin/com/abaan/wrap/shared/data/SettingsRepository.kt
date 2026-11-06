@@ -33,6 +33,7 @@ class SettingsRepository(
             callReminderMinutes = settings.callReminderMinutes.coerceAtLeast(0).toLong(),
             chaseReminders = if (settings.chaseRemindersEnabled) 1L else 0L,
             calendarSync = if (settings.calendarSyncEnabled) 1L else 0L,
+            appLock = if (settings.appLockEnabled) 1L else 0L,
         )
     }
 }
