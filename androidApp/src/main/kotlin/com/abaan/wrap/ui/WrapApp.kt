@@ -29,9 +29,11 @@ import com.abaan.wrap.ui.navigation.JobDetailRoute
 import com.abaan.wrap.ui.navigation.JobEditRoute
 import com.abaan.wrap.ui.navigation.HomeRoute
 import com.abaan.wrap.ui.navigation.JobsRoute
+import com.abaan.wrap.ui.navigation.PaymentEditRoute
 import com.abaan.wrap.ui.navigation.SettingsRoute
 import com.abaan.wrap.ui.navigation.TopLevelDestination
 import com.abaan.wrap.ui.navigation.WrapBottomBar
+import com.abaan.wrap.ui.payments.PaymentEditScreen
 import com.abaan.wrap.ui.screens.HomeScreen
 import com.abaan.wrap.ui.jobs.JobDetailScreen
 import com.abaan.wrap.ui.jobs.JobEditScreen
@@ -85,6 +87,8 @@ fun WrapApp() {
                     jobId = route.jobId,
                     onBack = { navController.popBackStack() },
                     onEdit = { navController.navigate(JobEditRoute(jobId = route.jobId)) },
+                    onAddPayment = { navController.navigate(PaymentEditRoute(jobId = route.jobId)) },
+                    onEditPayment = { navController.navigate(PaymentEditRoute(jobId = route.jobId, paymentId = it)) },
                 )
             }
             composable<JobEditRoute> { entry ->
@@ -102,6 +106,14 @@ fun WrapApp() {
                             navController.popBackStack()
                         }
                     },
+                )
+            }
+            composable<PaymentEditRoute> { entry ->
+                val route = entry.toRoute<PaymentEditRoute>()
+                PaymentEditScreen(
+                    jobId = route.jobId,
+                    paymentId = route.paymentId,
+                    onClose = { navController.popBackStack() },
                 )
             }
             composable<ClientEditRoute> { entry ->
@@ -131,6 +143,6 @@ private fun NavHostController.handleAddAction(action: AddAction) {
     when (action) {
         AddAction.UPCOMING_JOB -> navigate(JobEditRoute())
         AddAction.FINISHED_JOB -> navigate(JobEditRoute(finished = true))
-        AddAction.PAYMENT -> navigateToTab(TopLevelDestination.JOBS)
+        AddAction.PAYMENT -> navigate(PaymentEditRoute())
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -71,6 +72,8 @@ fun JobDetailScreen(
     jobId: Long,
     onBack: () -> Unit,
     onEdit: () -> Unit,
+    onAddPayment: () -> Unit,
+    onEditPayment: (Long) -> Unit,
     viewModel: JobDetailViewModel = koinViewModel(key = "job-$jobId") { parametersOf(jobId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -133,6 +136,13 @@ fun JobDetailScreen(
                     }
                 }
                 MoneyCard(summary, state.currency)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(onClick = onAddPayment, modifier = Modifier.weight(1f)) {
+                        Icon(painterResource(R.drawable.ic_payments), contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.job_add_payment))
+                    }
+                }
                 OutlinedButton(
                     onClick = { viewModel.setWorkDone(!summary.workDone) },
                     modifier = Modifier.fillMaxWidth(),
@@ -147,6 +157,7 @@ fun JobDetailScreen(
                     onAdd = viewModel::addTimeLog,
                     onDelete = viewModel::deleteTimeLog,
                 )
+                PaymentsSection(summary.payments, state.currency, onEdit = onEditPayment)
                 if (summary.job.notes.isNotBlank()) {
                     DetailSection(stringResource(R.string.job_notes)) {
                         Text(summary.job.notes, style = MaterialTheme.typography.bodyMedium)

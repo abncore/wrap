@@ -5,6 +5,7 @@ import com.abaan.wrap.ui.clients.ClientsViewModel
 import com.abaan.wrap.ui.jobs.JobDetailViewModel
 import com.abaan.wrap.ui.jobs.JobEditViewModel
 import com.abaan.wrap.ui.jobs.JobsViewModel
+import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -19,4 +20,7 @@ val appModule = module {
         JobEditViewModel(jobId, finished, get(), get(), get(), get(), get())
     }
     viewModel { (jobId: Long) -> JobDetailViewModel(jobId, get(), get(), get(), get(), get()) }
+    viewModel { (jobId: Long, paymentId: Long) ->
+        PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
+    }
 }
