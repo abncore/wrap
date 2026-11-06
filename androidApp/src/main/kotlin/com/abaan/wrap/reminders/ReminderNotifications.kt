@@ -15,9 +15,14 @@ import com.abaan.wrap.MainActivity
 import com.abaan.wrap.R
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.ui.components.formatShort
+import com.abaan.wrap.ui.jobs.isLink
+import com.abaan.wrap.ui.jobs.mapsIntent
 
 object ReminderNotifications {
     const val CHANNEL_ID = "job_reminders"
+    const val CALL_CHANNEL_ID = "call_reminders"
+    /** Call reminders use their own notification ids so they don't replace the night-before one. */
+    private const val CALL_ID_OFFSET = 1_000_000
     const val EXTRA_JOB_ID = "com.abaan.wrap.extra.JOB_ID"
 
     fun createChannel(context: Context) {
@@ -26,7 +31,12 @@ object ReminderNotifications {
             context.getString(R.string.reminder_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply { description = context.getString(R.string.reminder_channel_desc) }
-        context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        val callChannel = NotificationChannel(
+            CALL_CHANNEL_ID,
+            context.getString(R.string.call_reminder_channel_name),
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply { description = context.getString(R.string.call_reminder_channel_desc) }
+        context.getSystemService(NotificationManager::class.java).createNotificationChannels(listOf(channel, callChannel))
     }
 
     fun canNotify(context: Context): Boolean =
@@ -42,29 +52,66 @@ object ReminderNotifications {
             summary.client?.name,
         ).joinToString(" · ")
 
-        val openJob = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra(EXTRA_JOB_ID, job.id)
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            job.id.toInt(),
-            openJob,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
-
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_schedule)
             .setContentTitle(context.getString(R.string.reminder_title, job.title))
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-            .setContentIntent(pendingIntent)
+            .setContentIntent(openJobIntent(context, job.id))
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .build()
 
+        post(context, job.id.toInt(), notification)
+    }
+
+    /** "Call at 6:30: Desert car commercial", with directions when the job has a location. */
+    fun showCall(context: Context, summary: JobSummary) {
+        if (!canNotify(context)) return
+        val job = summary.job
+        val callTime = job.callTime ?: return
+        val body = listOfNotNull(
+            job.location.takeIf { it.isNotBlank() && !isLink(it) },
+            job.unitBase.takeIf { it.isNotBlank() && !isLink(it) }?.let { context.getString(R.string.call_sheet_unit_base) + ": " + it },
+            summary.client?.name,
+        ).joinToString(" · ")
+        val builder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_schedule)
+            .setContentTitle(context.getString(R.string.call_reminder_title, callTime.formatShort(), job.title))
+            .setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setContentIntent(openJobIntent(context, job.id))
+            .setAutoCancel(true)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+        val place = job.location.ifBlank { job.unitBase }
+        if (place.isNotBlank()) {
+            val directions = PendingIntent.getActivity(
+                context,
+                CALL_ID_OFFSET + job.id.toInt(),
+                mapsIntent(place),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            builder.addAction(R.drawable.ic_directions, context.getString(R.string.action_directions), directions)
+        }
+        post(context, CALL_ID_OFFSET + job.id.toInt(), builder.build())
+    }
+
+    private fun openJobIntent(context: Context, jobId: Long): PendingIntent {
+        val openJob = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_JOB_ID, jobId)
+        }
+        return PendingIntent.getActivity(
+            context,
+            jobId.toInt(),
+            openJob,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+    }
+
+    private fun post(context: Context, id: Int, notification: android.app.Notification) {
         try {
-            NotificationManagerCompat.from(context).notify(job.id.toInt(), notification)
+            NotificationManagerCompat.from(context).notify(id, notification)
         } catch (_: SecurityException) {
             // Permission was revoked between the check and posting; nothing to show.
         }

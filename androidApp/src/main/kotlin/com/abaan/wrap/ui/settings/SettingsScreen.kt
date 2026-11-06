@@ -46,7 +46,7 @@ import com.abaan.wrap.ui.components.money
 import com.abaan.wrap.ui.money.BudgetDialog
 import org.koin.compose.viewmodel.koinViewModel
 
-private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRENCY, BUDGET }
+private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRENCY, BUDGET, CALL_REMINDER }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,6 +139,11 @@ fun SettingsScreen(
                     viewModel.update { it.copy(remindersEnabled = !it.remindersEnabled) }
                 },
             )
+            SettingRow(
+                title = stringResource(R.string.settings_call_reminder),
+                value = callReminderLabel(settings.callReminderMinutes),
+                onClick = { dialog = SettingDialog.CALL_REMINDER },
+            )
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_version)) },
                 supportingContent = { Text(BuildConfig.VERSION_NAME) },
@@ -208,8 +213,60 @@ fun SettingsScreen(
                 dialog = null
             },
         )
+        SettingDialog.CALL_REMINDER -> OptionsDialog(
+            title = stringResource(R.string.settings_call_reminder),
+            options = AppSettings.CALL_REMINDER_OPTIONS,
+            selected = settings.callReminderMinutes,
+            label = { callReminderLabel(it) },
+            onDismiss = { dialog = null },
+            onSelect = { minutes ->
+                viewModel.update { it.copy(callReminderMinutes = minutes) }
+                dialog = null
+            },
+        )
         null -> Unit
     }
+}
+
+@Composable
+private fun callReminderLabel(minutes: Int): String = when {
+    minutes <= 0 -> stringResource(R.string.settings_call_reminder_off)
+    minutes % 60 == 0 || minutes % 30 == 0 && minutes > 60 -> {
+        val hours = minutes / 60.0
+        pluralStringResource(R.plurals.settings_call_reminder_hours, if (hours == 1.0) 1 else 2, formatDecimal(hours))
+    }
+    else -> pluralStringResource(R.plurals.settings_call_reminder_minutes, minutes, minutes)
+}
+
+@Composable
+private fun <T> OptionsDialog(
+    title: String,
+    options: List<T>,
+    selected: T,
+    label: @Composable (T) -> String,
+    onDismiss: () -> Unit,
+    onSelect: (T) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                options.forEach { option ->
+                    ListItem(
+                        headlineContent = { Text(label(option)) },
+                        leadingContent = { RadioButton(selected = option == selected, onClick = null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(selected = option == selected, role = Role.RadioButton) { onSelect(option) },
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
 }
 
 @Composable

@@ -71,12 +71,13 @@ class JobRepository(
         }
     }
 
-    /** Deletes the job together with its time logs and payments. Spends billed to it are kept, unbilled. */
+    /** Deletes the job with its time logs, payments and crew. Spends billed to it are kept, unbilled. */
     suspend fun delete(id: Long) = withContext(io) {
         db.transaction {
             db.timeLogEntityQueries.deleteByJob(id)
             db.paymentEntityQueries.deleteByJob(id)
             db.spendEntityQueries.unlinkJob(id)
+            db.crewContactEntityQueries.deleteByJob(id)
             queries.deleteById(id)
         }
     }
@@ -86,6 +87,8 @@ class JobRepository(
         val role = job.role.trim()
         val location = job.location.trim()
         val notes = job.notes.trim()
+        val unitBase = job.unitBase.trim()
+        val parking = job.parking.trim()
         return if (job.id == NEW_ID) {
             queries.insert(
                 clientId = job.clientId,
@@ -104,6 +107,8 @@ class JobRepository(
                 dueDate = job.dueDate?.toDb(),
                 status = job.status.name,
                 notes = notes,
+                unitBase = unitBase,
+                parking = parking,
             )
             queries.lastInsertedId().executeAsOne()
         } else {
@@ -124,6 +129,8 @@ class JobRepository(
                 dueDate = job.dueDate?.toDb(),
                 status = job.status.name,
                 notes = notes,
+                unitBase = unitBase,
+                parking = parking,
                 id = job.id,
             )
             job.id

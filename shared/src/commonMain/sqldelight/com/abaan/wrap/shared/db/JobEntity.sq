@@ -1,4 +1,5 @@
 -- Dates are epoch days, callTime is minutes after midnight, money is minor units (fils).
+-- unitBase and parking (call sheet details) were added in version 6, see migrations/5.sqm.
 CREATE TABLE JobEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     clientId INTEGER NOT NULL,
@@ -16,7 +17,9 @@ CREATE TABLE JobEntity (
     expenses INTEGER NOT NULL DEFAULT 0,
     dueDate INTEGER,
     status TEXT NOT NULL,
-    notes TEXT NOT NULL DEFAULT ''
+    notes TEXT NOT NULL DEFAULT '',
+    unitBase TEXT NOT NULL DEFAULT '',
+    parking TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX JobEntity_clientId ON JobEntity(clientId);
@@ -33,14 +36,14 @@ SELECT COUNT(*) FROM JobEntity WHERE clientId = ?;
 insert:
 INSERT INTO JobEntity(
     clientId, title, role, startDate, endDate, callTime, location, rateType, rate,
-    dayLengthHours, otMultiplier, kitRental, expenses, dueDate, status, notes
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    dayLengthHours, otMultiplier, kitRental, expenses, dueDate, status, notes, unitBase, parking
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE JobEntity SET
     clientId = ?, title = ?, role = ?, startDate = ?, endDate = ?, callTime = ?, location = ?,
     rateType = ?, rate = ?, dayLengthHours = ?, otMultiplier = ?, kitRental = ?, expenses = ?,
-    dueDate = ?, status = ?, notes = ?
+    dueDate = ?, status = ?, notes = ?, unitBase = ?, parking = ?
 WHERE id = ?;
 
 updateStatus:

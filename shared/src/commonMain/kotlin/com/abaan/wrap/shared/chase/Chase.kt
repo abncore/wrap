@@ -7,7 +7,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 /** Phone number handling for wa.me links. */
@@ -56,4 +59,30 @@ object ReminderRules {
     /** Only jobs that haven't been worked yet and whose reminder time is still ahead. */
     fun shouldRemind(summary: JobSummary, now: Instant, timeZone: TimeZone): Boolean =
         !summary.workDone && reminderAt(summary.job.startDate, timeZone) > now
+}
+
+/** A reminder shortly before call time on each day of a job. */
+data class CallReminder(val date: LocalDate, val at: Instant)
+
+object CallReminderRules {
+    /** Reminders further ahead than this are scheduled later, as the date gets closer. */
+    const val DAYS_AHEAD = 14
+
+    fun callAt(date: LocalDate, callTime: LocalTime, timeZone: TimeZone): Instant =
+        LocalDateTime(date, callTime).toInstant(timeZone)
+
+    /**
+     * The reminders still ahead for [summary]: one per job day, [minutesBefore] its call time.
+     * None when the job has no call time, the work is done, or reminders are off ([minutesBefore] 0).
+     */
+    fun upcoming(summary: JobSummary, minutesBefore: Int, now: Instant, timeZone: TimeZone): List<CallReminder> {
+        val callTime = summary.job.callTime ?: return emptyList()
+        if (minutesBefore <= 0 || summary.workDone) return emptyList()
+        val horizon = now + DAYS_AHEAD.days
+        return generateSequence(summary.job.startDate) { it.plus(DatePeriod(days = 1)) }
+            .takeWhile { it <= summary.job.endDate }
+            .map { CallReminder(it, callAt(it, callTime, timeZone) - minutesBefore.minutes) }
+            .filter { it.at > now && it.at < horizon }
+            .toList()
+    }
 }

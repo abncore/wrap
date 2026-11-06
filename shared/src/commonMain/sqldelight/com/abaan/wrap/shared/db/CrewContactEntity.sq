@@ -1,0 +1,25 @@
+-- People on a job's call sheet (producer, AD, other crew). Added in schema version 6, see migrations/5.sqm.
+CREATE TABLE CrewContactEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jobId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX CrewContactEntity_jobId ON CrewContactEntity(jobId);
+
+selectAll:
+SELECT * FROM CrewContactEntity ORDER BY jobId, id;
+
+selectByJob:
+SELECT * FROM CrewContactEntity WHERE jobId = ? ORDER BY id;
+
+insert:
+INSERT INTO CrewContactEntity(jobId, name, role, phone) VALUES (?, ?, ?, ?);
+
+deleteById:
+DELETE FROM CrewContactEntity WHERE id = ?;
+
+deleteByJob:
+DELETE FROM CrewContactEntity WHERE jobId = ?;

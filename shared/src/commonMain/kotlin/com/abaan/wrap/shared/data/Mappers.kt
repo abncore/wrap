@@ -1,6 +1,7 @@
 package com.abaan.wrap.shared.data
 
 import com.abaan.wrap.shared.db.ClientEntity
+import com.abaan.wrap.shared.db.CrewContactEntity
 import com.abaan.wrap.shared.db.JobEntity
 import com.abaan.wrap.shared.db.PaymentEntity
 import com.abaan.wrap.shared.db.RecurringSpendEntity
@@ -9,6 +10,7 @@ import com.abaan.wrap.shared.db.SpendEntity
 import com.abaan.wrap.shared.db.TimeLogEntity
 import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.model.Client
+import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
@@ -59,6 +61,16 @@ internal fun JobEntity.toModel() = Job(
     dueDate = dueDate?.toLocalDate(),
     status = JobStatus.valueOf(status),
     notes = notes,
+    unitBase = unitBase,
+    parking = parking,
+)
+
+internal fun CrewContactEntity.toModel() = CrewContact(
+    id = id,
+    jobId = jobId,
+    name = name,
+    role = role,
+    phone = phone,
 )
 
 internal fun TimeLogEntity.toModel() = TimeLog(
@@ -106,4 +118,5 @@ internal fun SettingsEntity.toModel() = AppSettings(
     remindersEnabled = remindersEnabled != 0L,
     monthlyBudget = monthlyBudget,
     budgetAlertsEnabled = budgetAlerts != 0L,
+    callReminderMinutes = callReminderMinutes.toInt(),
 )

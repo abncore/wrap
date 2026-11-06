@@ -144,7 +144,21 @@ fun JobEditScreen(
                 value = form.location,
                 onValueChange = { v -> viewModel.update { it.copy(location = v) } },
                 label = stringResource(R.string.job_field_location),
+                placeholder = stringResource(R.string.job_field_place_hint),
                 capitalization = KeyboardCapitalization.Words,
+            )
+            TextInput(
+                value = form.unitBase,
+                onValueChange = { v -> viewModel.update { it.copy(unitBase = v) } },
+                label = stringResource(R.string.job_field_unit_base),
+                placeholder = stringResource(R.string.job_field_place_hint),
+                capitalization = KeyboardCapitalization.Words,
+            )
+            TextInput(
+                value = form.parking,
+                onValueChange = { v -> viewModel.update { it.copy(parking = v) } },
+                label = stringResource(R.string.job_field_parking),
+                placeholder = stringResource(R.string.job_field_place_hint),
             )
 
             SectionTitle(stringResource(R.string.job_section_when))

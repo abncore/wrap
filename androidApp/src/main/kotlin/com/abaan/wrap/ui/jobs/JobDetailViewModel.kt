@@ -2,12 +2,14 @@ package com.abaan.wrap.ui.jobs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abaan.wrap.shared.data.CrewRepository
 import com.abaan.wrap.shared.data.JobRepository
 import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.TimeLogRepository
 import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.model.AppSettings
+import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.money.Shifts
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ import kotlinx.datetime.TimeZone
 data class JobDetailUiState(
     val loading: Boolean = true,
     val summary: JobSummary? = null,
+    val crew: List<CrewContact> = emptyList(),
     val currency: String = AppSettings.DEFAULT_CURRENCY,
     val timeZone: TimeZone = TimeZone.currentSystemDefault(),
     val today: LocalDate = LocalDate(1970, 1, 1),
@@ -36,6 +39,7 @@ class JobDetailViewModel(
     private val timeLogs: TimeLogRepository,
     settings: SettingsRepository,
     private val today: Today,
+    private val crewContacts: CrewRepository,
 ) : ViewModel() {
     private val deleted = MutableStateFlow(false)
 
@@ -43,10 +47,12 @@ class JobDetailViewModel(
         ledger.observeJobSummary(jobId),
         settings.observeSettings(),
         deleted,
-    ) { summary, appSettings, isDeleted ->
+        crewContacts.observeForJob(jobId),
+    ) { summary, appSettings, isDeleted, crew ->
         JobDetailUiState(
             loading = false,
             summary = summary,
+            crew = crew,
             currency = appSettings.currency,
             timeZone = today.timeZone,
             today = today.date(),
@@ -74,6 +80,14 @@ class JobDetailViewModel(
 
     fun deleteTimeLog(id: Long) {
         viewModelScope.launch { timeLogs.delete(id) }
+    }
+
+    fun addCrew(name: String, role: String, phone: String) {
+        viewModelScope.launch { crewContacts.add(CrewContact(jobId = jobId, name = name, role = role, phone = phone)) }
+    }
+
+    fun deleteCrew(id: Long) {
+        viewModelScope.launch { crewContacts.delete(id) }
     }
 
     fun delete() {

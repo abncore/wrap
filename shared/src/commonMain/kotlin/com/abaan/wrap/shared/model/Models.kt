@@ -25,7 +25,8 @@ data class Client(
 )
 
 /**
- * A booking. Money fields ([rate], [kitRental], [expenses]) are in minor units.
+ * A booking. Money fields ([rate], [kitRental], [expenses]) are in minor units. [unitBase] and
+ * [parking] come from the call sheet; like [location] they can be an address or a maps link.
  * [status] is the stored lifecycle status; see `JobStatusRules` for how it is kept up to date
  * and how the displayed status (including OVERDUE) is derived.
  */
@@ -47,6 +48,17 @@ data class Job(
     val dueDate: LocalDate? = null,
     val status: JobStatus = JobStatus.UPCOMING,
     val notes: String = "",
+    val unitBase: String = "",
+    val parking: String = "",
+)
+
+/** Someone on a job's call sheet. */
+data class CrewContact(
+    val id: Long = NEW_ID,
+    val jobId: Long,
+    val name: String,
+    val role: String = "",
+    val phone: String = "",
 )
 
 /** A clock-in / clock-out pair. [clockOut] is null while the freelancer is still on the clock. */
@@ -106,10 +118,14 @@ data class AppSettings(
     val remindersEnabled: Boolean = true,
     val monthlyBudget: Long = 0,
     val budgetAlertsEnabled: Boolean = true,
+    /** Minutes before call time to send a reminder; 0 means off. */
+    val callReminderMinutes: Int = 60,
 ) {
     companion object {
         const val DEFAULT_CURRENCY = "AED"
         /** Currencies with two decimal places, so stored minor units mean the same thing in each. */
         val SUPPORTED_CURRENCIES = listOf("AED", "SAR", "QAR", "USD", "EUR", "GBP", "INR")
+        /** Choices for [callReminderMinutes]. */
+        val CALL_REMINDER_OPTIONS = listOf(0, 30, 60, 90, 120, 180)
     }
 }

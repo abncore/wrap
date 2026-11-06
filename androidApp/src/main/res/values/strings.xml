@@ -367,4 +367,40 @@
     <string name="spend_billed">Billed to a job</string>
     <string name="job_option">%1$s · %2$s</string>
     <string name="job_billed_spends">Billed spending (%1$d)</string>
+
+    <!-- Call sheet -->
+    <string name="no_app_to_open">No app on this phone can open that</string>
+    <string name="action_directions">Directions</string>
+    <string name="call_sheet_title">Call sheet</string>
+    <string name="call_sheet_empty">Add crew contacts, unit base and parking from the call sheet.</string>
+    <string name="call_sheet_add_places">Add unit base and parking</string>
+    <string name="call_sheet_unit_base">Unit base</string>
+    <string name="call_sheet_parking">Parking</string>
+    <string name="call_sheet_map_link">Map link</string>
+    <string name="crew_add">Add contact</string>
+    <string name="crew_name">Name</string>
+    <string name="crew_role">Role</string>
+    <string name="crew_role_hint">e.g. 1st AD, producer, gaffer</string>
+    <string name="crew_phone">Phone</string>
+    <string name="crew_call">Call %1$s</string>
+    <string name="crew_whatsapp">WhatsApp %1$s</string>
+    <string name="crew_delete">Remove %1$s</string>
+    <string name="crew_delete_title">Remove this contact?</string>
+    <string name="job_field_unit_base">Unit base</string>
+    <string name="job_field_parking">Parking</string>
+    <string name="job_field_place_hint">Address, or paste a Google Maps link</string>
+    <string name="job_location_directions">Directions to %1$s</string>
+    <string name="call_reminder_title">Call at %1$s: %2$s</string>
+    <string name="call_reminder_channel_name">Call time reminders</string>
+    <string name="call_reminder_channel_desc">Shortly before call time on each job day</string>
+    <string name="settings_call_reminder">Call time reminder</string>
+    <string name="settings_call_reminder_off">Off</string>
+    <plurals name="settings_call_reminder_minutes">
+        <item quantity="one">%1$d minute before call</item>
+        <item quantity="other">%1$d minutes before call</item>
+    </plurals>
+    <plurals name="settings_call_reminder_hours">
+        <item quantity="one">%1$s hour before call</item>
+        <item quantity="other">%1$s hours before call</item>
+    </plurals>
 </resources>

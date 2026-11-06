@@ -1,5 +1,6 @@
 package com.abaan.wrap.ui.jobs
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
@@ -48,6 +48,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -139,6 +141,16 @@ fun JobDetailScreen(
                         )
                     }
                 }
+                val job = summary.job
+                if (!summary.workDone || state.crew.isNotEmpty() || job.unitBase.isNotBlank() || job.parking.isNotBlank()) {
+                    CallSheetSection(
+                        job = job,
+                        crew = state.crew,
+                        onAddCrew = viewModel::addCrew,
+                        onDeleteCrew = viewModel::deleteCrew,
+                        onEditJob = onEdit,
+                    )
+                }
                 MoneyCard(summary, state.currency)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Button(onClick = onAddPayment, modifier = Modifier.weight(1f)) {
@@ -218,21 +230,37 @@ private fun JobHeader(summary: JobSummary) {
             rememberVectorPainter(Icons.Filled.DateRange),
             listOfNotNull(formatDateRange(job.startDate, job.endDate), call).joinToString(" · "),
         )
-        if (job.location.isNotBlank()) InfoLine(rememberVectorPainter(Icons.Filled.LocationOn), job.location)
+        if (job.location.isNotBlank()) {
+            val context = LocalContext.current
+            val description = stringResource(R.string.job_location_directions, job.location)
+            InfoLine(
+                icon = painterResource(R.drawable.ic_directions),
+                text = if (isLink(job.location)) stringResource(R.string.call_sheet_map_link) else job.location,
+                modifier = Modifier
+                    .clickable { openMaps(context, job.location) }
+                    .semantics { contentDescription = description },
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
 
 @Composable
-private fun InfoLine(icon: Painter, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun InfoLine(
+    icon: Painter,
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Icon(
             painter = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = color,
             modifier = Modifier.size(18.dp),
         )
         Spacer(Modifier.width(8.dp))
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = color)
     }
 }
 

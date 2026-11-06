@@ -3,6 +3,7 @@ package com.abaan.wrap.shared.data
 import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.model.BudgetLevel
 import com.abaan.wrap.shared.model.Client
+import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
@@ -47,6 +48,7 @@ class RepositoryTest {
     private val settings = SettingsRepository(db, io)
     private val spends = SpendRepository(db, io, statusUpdater)
     private val recurring = RecurringSpendRepository(db, io)
+    private val crew = CrewRepository(db, io)
     private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
     private fun job(clientId: Long) = Job(
@@ -255,6 +257,23 @@ class RepositoryTest {
 
         assertEquals(1_000_00, settings.getSettings().monthlyBudget)
         assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
+    }
+
+    @Test
+    fun callSheetDetailsAreSavedAndCrewGoesWithTheJob() = runTest {
+        val clientId = clients.save(Client(name = "Falcon Productions"))
+        val jobId = jobs.save(job(clientId).copy(unitBase = " Gate 3, Dubai Studio City ", parking = "Behind stage 2"))
+        assertEquals("Gate 3, Dubai Studio City", jobs.getJob(jobId)!!.unitBase)
+        assertEquals("Behind stage 2", jobs.getJob(jobId)!!.parking)
+
+        crew.add(CrewContact(jobId = jobId, name = "Omar", role = "1st AD", phone = "050 123 4567"))
+        crew.add(CrewContact(jobId = jobId, name = "Lina", role = "Producer"))
+        assertEquals(listOf("Omar", "Lina"), crew.observeForJob(jobId).first().map { it.name })
+
+        crew.delete(crew.observeForJob(jobId).first().first().id)
+        assertEquals(listOf("Lina"), crew.observeForJob(jobId).first().map { it.name })
+        jobs.delete(jobId)
+        assertTrue(crew.observeForJob(jobId).first().isEmpty())
     }
 
     @Test

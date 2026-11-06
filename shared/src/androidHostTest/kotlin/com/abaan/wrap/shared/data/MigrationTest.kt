@@ -24,6 +24,10 @@ class MigrationTest {
         WrapDatabase.Schema.create(driver)
         driver.execute(null, "DROP TABLE SpendEntity", 0)
         driver.execute(null, "DROP TABLE RecurringSpendEntity", 0)
+        driver.execute(null, "DROP TABLE CrewContactEntity", 0)
+        driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN unitBase", 0)
+        driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN parking", 0)
+        driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN callReminderMinutes", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN monthlyBudget", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN budgetAlerts", 0)
         driver.execute(null, "UPDATE SettingsEntity SET currency = 'USD', defaultRate = 120000 WHERE id = 1", 0)
@@ -32,7 +36,7 @@ class MigrationTest {
         WrapDatabase.Schema.migrate(driver, 1, WrapDatabase.Schema.version)
 
         val db = WrapDatabase(driver)
-        assertEquals(5L, WrapDatabase.Schema.version)
+        assertEquals(6L, WrapDatabase.Schema.version)
         assertEquals("Sandstorm Films", ClientRepository(db, io).observeClients().first().single().name)
 
         val settings = SettingsRepository(db, io)
