@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +58,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.R
+import com.abaan.wrap.files.SharedFiles
+import com.abaan.wrap.ui.settings.vatPercent
 import com.abaan.wrap.shared.chase.ChaseRules
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.model.RateType
@@ -82,6 +86,7 @@ fun JobDetailScreen(
     onEdit: () -> Unit,
     onAddPayment: () -> Unit,
     onEditPayment: (Long) -> Unit,
+    onOpenProfile: () -> Unit,
     viewModel: JobDetailViewModel = koinViewModel(key = "job-$jobId") { parametersOf(jobId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -89,6 +94,21 @@ fun JobDetailScreen(
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
+
+    val invoice by viewModel.invoice.collectAsStateWithLifecycle()
+    LaunchedEffect(invoice) {
+        invoice?.let {
+            SharedFiles.share(
+                context = context,
+                file = it.file,
+                mimeType = "application/pdf",
+                subject = context.getString(R.string.invoice_subject, it.number, it.jobTitle),
+                chooserTitle = context.getString(R.string.invoice_share_title),
+            )
+            viewModel.invoiceShared()
+        }
+    }
+    val needsProfile by viewModel.needsProfile.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -175,6 +195,14 @@ fun JobDetailScreen(
                         }
                     }
                 }
+                OutlinedButton(onClick = viewModel::makeInvoice, modifier = Modifier.fillMaxWidth()) {
+                    Icon(painterResource(R.drawable.ic_receipt), contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        summary.job.invoiceNumber?.let { stringResource(R.string.job_invoice_again, it) }
+                            ?: stringResource(R.string.job_invoice),
+                    )
+                }
                 if (ChaseRules.canChase(summary)) {
                     val last = state.chases.firstOrNull()
                     Text(
@@ -219,6 +247,23 @@ fun JobDetailScreen(
                 Spacer(Modifier.height(16.dp))
             }
         }
+    }
+
+    if (needsProfile) {
+        AlertDialog(
+            onDismissRequest = viewModel::profilePromptShown,
+            title = { Text(stringResource(R.string.job_invoice_profile_title)) },
+            text = { Text(stringResource(R.string.job_invoice_profile_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.profilePromptShown()
+                    onOpenProfile()
+                }) { Text(stringResource(R.string.job_invoice_profile_action)) }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::profilePromptShown) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
     }
 
     if (confirmDelete) {
@@ -325,6 +370,10 @@ private fun MoneyCard(summary: JobSummary, currency: String) {
                 )
             }
             HorizontalDivider()
+            if (money.vat > 0) {
+                MoneyRow(stringResource(R.string.job_subtotal), money(money.subtotal, currency))
+                MoneyRow(stringResource(R.string.job_vat, vatPercent(job.vatRate)), money(money.vat, currency))
+            }
             MoneyRow(stringResource(R.string.job_total), money(money.total, currency), bold = true)
             if (money.paid > 0) {
                 MoneyRow(stringResource(R.string.job_paid), money(money.paid, currency), color = LocalStatusColors.current.success)

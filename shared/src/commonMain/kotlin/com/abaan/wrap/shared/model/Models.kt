@@ -27,6 +27,8 @@ data class Client(
 /**
  * A booking. Money fields ([rate], [kitRental], [expenses]) are in minor units. [unitBase] and
  * [parking] come from the call sheet; like [location] they can be an address or a maps link.
+ * [vatRate] (0.05 = 5%) is added on top of the job's total. [invoiceNumber] is set once an invoice
+ * has been made, and never changed by saving the job.
  * [status] is the stored lifecycle status; see `JobStatusRules` for how it is kept up to date
  * and how the displayed status (including OVERDUE) is derived.
  */
@@ -50,7 +52,28 @@ data class Job(
     val notes: String = "",
     val unitBase: String = "",
     val parking: String = "",
+    val vatRate: Double = 0.0,
+    val invoiceNumber: String? = null,
 )
+
+/** The freelancer's own details, printed on invoices. */
+data class Profile(
+    val name: String = "",
+    val businessName: String = "",
+    val address: String = "",
+    val phone: String = "",
+    val email: String = "",
+    /** UAE Tax Registration Number, when VAT registered. */
+    val trn: String = "",
+    val bankDetails: String = "",
+    /** New jobs add VAT by default. */
+    val vatRegistered: Boolean = false,
+    val invoicePrefix: String = "INV-",
+    val nextInvoiceNumber: Long = 1,
+) {
+    /** The name invoices are from: the business name, or the person's name without one. */
+    val displayName: String get() = businessName.ifBlank { name }
+}
 
 /** One entry in a job's chase log. */
 data class ChaseLog(

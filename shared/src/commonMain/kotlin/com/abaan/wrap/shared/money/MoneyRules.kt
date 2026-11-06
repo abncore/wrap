@@ -25,6 +25,10 @@ data class MoneyBreakdown(
     val expenses: Long,
     /** Spends billed to this job, charged back to the client. */
     val billedSpends: Long,
+    /** Everything before VAT. */
+    val subtotal: Long,
+    val vat: Long,
+    /** subtotal + VAT: what the client pays. */
     val total: Long,
     val paid: Long,
     /** What is still owed; never negative. */
@@ -38,7 +42,8 @@ data class MoneyBreakdown(
  * - DAY: rate per day; HALF_DAY: rate / 2 per day; HOUR: hours x rate; FIXED: rate.
  * - Overtime (DAY only): hours beyond the day length x (rate / day length) x OT multiplier,
  *   worked out per calendar day from time logs.
- * - total = base + overtime + kit rental + expenses + spends billed to the job; owed = total - payments.
+ * - subtotal = base + overtime + kit rental + expenses + spends billed to the job.
+ * - total = subtotal + VAT at the job's rate (rounded to the nearest fils); owed = total - payments.
  *
  * HOUR jobs with no time logs yet are estimated from the planned day length.
  */
@@ -62,6 +67,7 @@ object MoneyRules {
             expenses = job.expenses,
             paid = payments.sumOf { it.amount },
             billedSpends = billedSpends.sumOf { it.amount },
+            vatRate = job.vatRate,
         )
 
     /**
@@ -79,6 +85,7 @@ object MoneyRules {
         expenses: Long,
         paid: Long,
         billedSpends: Long = 0,
+        vatRate: Double = 0.0,
     ): MoneyBreakdown {
         val safeRate = rate.coerceAtLeast(0)
         val safeDays = days.coerceAtLeast(1)
@@ -109,7 +116,9 @@ object MoneyRules {
         val safeKit = kitRental.coerceAtLeast(0)
         val safeExpenses = expenses.coerceAtLeast(0)
         val safeBilled = billedSpends.coerceAtLeast(0)
-        val total = base + overtime + safeKit + safeExpenses + safeBilled
+        val subtotal = base + overtime + safeKit + safeExpenses + safeBilled
+        val vat = (subtotal * vatRate.coerceIn(0.0, 1.0)).roundToLong()
+        val total = subtotal + vat
         val safePaid = paid.coerceAtLeast(0)
 
         return MoneyBreakdown(
@@ -121,6 +130,8 @@ object MoneyRules {
             kitRental = safeKit,
             expenses = safeExpenses,
             billedSpends = safeBilled,
+            subtotal = subtotal,
+            vat = vat,
             total = total,
             paid = safePaid,
             owed = (total - safePaid).coerceAtLeast(0),

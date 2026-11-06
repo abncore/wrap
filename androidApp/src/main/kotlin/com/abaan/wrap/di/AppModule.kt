@@ -9,7 +9,9 @@ import com.abaan.wrap.ui.jobs.JobsViewModel
 import com.abaan.wrap.ui.money.MoneyViewModel
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
+import com.abaan.wrap.ui.settings.ProfileViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
+import com.abaan.wrap.files.InvoicePdf
 import com.abaan.wrap.files.ReceiptStore
 import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
@@ -22,16 +24,18 @@ val appModule = module {
     single { ReminderScheduler(androidContext(), get(), get(), get(), get()) }
     single { BudgetNotifications(androidContext()) }
     single { ReceiptStore(androidContext()) }
+    single { InvoicePdf(androidContext()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
     viewModel { (clientId: Long) -> ClientEditViewModel(clientId, get(), get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get()) }
     viewModel { JobsViewModel(get(), get()) }
     viewModel { (jobId: Long, finished: Boolean) ->
-        JobEditViewModel(jobId, finished, get(), get(), get(), get(), get())
+        JobEditViewModel(jobId, finished, get(), get(), get(), get(), get(), get())
     }
-    viewModel { (jobId: Long) -> JobDetailViewModel(jobId, get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { (jobId: Long) -> JobDetailViewModel(jobId, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (jobId: Long, paymentId: Long) ->
         PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
     }

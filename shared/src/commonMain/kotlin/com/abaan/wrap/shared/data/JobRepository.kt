@@ -110,6 +110,7 @@ class JobRepository(
                 notes = notes,
                 unitBase = unitBase,
                 parking = parking,
+                vatRate = job.vatRate.coerceIn(0.0, 1.0),
             )
             queries.lastInsertedId().executeAsOne()
         } else {
@@ -132,6 +133,7 @@ class JobRepository(
                 notes = notes,
                 unitBase = unitBase,
                 parking = parking,
+                vatRate = job.vatRate.coerceIn(0.0, 1.0),
                 id = job.id,
             )
             job.id

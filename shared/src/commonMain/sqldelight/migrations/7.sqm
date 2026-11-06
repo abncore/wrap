@@ -1,0 +1,20 @@
+-- Version 7 -> 8: invoices. The freelancer's own details for invoices, an invoice number per job once
+-- one is made, and VAT per job (0 for every existing job, so their totals don't change).
+CREATE TABLE ProfileEntity (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    name TEXT NOT NULL DEFAULT '',
+    businessName TEXT NOT NULL DEFAULT '',
+    address TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
+    trn TEXT NOT NULL DEFAULT '',
+    bankDetails TEXT NOT NULL DEFAULT '',
+    vatRegistered INTEGER NOT NULL DEFAULT 0,
+    invoicePrefix TEXT NOT NULL DEFAULT 'INV-',
+    nextInvoiceNumber INTEGER NOT NULL DEFAULT 1
+);
+
+INSERT INTO ProfileEntity(id) VALUES (1);
+
+ALTER TABLE JobEntity ADD COLUMN invoiceNumber TEXT;
+ALTER TABLE JobEntity ADD COLUMN vatRate REAL NOT NULL DEFAULT 0;

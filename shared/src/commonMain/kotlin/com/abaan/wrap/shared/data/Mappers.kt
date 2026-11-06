@@ -5,6 +5,7 @@ import com.abaan.wrap.shared.db.ClientEntity
 import com.abaan.wrap.shared.db.CrewContactEntity
 import com.abaan.wrap.shared.db.JobEntity
 import com.abaan.wrap.shared.db.PaymentEntity
+import com.abaan.wrap.shared.db.ProfileEntity
 import com.abaan.wrap.shared.db.RecurringSpendEntity
 import com.abaan.wrap.shared.db.SettingsEntity
 import com.abaan.wrap.shared.db.SpendEntity
@@ -18,6 +19,7 @@ import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.PaymentMethod
+import com.abaan.wrap.shared.model.Profile
 import com.abaan.wrap.shared.model.RateType
 import com.abaan.wrap.shared.model.RecurringSpend
 import com.abaan.wrap.shared.model.Spend
@@ -66,6 +68,21 @@ internal fun JobEntity.toModel() = Job(
     notes = notes,
     unitBase = unitBase,
     parking = parking,
+    vatRate = vatRate,
+    invoiceNumber = invoiceNumber,
+)
+
+internal fun ProfileEntity.toModel() = Profile(
+    name = name,
+    businessName = businessName,
+    address = address,
+    phone = phone,
+    email = email,
+    trn = trn,
+    bankDetails = bankDetails,
+    vatRegistered = vatRegistered != 0L,
+    invoicePrefix = invoicePrefix,
+    nextInvoiceNumber = nextInvoiceNumber,
 )
 
 internal fun CrewContactEntity.toModel() = CrewContact(

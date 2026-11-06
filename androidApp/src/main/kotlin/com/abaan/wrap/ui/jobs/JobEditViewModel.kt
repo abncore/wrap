@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abaan.wrap.shared.data.ClientRepository
 import com.abaan.wrap.shared.data.JobRepository
+import com.abaan.wrap.shared.data.ProfileRepository
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.TimeLogRepository
 import com.abaan.wrap.shared.data.Today
@@ -14,6 +15,7 @@ import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.NEW_ID
 import com.abaan.wrap.shared.model.RateType
 import com.abaan.wrap.shared.model.TimeLog
+import com.abaan.wrap.shared.money.InvoiceRules
 import com.abaan.wrap.shared.money.JobStatusRules
 import com.abaan.wrap.shared.money.MoneyBreakdown
 import com.abaan.wrap.shared.money.MoneyFormat
@@ -47,6 +49,8 @@ data class JobForm(
     val otMultiplier: String = "",
     val kitRental: String = "",
     val expenses: String = "",
+    /** Whether VAT is added; new jobs follow the profile's "VAT registered" setting. */
+    val addVat: Boolean = false,
     /** A due date the user picked; null means "end date + payment terms". */
     val dueDateOverride: LocalDate? = null,
     val notes: String = "",
@@ -91,6 +95,7 @@ class JobEditViewModel(
     private val timeLogs: TimeLogRepository,
     private val settings: SettingsRepository,
     private val today: Today,
+    private val profiles: ProfileRepository,
 ) : ViewModel() {
     private var existing: Job? = null
     private var existingLogs: List<TimeLog> = emptyList()
@@ -119,6 +124,7 @@ class JobEditViewModel(
                 dayLengthHours = appSettings.dayLengthHours.toInput(),
                 otMultiplier = appSettings.otMultiplier.toInput(),
                 clientId = clientList.singleOrNull()?.id,
+                addVat = profiles.getProfile().vatRegistered,
             )
             _state.update {
                 recalculate(
@@ -207,6 +213,7 @@ class JobEditViewModel(
             dueDate = state.dueDate,
             status = existing?.status ?: if (state.finished) JobStatus.DONE_UNPAID else JobStatus.UPCOMING,
             notes = form.notes,
+            vatRate = if (form.addVat) vatRate() else 0.0,
         )
 
         viewModelScope.launch {
@@ -244,6 +251,7 @@ class JobEditViewModel(
                 kitRental = parseOptionalMoney(form.kitRental) ?: 0,
                 expenses = parseOptionalMoney(form.expenses) ?: 0,
                 paid = 0,
+                vatRate = if (form.addVat) vatRate() else 0.0,
             )
         }
         return state.copy(
@@ -252,6 +260,9 @@ class JobEditViewModel(
             paymentTermsDays = terms,
         )
     }
+
+    /** The job's own VAT rate if it has one, otherwise the UAE rate. */
+    private fun vatRate(): Double = existing?.vatRate?.takeIf { it > 0 } ?: InvoiceRules.UAE_VAT_RATE
 
     private fun parseOptionalMoney(value: String): Long? = if (value.isBlank()) 0 else MoneyFormat.parse(value)
 
@@ -274,6 +285,7 @@ class JobEditViewModel(
         expenses = expenses.takeIf { it > 0 }?.let(MoneyFormat::toInput).orEmpty(),
         dueDateOverride = dueDate,
         notes = notes,
+        addVat = vatRate > 0,
     )
 
     private fun Double.toInput(): String = if (this % 1.0 == 0.0) toLong().toString() else toString()

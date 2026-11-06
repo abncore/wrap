@@ -1,0 +1,29 @@
+-- Single-row table: the freelancer's own details, printed on invoices. Added in schema version 8,
+-- see migrations/7.sqm. nextInvoiceNumber is the number the next new invoice gets.
+CREATE TABLE ProfileEntity (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    name TEXT NOT NULL DEFAULT '',
+    businessName TEXT NOT NULL DEFAULT '',
+    address TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
+    trn TEXT NOT NULL DEFAULT '',
+    bankDetails TEXT NOT NULL DEFAULT '',
+    vatRegistered INTEGER NOT NULL DEFAULT 0,
+    invoicePrefix TEXT NOT NULL DEFAULT 'INV-',
+    nextInvoiceNumber INTEGER NOT NULL DEFAULT 1
+);
+
+INSERT INTO ProfileEntity(id) VALUES (1);
+
+select:
+SELECT * FROM ProfileEntity WHERE id = 1;
+
+update:
+UPDATE ProfileEntity SET
+    name = ?, businessName = ?, address = ?, phone = ?, email = ?, trn = ?, bankDetails = ?,
+    vatRegistered = ?, invoicePrefix = ?, nextInvoiceNumber = ?
+WHERE id = 1;
+
+takeInvoiceNumber:
+UPDATE ProfileEntity SET nextInvoiceNumber = nextInvoiceNumber + 1 WHERE id = 1;

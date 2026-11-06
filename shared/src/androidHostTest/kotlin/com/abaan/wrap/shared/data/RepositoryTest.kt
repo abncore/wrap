@@ -8,6 +8,9 @@ import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.PaymentMethod
+import com.abaan.wrap.shared.model.Profile
+import com.abaan.wrap.shared.money.InvoiceLineKind
+import com.abaan.wrap.shared.money.InvoiceRules
 import com.abaan.wrap.shared.model.InsightPeriod
 import com.abaan.wrap.shared.model.RateType
 import com.abaan.wrap.shared.model.Spend
@@ -50,6 +53,7 @@ class RepositoryTest {
     private val recurring = RecurringSpendRepository(db, io)
     private val crew = CrewRepository(db, io)
     private val chases = ChaseRepository(db, io, clock, today)
+    private val profiles = ProfileRepository(db, io)
     private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
     private fun job(clientId: Long) = Job(
@@ -258,6 +262,37 @@ class RepositoryTest {
 
         assertEquals(1_000_00, settings.getSettings().monthlyBudget)
         assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
+    }
+
+    @Test
+    fun invoicesGetTheNextNumberOnceAndIncludeVatAndBilledSpends() = runTest {
+        profiles.save(Profile(name = "Abaan", businessName = " Wrap Films ", vatRegistered = true, invoicePrefix = "WF-", nextInvoiceNumber = 41))
+        assertEquals("Wrap Films", profiles.getProfile().displayName)
+
+        val clientId = clients.save(Client(name = "Falcon Productions"))
+        val jobId = jobs.save(job(clientId).copy(vatRate = InvoiceRules.UAE_VAT_RATE))
+        spends.save(Spend(amount = 100_00, category = SpendCategory.FUEL, date = LocalDate(2026, 3, 10), note = "ADNOC", jobId = jobId))
+        jobs.setWorkDone(jobId, true)
+
+        assertEquals("WF-0041", profiles.invoiceNumberFor(jobId))
+        assertEquals("WF-0041", profiles.invoiceNumberFor(jobId))
+        assertEquals(42, profiles.getProfile().nextInvoiceNumber)
+        // Saving the job again keeps its number.
+        jobs.save(jobs.getJob(jobId)!!.copy(title = "Desert car commercial (day 1)"))
+        assertEquals("WF-0041", jobs.getJob(jobId)!!.invoiceNumber)
+
+        val summary = ledger.observeJobSummary(jobId).first()!!
+        val invoice = InvoiceRules.build(summary, profiles.getProfile(), "WF-0041", LocalDate(2026, 3, 11), "AED")
+        assertEquals(listOf(InvoiceLineKind.BASE, InvoiceLineKind.SPEND), invoice.lines.map { it.kind })
+        assertEquals(1_600_00, invoice.subtotal)
+        assertEquals(80_00, invoice.vat)
+        assertEquals(1_680_00, invoice.total)
+        assertEquals(1_680_00, invoice.balanceDue)
+
+        // VAT is part of what is owed, so paying the pre-VAT amount leaves the VAT outstanding.
+        payments.save(payment(jobId, 1_600_00))
+        assertEquals(JobStatus.PART_PAID, jobs.getJob(jobId)!!.status)
+        assertEquals(80_00, ledger.observeJobSummary(jobId).first()!!.money.owed)
     }
 
     @Test

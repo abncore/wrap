@@ -26,6 +26,9 @@ class MigrationTest {
         driver.execute(null, "DROP TABLE RecurringSpendEntity", 0)
         driver.execute(null, "DROP TABLE CrewContactEntity", 0)
         driver.execute(null, "DROP TABLE ChaseLogEntity", 0)
+        driver.execute(null, "DROP TABLE ProfileEntity", 0)
+        driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN invoiceNumber", 0)
+        driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN vatRate", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN chaseReminders", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN unitBase", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN parking", 0)
@@ -38,7 +41,7 @@ class MigrationTest {
         WrapDatabase.Schema.migrate(driver, 1, WrapDatabase.Schema.version)
 
         val db = WrapDatabase(driver)
-        assertEquals(7L, WrapDatabase.Schema.version)
+        assertEquals(8L, WrapDatabase.Schema.version)
         assertEquals("Sandstorm Films", ClientRepository(db, io).observeClients().first().single().name)
 
         val settings = SettingsRepository(db, io)
@@ -49,6 +52,8 @@ class MigrationTest {
         val spends = SpendRepository(db, io, StatusUpdater(db, Today(Clock.System, TimeZone.UTC)))
         spends.save(Spend(amount = 99_00, category = SpendCategory.KIT, date = LocalDate(2026, 3, 1)))
         assertEquals(99_00, spends.observeAll().first().single().amount)
+
+        assertEquals("INV-0001", ProfileRepository(db, io).getProfile().let { "${it.invoicePrefix}000${it.nextInvoiceNumber}" })
 
         val recurring = RecurringSpendRepository(db, io)
         recurring.setRepeating(spends.observeAll().first().single().id, repeat = true, today = LocalDate(2026, 4, 1))

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.abaan.wrap.shared.data.ChaseRepository
 import com.abaan.wrap.shared.data.CrewRepository
 import com.abaan.wrap.shared.data.JobRepository
+import com.abaan.wrap.shared.data.ProfileRepository
 import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.TimeLogRepository
@@ -13,16 +14,24 @@ import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.model.ChaseLog
 import com.abaan.wrap.shared.model.CrewContact
 import com.abaan.wrap.shared.model.JobSummary
+import com.abaan.wrap.files.InvoicePdf
+import com.abaan.wrap.shared.money.InvoiceRules
 import com.abaan.wrap.shared.money.Shifts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import java.io.File
+
+/** A finished invoice PDF waiting to be shared. */
+data class InvoiceFile(val file: File, val number: String, val jobTitle: String)
 
 data class JobDetailUiState(
     val loading: Boolean = true,
@@ -38,15 +47,25 @@ data class JobDetailUiState(
 
 class JobDetailViewModel(
     private val jobId: Long,
-    ledger: LedgerRepository,
+    private val ledger: LedgerRepository,
     private val jobs: JobRepository,
     private val timeLogs: TimeLogRepository,
-    settings: SettingsRepository,
+    private val settings: SettingsRepository,
     private val today: Today,
     private val crewContacts: CrewRepository,
     private val chaseLog: ChaseRepository,
+    private val profiles: ProfileRepository,
+    private val invoicePdf: InvoicePdf,
 ) : ViewModel() {
     private val deleted = MutableStateFlow(false)
+
+    private val _invoice = MutableStateFlow<InvoiceFile?>(null)
+    /** Set when an invoice PDF is ready to share; cleared by [invoiceShared]. */
+    val invoice: StateFlow<InvoiceFile?> = _invoice.asStateFlow()
+
+    private val _needsProfile = MutableStateFlow(false)
+    /** True when an invoice was asked for before the freelancer added their details. */
+    val needsProfile: StateFlow<Boolean> = _needsProfile.asStateFlow()
 
     val state: StateFlow<JobDetailUiState> = combine(
         ledger.observeJobSummary(jobId),
@@ -87,6 +106,28 @@ class JobDetailViewModel(
 
     fun deleteTimeLog(id: Long) {
         viewModelScope.launch { timeLogs.delete(id) }
+    }
+
+    fun makeInvoice() {
+        viewModelScope.launch {
+            val profile = profiles.getProfile()
+            if (profile.displayName.isBlank()) {
+                _needsProfile.value = true
+                return@launch
+            }
+            val number = profiles.invoiceNumberFor(jobId)
+            val summary = ledger.observeJobSummary(jobId).first() ?: return@launch
+            val invoice = InvoiceRules.build(summary, profile, number, today.date(), settings.getSettings().currency)
+            _invoice.value = InvoiceFile(invoicePdf.write(invoice), number, summary.job.title)
+        }
+    }
+
+    fun invoiceShared() {
+        _invoice.value = null
+    }
+
+    fun profilePromptShown() {
+        _needsProfile.value = false
     }
 
     fun recordChase() {

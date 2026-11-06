@@ -47,6 +47,12 @@ import com.abaan.wrap.ui.components.DecimalInput
 import com.abaan.wrap.ui.components.DropdownInput
 import com.abaan.wrap.ui.components.MoneyInput
 import com.abaan.wrap.ui.components.SectionTitle
+import com.abaan.wrap.ui.settings.vatPercent
+import com.abaan.wrap.shared.money.InvoiceRules
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.ui.graphics.Color
 import com.abaan.wrap.ui.components.TextInput
 import com.abaan.wrap.ui.components.TimeInput
 import com.abaan.wrap.ui.components.fieldLabelRes
@@ -255,6 +261,14 @@ fun JobEditScreen(
                     modifier = Modifier.weight(1f),
                 )
             }
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.job_field_vat, vatPercent(InvoiceRules.UAE_VAT_RATE))) },
+                supportingContent = { Text(stringResource(R.string.job_field_vat_desc)) },
+                trailingContent = {
+                    Switch(checked = form.addVat, onCheckedChange = { v -> viewModel.update { it.copy(addVat = v) } })
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            )
 
             SectionTitle(stringResource(R.string.job_section_payment))
             DateInput(

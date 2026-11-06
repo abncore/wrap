@@ -52,10 +52,12 @@ private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRE
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onOpenProfile: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val settings = state.settings
+    val profile = state.profile
     var dialog by rememberSaveable { mutableStateOf<SettingDialog?>(null) }
 
     Scaffold(
@@ -76,6 +78,12 @@ fun SettingsScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState()),
         ) {
+            SettingRow(
+                title = stringResource(R.string.settings_profile),
+                value = profile.displayName.ifBlank { stringResource(R.string.settings_profile_empty) },
+                onClick = onOpenProfile,
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             SettingsHeader(stringResource(R.string.settings_section_defaults))
             SettingRow(
                 title = stringResource(R.string.settings_default_rate),
