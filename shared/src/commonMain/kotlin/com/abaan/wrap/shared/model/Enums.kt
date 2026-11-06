@@ -26,3 +26,22 @@ enum class JobStatus {
     PAID,
     OVERDUE,
 }
+
+/** What money was spent on. */
+enum class SpendCategory {
+    FUEL,
+    TRANSPORT,
+    FOOD,
+    KIT,
+    PHONE,
+    SOFTWARE,
+    PERMITS,
+    OTHER,
+}
+
+/** Time span for the spending-by-category breakdown. */
+enum class InsightPeriod {
+    THIS_MONTH,
+    THIS_YEAR,
+    ALL_TIME,
+}

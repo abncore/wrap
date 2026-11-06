@@ -36,6 +36,9 @@ data class Dashboard(
     /** Finished jobs that still have money owed. */
     val unpaidCount: Int,
     val receivedThisMonth: Long,
+    /** Every payment ever received. */
+    val earnedLifetime: Long,
+    val spentThisMonth: Long,
     val overdueCount: Int,
     val overdueTotal: Long,
     /** Today's unfinished (or clocked-in) job, if any, so the freelancer can clock in or out. */

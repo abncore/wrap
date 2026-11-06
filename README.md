@@ -14,7 +14,10 @@ Kotlin Multiplatform `shared` module.
 - **Job detail**: full money breakdown (base, overtime, kit, expenses, paid, owed),
   time logs, payment history, Add payment, and **Chase** (opens WhatsApp with a polite
   reminder of the amount owed).
-- **Clients** with total owed each; **Settings** for default rate, day length,
+- **Money**: earned all time (payments received), spent and kept after spending, a
+  6-month earned vs spent chart, spending by category (this month / year / all time) and a
+  spending log for fuel, kit, food, permits and other work costs.
+- **Clients** with total owed each; **Settings** (gear on Home) for default rate, day length,
   overtime multiplier, payment terms, currency and reminders.
 - **Reminders** at 8 PM the night before each job (WorkManager).
 
@@ -31,6 +34,14 @@ Overtime (day rate only) = hours beyond the day length on each day × (rate ÷ d
 OT multiplier. Total = base + overtime + kit rental + expenses; owed = total − payments.
 Status moves UPCOMING → DONE_UNPAID → PART_PAID → PAID automatically; OVERDUE is shown
 when money is owed after the due date (end date + payment terms by default).
+
+"Earned" means money actually received. Spending is your own cost of working and is separate
+from a job's *expenses*, which are billed to the client.
+
+### Database upgrades
+
+Schema changes ship as SQLDelight migrations (`shared/src/commonMain/sqldelight/migrations/`),
+so installing a new build over an old one keeps all data. `MigrationTest` checks each upgrade.
 
 ## Project layout
 

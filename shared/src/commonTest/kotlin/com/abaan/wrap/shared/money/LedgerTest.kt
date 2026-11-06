@@ -88,7 +88,7 @@ class LedgerTest {
             pay(4, 200_00, LocalDate(2026, 5, 14)),
         )
         val summaries = Ledger.summarizeAll(jobs, listOf(clientA, clientB), emptyList(), payments, today, tz)
-        val dashboard = Ledger.dashboard(summaries, payments, null, AppSettings(), today)
+        val dashboard = Ledger.dashboard(summaries, payments, emptyList(), null, AppSettings(), today)
 
         assertEquals(1_600_00, dashboard.owedTotal)
         assertEquals(2, dashboard.unpaidCount)
@@ -108,7 +108,7 @@ class LedgerTest {
             job(2, 1, LocalDate(2026, 5, 20)),
         )
         val summaries = Ledger.summarizeAll(jobs, listOf(clientA), emptyList(), emptyList(), today, tz)
-        val dashboard = Ledger.dashboard(summaries, emptyList(), null, AppSettings(), today)
+        val dashboard = Ledger.dashboard(summaries, emptyList(), emptyList(), null, AppSettings(), today)
         assertEquals(2L, dashboard.nextJob?.job?.id)
         // Today's job is already done, so there's nothing to clock in on.
         assertNull(dashboard.todayJob)
@@ -116,7 +116,7 @@ class LedgerTest {
 
     @Test
     fun emptyDashboard() {
-        val dashboard = Ledger.dashboard(emptyList(), emptyList(), null, AppSettings(currency = "USD"), today)
+        val dashboard = Ledger.dashboard(emptyList(), emptyList(), emptyList(), null, AppSettings(currency = "USD"), today)
         assertEquals(0, dashboard.owedTotal)
         assertNull(dashboard.nextJob)
         assertNull(dashboard.todayJob)

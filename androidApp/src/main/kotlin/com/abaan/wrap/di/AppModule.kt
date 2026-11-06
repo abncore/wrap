@@ -6,6 +6,8 @@ import com.abaan.wrap.ui.home.HomeViewModel
 import com.abaan.wrap.ui.jobs.JobDetailViewModel
 import com.abaan.wrap.ui.jobs.JobEditViewModel
 import com.abaan.wrap.ui.jobs.JobsViewModel
+import com.abaan.wrap.ui.money.MoneyViewModel
+import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
 import com.abaan.wrap.reminders.ReminderScheduler
@@ -29,4 +31,6 @@ val appModule = module {
     viewModel { (jobId: Long, paymentId: Long) ->
         PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
     }
+    viewModel { MoneyViewModel(get()) }
+    viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get()) }
 }

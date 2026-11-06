@@ -67,6 +67,15 @@ data class Payment(
     val note: String = "",
 )
 
+/** Money spent on work (fuel, kit, food...). [amount] is in minor units. */
+data class Spend(
+    val id: Long = NEW_ID,
+    val amount: Long,
+    val category: SpendCategory,
+    val date: LocalDate,
+    val note: String = "",
+)
+
 /** App-wide defaults. [defaultRate] is in minor units; [currency] is an ISO 4217 code. */
 data class AppSettings(
     val defaultRate: Long = 0,

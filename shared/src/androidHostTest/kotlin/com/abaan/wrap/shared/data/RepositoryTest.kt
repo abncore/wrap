@@ -6,9 +6,13 @@ import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.PaymentMethod
+import com.abaan.wrap.shared.model.InsightPeriod
 import com.abaan.wrap.shared.model.RateType
+import com.abaan.wrap.shared.model.Spend
+import com.abaan.wrap.shared.model.SpendCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -40,7 +44,8 @@ class RepositoryTest {
     private val payments = PaymentRepository(db, io, statusUpdater)
     private val timeLogs = TimeLogRepository(db, io, clock, statusUpdater)
     private val settings = SettingsRepository(db, io)
-    private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, today)
+    private val spends = SpendRepository(db, io)
+    private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
     private fun job(clientId: Long) = Job(
         clientId = clientId,
@@ -199,5 +204,32 @@ class RepositoryTest {
 
         val clientSummary = ledger.observeClientSummaries().first().single()
         assertEquals(1_000_00, clientSummary.owed)
+    }
+
+    @Test
+    fun spendsRoundTripAndFeedTheMoneyOverview() = runTest {
+        val clientId = clients.save(Client(name = "Falcon Productions"))
+        val jobId = jobs.save(job(clientId))
+        jobs.setWorkDone(jobId, true)
+        payments.save(payment(jobId, 1_200_00))
+
+        val fuelId = spends.save(Spend(amount = 180_00, category = SpendCategory.FUEL, date = LocalDate(2026, 3, 9), note = " ADNOC "))
+        spends.save(Spend(amount = 45_50, category = SpendCategory.FOOD, date = LocalDate(2026, 3, 10)))
+        assertEquals("ADNOC", spends.getSpend(fuelId)!!.note)
+
+        spends.save(spends.getSpend(fuelId)!!.copy(amount = 200_00))
+        val overview = ledger.observeMoneyOverview(flowOf(InsightPeriod.THIS_MONTH)).first()
+        assertEquals(1_200_00, overview.earnedLifetime)
+        assertEquals(245_50, overview.spentLifetime)
+        assertEquals(954_50, overview.netLifetime)
+        assertEquals(300_00, overview.owedTotal)
+        assertEquals(SpendCategory.FUEL, overview.categories.first().category)
+
+        val dashboard = ledger.observeDashboard().first()
+        assertEquals(1_200_00, dashboard.earnedLifetime)
+        assertEquals(245_50, dashboard.spentThisMonth)
+
+        spends.delete(fuelId)
+        assertEquals(1, spends.observeAll().first().size)
     }
 }

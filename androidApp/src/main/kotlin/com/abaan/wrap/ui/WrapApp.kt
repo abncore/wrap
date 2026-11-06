@@ -37,8 +37,10 @@ import com.abaan.wrap.ui.navigation.JobDetailRoute
 import com.abaan.wrap.ui.navigation.JobEditRoute
 import com.abaan.wrap.ui.navigation.HomeRoute
 import com.abaan.wrap.ui.navigation.JobsRoute
+import com.abaan.wrap.ui.navigation.MoneyRoute
 import com.abaan.wrap.ui.navigation.PaymentEditRoute
 import com.abaan.wrap.ui.navigation.SettingsRoute
+import com.abaan.wrap.ui.navigation.SpendEditRoute
 import com.abaan.wrap.ui.navigation.TopLevelDestination
 import com.abaan.wrap.ui.navigation.WrapBottomBar
 import com.abaan.wrap.ui.payments.PaymentEditScreen
@@ -47,6 +49,8 @@ import com.abaan.wrap.ui.jobs.JobDetailScreen
 import com.abaan.wrap.ui.jobs.JobEditScreen
 import com.abaan.wrap.ui.jobs.JobsScreen
 import com.abaan.wrap.ui.jobs.JobsTab
+import com.abaan.wrap.ui.money.MoneyScreen
+import com.abaan.wrap.ui.money.SpendEditScreen
 import com.abaan.wrap.ui.settings.SettingsScreen
 
 private const val REQUESTED_JOBS_TAB = "requested_jobs_tab"
@@ -103,6 +107,8 @@ fun WrapApp(
                         navController.navigateToTab(TopLevelDestination.JOBS)
                         navController.getBackStackEntry<JobsRoute>().savedStateHandle[REQUESTED_JOBS_TAB] = JobsTab.UNPAID.name
                     },
+                    onOpenMoney = { navController.navigateToTab(TopLevelDestination.MONEY) },
+                    onOpenSettings = { navController.navigate(SettingsRoute) },
                 )
             }
             composable<JobsRoute> { entry ->
@@ -119,7 +125,13 @@ fun WrapApp(
                     onOpenClient = { navController.navigate(ClientEditRoute(it)) },
                 )
             }
-            composable<SettingsRoute> { SettingsScreen() }
+            composable<MoneyRoute> {
+                MoneyScreen(
+                    onAddSpend = { navController.navigate(SpendEditRoute()) },
+                    onOpenSpend = { navController.navigate(SpendEditRoute(it)) },
+                )
+            }
+            composable<SettingsRoute> { SettingsScreen(onBack = { navController.popBackStack() }) }
             composable<JobDetailRoute> { entry ->
                 val route = entry.toRoute<JobDetailRoute>()
                 JobDetailScreen(
@@ -159,6 +171,10 @@ fun WrapApp(
                 val route = entry.toRoute<ClientEditRoute>()
                 ClientEditScreen(clientId = route.clientId, onClose = { navController.popBackStack() })
             }
+            composable<SpendEditRoute> { entry ->
+                val route = entry.toRoute<SpendEditRoute>()
+                SpendEditScreen(spendId = route.spendId, onClose = { navController.popBackStack() })
+            }
         }
     }
 
@@ -183,5 +199,6 @@ private fun NavHostController.handleAddAction(action: AddAction) {
         AddAction.UPCOMING_JOB -> navigate(JobEditRoute())
         AddAction.FINISHED_JOB -> navigate(JobEditRoute(finished = true))
         AddAction.PAYMENT -> navigate(PaymentEditRoute())
+        AddAction.SPEND -> navigate(SpendEditRoute())
     }
 }

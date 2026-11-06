@@ -2,7 +2,10 @@ package com.abaan.wrap.shared.data
 
 import com.abaan.wrap.shared.model.ClientSummary
 import com.abaan.wrap.shared.model.Dashboard
+import com.abaan.wrap.shared.model.InsightPeriod
+import com.abaan.wrap.shared.model.MoneyOverview
 import com.abaan.wrap.shared.model.JobSummary
+import com.abaan.wrap.shared.money.Insights
 import com.abaan.wrap.shared.money.Ledger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -16,6 +19,7 @@ class LedgerRepository(
     private val timeLogs: TimeLogRepository,
     private val payments: PaymentRepository,
     private val settings: SettingsRepository,
+    private val spends: SpendRepository,
     private val today: Today,
 ) {
     fun observeJobSummaries(): Flow<List<JobSummary>> = combine(
@@ -33,12 +37,30 @@ class LedgerRepository(
 
     fun observeDashboard(): Flow<Dashboard> = combine(
         observeJobSummaries(),
-        payments.observeAll(),
+        combine(payments.observeAll(), spends.observeAll(), ::Pair),
         timeLogs.observeOpenLog(),
         settings.observeSettings(),
         today.observe(),
-    ) { summaries, paymentList, openLog, appSettings, date ->
-        Ledger.dashboard(summaries, paymentList, openLog, appSettings, date)
+    ) { summaries, (paymentList, spendList), openLog, appSettings, date ->
+        Ledger.dashboard(summaries, paymentList, spendList, openLog, appSettings, date)
+    }
+
+    /** Lifetime earned vs spent, the monthly chart and spending by category for [period]. */
+    fun observeMoneyOverview(period: Flow<InsightPeriod>): Flow<MoneyOverview> = combine(
+        observeJobSummaries(),
+        combine(payments.observeAll(), spends.observeAll(), ::Pair),
+        settings.observeSettings(),
+        period,
+        today.observe(),
+    ) { summaries, (paymentList, spendList), appSettings, selected, date ->
+        Insights.overview(
+            payments = paymentList,
+            spends = spendList,
+            owedTotal = summaries.sumOf(Ledger::owedOf),
+            currency = appSettings.currency,
+            period = selected,
+            today = date,
+        )
     }
 
     fun observeClientSummaries(): Flow<List<ClientSummary>> = combine(

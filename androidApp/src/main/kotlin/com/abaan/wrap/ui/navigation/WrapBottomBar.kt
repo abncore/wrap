@@ -63,7 +63,7 @@ private fun RowScope.TabItem(
     NavigationBarItem(
         selected = selected,
         onClick = { onSelect(destination) },
-        icon = { Icon(destination.icon, contentDescription = null) },
+        icon = { Icon(destination.icon(), contentDescription = null) },
         label = { Text(label) },
     )
 }

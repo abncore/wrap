@@ -4,9 +4,11 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.abaan.wrap.R
+import com.abaan.wrap.shared.model.InsightPeriod
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.PaymentMethod
 import com.abaan.wrap.shared.model.RateType
+import com.abaan.wrap.shared.model.SpendCategory
 import com.abaan.wrap.shared.money.MoneyFormat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -84,4 +86,23 @@ fun PaymentMethod.labelRes(): Int = when (this) {
     PaymentMethod.CASH -> R.string.method_cash
     PaymentMethod.BANK -> R.string.method_bank
     PaymentMethod.CHEQUE -> R.string.method_cheque
+}
+
+@StringRes
+fun SpendCategory.labelRes(): Int = when (this) {
+    SpendCategory.FUEL -> R.string.category_fuel
+    SpendCategory.TRANSPORT -> R.string.category_transport
+    SpendCategory.FOOD -> R.string.category_food
+    SpendCategory.KIT -> R.string.category_kit
+    SpendCategory.PHONE -> R.string.category_phone
+    SpendCategory.SOFTWARE -> R.string.category_software
+    SpendCategory.PERMITS -> R.string.category_permits
+    SpendCategory.OTHER -> R.string.category_other
+}
+
+@StringRes
+fun InsightPeriod.labelRes(): Int = when (this) {
+    InsightPeriod.THIS_MONTH -> R.string.period_this_month
+    InsightPeriod.THIS_YEAR -> R.string.period_this_year
+    InsightPeriod.ALL_TIME -> R.string.period_all_time
 }

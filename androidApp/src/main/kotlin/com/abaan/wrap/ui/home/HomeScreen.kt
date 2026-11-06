@@ -17,10 +17,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +57,8 @@ fun HomeScreen(
     onAddJob: () -> Unit,
     onOpenJob: (Long) -> Unit,
     onOpenUnpaid: () -> Unit,
+    onOpenMoney: () -> Unit,
+    onOpenSettings: () -> Unit,
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,7 +78,12 @@ fun HomeScreen(
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        Greeting(today, state.timeZone)
+        Row(verticalAlignment = Alignment.Top) {
+            Greeting(today, state.timeZone, modifier = Modifier.weight(1f))
+            IconButton(onClick = onOpenSettings) {
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.nav_settings))
+            }
+        }
 
         if (!dashboard.hasAnyJobs) {
             EmptyState(
@@ -109,6 +118,20 @@ fun HomeScreen(
                 },
                 alert = dashboard.overdueCount > 0,
                 onClick = onOpenUnpaid,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            StatCard(
+                label = stringResource(R.string.home_earned_lifetime),
+                value = money(dashboard.earnedLifetime, dashboard.currency),
+                onClick = onOpenMoney,
+                modifier = Modifier.weight(1f),
+            )
+            StatCard(
+                label = stringResource(R.string.home_spent_month),
+                value = money(dashboard.spentThisMonth, dashboard.currency),
+                onClick = onOpenMoney,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -154,7 +177,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Greeting(today: LocalDate, timeZone: TimeZone) {
+private fun Greeting(today: LocalDate, timeZone: TimeZone, modifier: Modifier = Modifier) {
     val hour = rememberNow(60_000).toLocalDateTime(timeZone).hour
     val greeting = stringResource(
         when (hour) {
@@ -163,7 +186,7 @@ private fun Greeting(today: LocalDate, timeZone: TimeZone) {
             else -> R.string.home_greeting_evening
         },
     )
-    Column {
+    Column(modifier) {
         Text(greeting, style = MaterialTheme.typography.headlineMedium)
         Text(
             text = today.formatFullWeekday(),

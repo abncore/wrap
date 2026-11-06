@@ -1,0 +1,29 @@
+-- Money spent on work (fuel, kit, food...). amount is minor units (fils); date is an epoch day.
+-- Added in schema version 2, see migrations/1.sqm.
+CREATE TABLE SpendEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX SpendEntity_date ON SpendEntity(date);
+
+selectAll:
+SELECT * FROM SpendEntity ORDER BY date DESC, id DESC;
+
+selectById:
+SELECT * FROM SpendEntity WHERE id = ?;
+
+insert:
+INSERT INTO SpendEntity(amount, category, date, note) VALUES (?, ?, ?, ?);
+
+update:
+UPDATE SpendEntity SET amount = ?, category = ?, date = ?, note = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM SpendEntity WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

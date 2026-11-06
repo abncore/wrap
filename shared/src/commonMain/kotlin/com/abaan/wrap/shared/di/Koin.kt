@@ -6,6 +6,7 @@ import com.abaan.wrap.shared.data.JobRepository
 import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.PaymentRepository
 import com.abaan.wrap.shared.data.SettingsRepository
+import com.abaan.wrap.shared.data.SpendRepository
 import com.abaan.wrap.shared.data.StatusUpdater
 import com.abaan.wrap.shared.data.TimeLogRepository
 import com.abaan.wrap.shared.data.Today
@@ -38,7 +39,8 @@ val sharedModule = module {
     single { JobRepository(get(), get(), get()) }
     single { TimeLogRepository(get(), get(), get(), get()) }
     single { PaymentRepository(get(), get(), get()) }
-    single { LedgerRepository(get(), get(), get(), get(), get(), get()) }
+    single { SpendRepository(get(), get()) }
+    single { LedgerRepository(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 /** Starts Koin with the shared modules plus whatever the platform app declares. */

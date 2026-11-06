@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.abaan.wrap.R
 import kotlinx.coroutines.launch
@@ -28,13 +29,14 @@ private data class AddOption(
     val action: AddAction,
     @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int,
-    val icon: ImageVector,
+    val icon: @Composable () -> ImageVector,
 )
 
 private val addOptions = listOf(
-    AddOption(AddAction.UPCOMING_JOB, R.string.add_upcoming_job, R.string.add_upcoming_job_desc, Icons.Filled.DateRange),
-    AddOption(AddAction.FINISHED_JOB, R.string.add_finished_job, R.string.add_finished_job_desc, Icons.Filled.CheckCircle),
-    AddOption(AddAction.PAYMENT, R.string.add_payment, R.string.add_payment_desc, Icons.Filled.ShoppingCart),
+    AddOption(AddAction.UPCOMING_JOB, R.string.add_upcoming_job, R.string.add_upcoming_job_desc) { Icons.Filled.DateRange },
+    AddOption(AddAction.FINISHED_JOB, R.string.add_finished_job, R.string.add_finished_job_desc) { Icons.Filled.CheckCircle },
+    AddOption(AddAction.PAYMENT, R.string.add_payment, R.string.add_payment_desc) { ImageVector.vectorResource(R.drawable.ic_payments) },
+    AddOption(AddAction.SPEND, R.string.add_spend, R.string.add_spend_desc) { Icons.Filled.ShoppingCart },
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +59,7 @@ fun AddSheet(
                 ListItem(
                     headlineContent = { Text(stringResource(option.titleRes)) },
                     supportingContent = { Text(stringResource(option.descriptionRes)) },
-                    leadingContent = { Icon(option.icon, contentDescription = null) },
+                    leadingContent = { Icon(option.icon(), contentDescription = null) },
                     modifier = Modifier.clickable {
                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                             onDismiss()
