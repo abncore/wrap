@@ -3,6 +3,7 @@ package com.abaan.wrap.shared.data
 import com.abaan.wrap.shared.db.ClientEntity
 import com.abaan.wrap.shared.db.JobEntity
 import com.abaan.wrap.shared.db.PaymentEntity
+import com.abaan.wrap.shared.db.RecurringSpendEntity
 import com.abaan.wrap.shared.db.SettingsEntity
 import com.abaan.wrap.shared.db.SpendEntity
 import com.abaan.wrap.shared.db.TimeLogEntity
@@ -13,6 +14,7 @@ import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.PaymentMethod
 import com.abaan.wrap.shared.model.RateType
+import com.abaan.wrap.shared.model.RecurringSpend
 import com.abaan.wrap.shared.model.Spend
 import com.abaan.wrap.shared.model.SpendCategory
 import com.abaan.wrap.shared.model.TimeLog
@@ -81,6 +83,16 @@ internal fun SpendEntity.toModel() = Spend(
     category = SpendCategory.valueOf(category),
     date = date.toLocalDate(),
     note = note,
+    recurringId = recurringId,
+)
+
+internal fun RecurringSpendEntity.toModel() = RecurringSpend(
+    id = id,
+    amount = amount,
+    category = SpendCategory.valueOf(category),
+    note = note,
+    dayOfMonth = dayOfMonth.toInt(),
+    nextDate = nextDate.toLocalDate(),
 )
 
 internal fun SettingsEntity.toModel() = AppSettings(

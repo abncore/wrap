@@ -5,10 +5,13 @@ import com.abaan.wrap.di.appModule
 import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.ReminderNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
+import com.abaan.wrap.shared.data.RecurringSpendRepository
+import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.di.initKoin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 
@@ -24,5 +27,14 @@ class WrapApplication : Application() {
         ReminderNotifications.createChannel(this)
         BudgetNotifications.createChannel(this)
         get<ReminderScheduler>().start(appScope)
+        addMonthlyCosts()
+    }
+
+    /** Adds monthly costs as they come due: on launch and whenever the date ticks over. */
+    private fun addMonthlyCosts() {
+        val recurring = get<RecurringSpendRepository>()
+        appScope.launch {
+            get<Today>().observe().collect { recurring.addDue(it) }
+        }
     }
 }

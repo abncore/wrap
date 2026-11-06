@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -115,6 +116,16 @@ fun MoneyScreen(
             }
             item(key = "chart") { ChartCard(overview.months, overview.currency) }
             item(key = "categories") { CategoryCard(overview, onSelectPeriod = viewModel::setPeriod) }
+            if (state.recurring.isNotEmpty()) {
+                item(key = "recurring") {
+                    RecurringCard(
+                        recurring = state.recurring,
+                        currency = overview.currency,
+                        onStop = viewModel::stopRecurring,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
+            }
             spendLog(overview, onAddSpend, onOpenSpend)
         }
     }
@@ -447,7 +458,18 @@ private fun SpendRow(spend: Spend, currency: String, onClick: () -> Unit) {
             )
         },
         trailingContent = {
-            Text(money(-spend.amount, currency), style = MaterialTheme.typography.titleSmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (spend.recurringId != null) {
+                    Icon(
+                        painterResource(R.drawable.ic_repeat),
+                        contentDescription = stringResource(R.string.spend_repeating),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
+                }
+                Text(money(-spend.amount, currency), style = MaterialTheme.typography.titleSmall)
+            }
         },
         modifier = Modifier.clickable(onClick = onClick),
     )

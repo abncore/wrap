@@ -5,6 +5,7 @@ import com.abaan.wrap.shared.data.ClientRepository
 import com.abaan.wrap.shared.data.JobRepository
 import com.abaan.wrap.shared.data.LedgerRepository
 import com.abaan.wrap.shared.data.PaymentRepository
+import com.abaan.wrap.shared.data.RecurringSpendRepository
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.SpendRepository
 import com.abaan.wrap.shared.data.StatusUpdater
@@ -40,6 +41,7 @@ val sharedModule = module {
     single { TimeLogRepository(get(), get(), get(), get()) }
     single { PaymentRepository(get(), get(), get()) }
     single { SpendRepository(get(), get()) }
+    single { RecurringSpendRepository(get(), get()) }
     single { LedgerRepository(get(), get(), get(), get(), get(), get(), get()) }
 }
 

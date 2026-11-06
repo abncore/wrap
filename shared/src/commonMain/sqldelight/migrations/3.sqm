@@ -1,0 +1,11 @@
+-- Version 3 -> 4: recurring monthly costs. Spends they create remember which rule made them.
+CREATE TABLE RecurringSpendEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    dayOfMonth INTEGER NOT NULL,
+    nextDate INTEGER NOT NULL
+);
+
+ALTER TABLE SpendEntity ADD COLUMN recurringId INTEGER;

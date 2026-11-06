@@ -67,13 +67,27 @@ data class Payment(
     val note: String = "",
 )
 
-/** Money spent on work (fuel, kit, food...). [amount] is in minor units. */
+/**
+ * Money spent on work (fuel, kit, food...). [amount] is in minor units. [recurringId] is the monthly
+ * cost that added it, if any.
+ */
 data class Spend(
     val id: Long = NEW_ID,
     val amount: Long,
     val category: SpendCategory,
     val date: LocalDate,
     val note: String = "",
+    val recurringId: Long? = null,
+)
+
+/** A cost that repeats every month on [dayOfMonth]; [nextDate] is when it is next added. */
+data class RecurringSpend(
+    val id: Long = NEW_ID,
+    val amount: Long,
+    val category: SpendCategory,
+    val note: String = "",
+    val dayOfMonth: Int,
+    val nextDate: LocalDate,
 )
 
 /**

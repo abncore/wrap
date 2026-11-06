@@ -46,6 +46,7 @@ class RepositoryTest {
     private val timeLogs = TimeLogRepository(db, io, clock, statusUpdater)
     private val settings = SettingsRepository(db, io)
     private val spends = SpendRepository(db, io)
+    private val recurring = RecurringSpendRepository(db, io)
     private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
     private fun job(clientId: Long) = Job(
@@ -254,5 +255,33 @@ class RepositoryTest {
 
         assertEquals(1_000_00, settings.getSettings().monthlyBudget)
         assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
+    }
+
+    @Test
+    fun monthlyCostsAddThemselvesEachMonthUntilStopped() = runTest {
+        // Started back in January, so January to March are added straight away.
+        val phoneId = spends.save(Spend(amount = 150_00, category = SpendCategory.PHONE, date = LocalDate(2026, 1, 31), note = "du"))
+        recurring.setRepeating(phoneId, repeat = true, today = LocalDate(2026, 3, 10))
+        val rule = recurring.observeAll().first().single()
+        assertEquals(31, rule.dayOfMonth)
+        assertEquals(LocalDate(2026, 3, 31), rule.nextDate)
+        assertEquals(
+            listOf(LocalDate(2026, 2, 28), LocalDate(2026, 1, 31)),
+            spends.observeAll().first().map { it.date },
+        )
+        assertTrue(spends.observeAll().first().all { it.recurringId == rule.id })
+
+        // Nothing new until the next due date; changing the spend changes future months.
+        assertEquals(0, recurring.addDue(LocalDate(2026, 3, 30)))
+        spends.save(spends.getSpend(phoneId)!!.copy(amount = 175_00))
+        recurring.setRepeating(phoneId, repeat = true, today = LocalDate(2026, 3, 30))
+        assertEquals(1, recurring.addDue(LocalDate(2026, 4, 1)))
+        assertEquals(175_00, spends.observeAll().first().first().amount)
+
+        recurring.setRepeating(phoneId, repeat = false, today = LocalDate(2026, 4, 1))
+        assertTrue(recurring.observeAll().first().isEmpty())
+        assertEquals(0, recurring.addDue(LocalDate(2026, 6, 1)))
+        assertEquals(3, spends.observeAll().first().size)
+        assertTrue(spends.observeAll().first().all { it.recurringId == null })
     }
 }

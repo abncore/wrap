@@ -33,6 +33,6 @@ val appModule = module {
     viewModel { (jobId: Long, paymentId: Long) ->
         PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
     }
-    viewModel { MoneyViewModel(get(), get()) }
-    viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get()) }
+    viewModel { MoneyViewModel(get(), get(), get()) }
+    viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get(), get()) }
 }

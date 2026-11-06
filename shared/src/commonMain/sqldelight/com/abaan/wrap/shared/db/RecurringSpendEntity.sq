@@ -1,0 +1,35 @@
+-- Monthly costs (phone bill, software...) that add a spend by themselves each month.
+-- amount is minor units (fils); nextDate is the epoch day of the next spend to add.
+-- Added in schema version 4, see migrations/3.sqm.
+CREATE TABLE RecurringSpendEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT '',
+    dayOfMonth INTEGER NOT NULL,
+    nextDate INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM RecurringSpendEntity ORDER BY dayOfMonth, id;
+
+selectById:
+SELECT * FROM RecurringSpendEntity WHERE id = ?;
+
+selectDue:
+SELECT * FROM RecurringSpendEntity WHERE nextDate <= ?;
+
+insert:
+INSERT INTO RecurringSpendEntity(amount, category, note, dayOfMonth, nextDate) VALUES (?, ?, ?, ?, ?);
+
+update:
+UPDATE RecurringSpendEntity SET amount = ?, category = ?, note = ? WHERE id = ?;
+
+updateNextDate:
+UPDATE RecurringSpendEntity SET nextDate = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM RecurringSpendEntity WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

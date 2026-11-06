@@ -340,4 +340,15 @@
     <string name="reminder_channel_name">Job reminders</string>
     <string name="reminder_channel_desc">The night before a job</string>
     <string name="reminder_title">Tomorrow: %1$s</string>
+
+    <!-- Recurring costs -->
+    <string name="spend_repeat">Repeat every month</string>
+    <string name="spend_repeat_desc">Adds this again on day %1$d of each month</string>
+    <string name="spend_repeating">Repeats monthly</string>
+    <string name="recurring_title">Monthly costs</string>
+    <string name="recurring_total">%1$s a month</string>
+    <string name="recurring_next">Next on %1$s</string>
+    <string name="recurring_stop">Stop repeating</string>
+    <string name="recurring_stop_title">Stop this monthly cost?</string>
+    <string name="recurring_stop_body">It won\'t be added again. Months already added stay in your spending.</string>
 </resources>

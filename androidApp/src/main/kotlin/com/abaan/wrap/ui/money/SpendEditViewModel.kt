@@ -3,6 +3,7 @@ package com.abaan.wrap.ui.money
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abaan.wrap.reminders.BudgetNotifications
+import com.abaan.wrap.shared.data.RecurringSpendRepository
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.SpendRepository
 import com.abaan.wrap.shared.data.Today
@@ -28,6 +29,9 @@ data class SpendEditUiState(
     val category: SpendCategory = SpendCategory.OTHER,
     val date: LocalDate,
     val note: String = "",
+    /** Whether the spend repeats every month; [wasRepeating] is how it was when the form opened. */
+    val repeatMonthly: Boolean = false,
+    val wasRepeating: Boolean = false,
     val currency: String = AppSettings.DEFAULT_CURRENCY,
     val errors: Set<SpendFormError> = emptySet(),
     val done: Boolean = false,
@@ -36,6 +40,7 @@ data class SpendEditUiState(
 class SpendEditViewModel(
     private val spendId: Long,
     private val spends: SpendRepository,
+    private val recurringSpends: RecurringSpendRepository,
     private val settings: SettingsRepository,
     private val today: Today,
     private val budgetNotifications: BudgetNotifications,
@@ -52,6 +57,8 @@ class SpendEditViewModel(
             editing = spend
             // New entries start on the category used last, which is usually the one needed again.
             val lastCategory = spends.observeAll().first().firstOrNull()?.category
+            val repeating = spend?.recurringId != null &&
+                recurringSpends.observeAll().first().any { it.id == spend.recurringId }
             _state.update { state ->
                 val base = state.copy(loading = false, currency = appSettings.currency)
                 if (spend != null) {
@@ -60,6 +67,8 @@ class SpendEditViewModel(
                         category = spend.category,
                         date = spend.date,
                         note = spend.note,
+                        repeatMonthly = repeating,
+                        wasRepeating = repeating,
                     )
                 } else {
                     base.copy(category = lastCategory ?: base.category)
@@ -75,6 +84,8 @@ class SpendEditViewModel(
     fun setDate(value: LocalDate) = _state.update { it.copy(date = value) }
 
     fun setNote(value: String) = _state.update { it.copy(note = value) }
+
+    fun setRepeatMonthly(value: Boolean) = _state.update { it.copy(repeatMonthly = value) }
 
     fun save() {
         val state = _state.value
@@ -92,6 +103,7 @@ class SpendEditViewModel(
                     category = state.category,
                     date = state.date,
                     note = state.note,
+                    recurringId = editing?.recurringId,
                 ),
                 monthlyBudget = appSettings.monthlyBudget,
                 today = today.date(),
@@ -100,6 +112,9 @@ class SpendEditViewModel(
             val status = result.status
             if (appSettings.budgetAlertsEnabled && level != null && status != null) {
                 budgetNotifications.show(level, status, appSettings.currency)
+            }
+            if (state.repeatMonthly || state.wasRepeating) {
+                recurringSpends.setRepeating(result.spendId, state.repeatMonthly, today.date())
             }
             _state.update { it.copy(done = true) }
         }

@@ -38,7 +38,10 @@ class SpendRepository(
         queries.selectById(id).executeAsOneOrNull()?.toModel()
     }
 
-    /** Inserts a new spend (when [Spend.id] is [NEW_ID]) or updates it. Returns its id. */
+    /**
+     * Inserts a new spend (when [Spend.id] is [NEW_ID]) or updates it. Returns its id. Which monthly
+     * cost a spend belongs to is set by [RecurringSpendRepository], never changed here.
+     */
     suspend fun save(spend: Spend): Long = withContext(io) {
         require(spend.amount > 0) { "Spend amount must be positive" }
         queries.transactionWithResult {
@@ -48,6 +51,7 @@ class SpendRepository(
                     category = spend.category.name,
                     date = spend.date.toDb(),
                     note = spend.note.trim(),
+                    recurringId = spend.recurringId,
                 )
                 queries.lastInsertedId().executeAsOne()
             } else {
