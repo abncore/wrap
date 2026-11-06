@@ -3,6 +3,7 @@ package com.abaan.wrap
 import android.app.Application
 import com.abaan.wrap.di.appModule
 import com.abaan.wrap.reminders.BudgetNotifications
+import com.abaan.wrap.reminders.CalendarSync
 import com.abaan.wrap.reminders.ChaseNudgeWorker
 import com.abaan.wrap.reminders.ReminderNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
@@ -28,6 +29,7 @@ class WrapApplication : Application() {
         ReminderNotifications.createChannel(this)
         BudgetNotifications.createChannel(this)
         get<ReminderScheduler>().start(appScope)
+        get<CalendarSync>().start(appScope)
         addMonthlyCosts()
         ChaseNudgeWorker.schedule(this, get(), get())
     }

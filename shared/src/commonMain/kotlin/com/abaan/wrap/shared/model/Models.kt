@@ -152,6 +152,8 @@ data class AppSettings(
     val callReminderMinutes: Int = 60,
     /** Remind about overdue payments that haven't been chased for a week. */
     val chaseRemindersEnabled: Boolean = true,
+    /** Copy jobs into the phone's calendar. */
+    val calendarSyncEnabled: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_CURRENCY = "AED"

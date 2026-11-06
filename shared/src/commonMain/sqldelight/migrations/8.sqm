@@ -1,0 +1,9 @@
+-- Version 8 -> 9: copying jobs into the phone's calendar. Which calendar event belongs to which job,
+-- and a setting to turn it on (off by default, as it needs calendar permission).
+CREATE TABLE CalendarEventEntity (
+    jobId INTEGER PRIMARY KEY,
+    eventId INTEGER NOT NULL,
+    signature TEXT NOT NULL
+);
+
+ALTER TABLE SettingsEntity ADD COLUMN calendarSync INTEGER NOT NULL DEFAULT 0;

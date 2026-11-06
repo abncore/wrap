@@ -31,6 +31,7 @@ import com.abaan.wrap.ui.clients.ClientEditScreen
 import com.abaan.wrap.ui.clients.ClientsScreen
 import com.abaan.wrap.ui.navigation.AddAction
 import com.abaan.wrap.ui.navigation.AddSheet
+import com.abaan.wrap.ui.navigation.CalendarRoute
 import com.abaan.wrap.ui.navigation.ClientEditRoute
 import com.abaan.wrap.ui.navigation.ClientsRoute
 import com.abaan.wrap.ui.navigation.JobDetailRoute
@@ -47,6 +48,7 @@ import com.abaan.wrap.ui.navigation.TopLevelDestination
 import com.abaan.wrap.ui.navigation.WrapBottomBar
 import com.abaan.wrap.ui.payments.PaymentEditScreen
 import com.abaan.wrap.ui.home.HomeScreen
+import com.abaan.wrap.ui.jobs.CalendarScreen
 import com.abaan.wrap.ui.jobs.JobDetailScreen
 import com.abaan.wrap.ui.jobs.JobEditScreen
 import com.abaan.wrap.ui.jobs.JobsScreen
@@ -129,6 +131,13 @@ fun WrapApp(
                     onOpenJob = { navController.navigate(JobDetailRoute(it)) },
                     requestedTab = requestedTab?.let(JobsTab::valueOf),
                     onRequestedTabShown = { entry.savedStateHandle[REQUESTED_JOBS_TAB] = null },
+                    onOpenCalendar = { navController.navigate(CalendarRoute) },
+                )
+            }
+            composable<CalendarRoute> {
+                CalendarScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenJob = { navController.navigate(JobDetailRoute(it)) },
                 )
             }
             composable<ClientsRoute> {

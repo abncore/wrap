@@ -27,6 +27,8 @@ class MigrationTest {
         driver.execute(null, "DROP TABLE CrewContactEntity", 0)
         driver.execute(null, "DROP TABLE ChaseLogEntity", 0)
         driver.execute(null, "DROP TABLE ProfileEntity", 0)
+        driver.execute(null, "DROP TABLE CalendarEventEntity", 0)
+        driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN calendarSync", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN invoiceNumber", 0)
         driver.execute(null, "ALTER TABLE JobEntity DROP COLUMN vatRate", 0)
         driver.execute(null, "ALTER TABLE SettingsEntity DROP COLUMN chaseReminders", 0)
@@ -41,7 +43,7 @@ class MigrationTest {
         WrapDatabase.Schema.migrate(driver, 1, WrapDatabase.Schema.version)
 
         val db = WrapDatabase(driver)
-        assertEquals(8L, WrapDatabase.Schema.version)
+        assertEquals(9L, WrapDatabase.Schema.version)
         assertEquals("Sandstorm Films", ClientRepository(db, io).observeClients().first().single().name)
 
         val settings = SettingsRepository(db, io)
@@ -54,6 +56,11 @@ class MigrationTest {
         assertEquals(99_00, spends.observeAll().first().single().amount)
 
         assertEquals("INV-0001", ProfileRepository(db, io).getProfile().let { "${it.invoicePrefix}000${it.nextInvoiceNumber}" })
+
+        val links = CalendarEventRepository(db, io)
+        links.save(CalendarLink(jobId = 1, eventId = 77, signature = "a"))
+        links.save(CalendarLink(jobId = 1, eventId = 78, signature = "b"))
+        assertEquals(listOf(CalendarLink(1, 78, "b")), links.all())
 
         val recurring = RecurringSpendRepository(db, io)
         recurring.setRepeating(spends.observeAll().first().single().id, repeat = true, today = LocalDate(2026, 4, 1))

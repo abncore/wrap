@@ -1,5 +1,8 @@
 package com.abaan.wrap.ui.settings
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.BuildConfig
 import com.abaan.wrap.R
+import com.abaan.wrap.reminders.CalendarSync
+import org.koin.compose.koinInject
+import androidx.compose.ui.platform.LocalContext
 import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.money.MoneyFormat
 import com.abaan.wrap.ui.components.DecimalInput
@@ -58,6 +64,23 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val settings = state.settings
     val profile = state.profile
+    val context = LocalContext.current
+    val calendarSync = koinInject<CalendarSync>()
+    val calendarPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+        if (results.values.all { it }) {
+            calendarSync.onPermissionChanged()
+            viewModel.update { it.copy(calendarSyncEnabled = true) }
+        } else {
+            Toast.makeText(context, R.string.settings_calendar_denied, Toast.LENGTH_LONG).show()
+        }
+    }
+    val setCalendarSync: (Boolean) -> Unit = { on ->
+        if (on && !calendarSync.hasPermission()) {
+            calendarPermission.launch(CalendarSync.PERMISSIONS)
+        } else {
+            viewModel.update { it.copy(calendarSyncEnabled = on) }
+        }
+    }
     var dialog by rememberSaveable { mutableStateOf<SettingDialog?>(null) }
 
     Scaffold(
@@ -159,6 +182,14 @@ fun SettingsScreen(
                 modifier = Modifier.clickable {
                     viewModel.update { it.copy(chaseRemindersEnabled = !it.chaseRemindersEnabled) }
                 },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_calendar_sync)) },
+                supportingContent = { Text(stringResource(R.string.settings_calendar_sync_desc)) },
+                trailingContent = {
+                    Switch(checked = settings.calendarSyncEnabled, onCheckedChange = setCalendarSync)
+                },
+                modifier = Modifier.clickable { setCalendarSync(!settings.calendarSyncEnabled) },
             )
             SettingRow(
                 title = stringResource(R.string.settings_call_reminder),

@@ -513,4 +513,27 @@
     <string name="report_csv_currency">Currency</string>
     <string name="report_csv_income">Income</string>
     <string name="report_csv_spend">Spending</string>
+
+    <!-- Calendar -->
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_open">Calendar view</string>
+    <string name="calendar_previous">Previous month</string>
+    <string name="calendar_next">Next month</string>
+    <plurals name="calendar_free_days">
+        <item quantity="one">%1$d free day</item>
+        <item quantity="other">%1$d free days</item>
+    </plurals>
+    <plurals name="calendar_clashes">
+        <item quantity="one">%1$d day double-booked</item>
+        <item quantity="other">%1$d days double-booked</item>
+    </plurals>
+    <string name="calendar_day_free">Nothing booked. A free day.</string>
+    <string name="calendar_day_desc">%1$s, %2$d booked</string>
+    <string name="calendar_day_desc_clash">%1$s, %2$d booked, double-booked</string>
+    <string name="calendar_legend_unpaid">Unpaid</string>
+    <string name="calendar_legend_clash">Clash</string>
+    <string name="calendar_event_footer">Added by Wrap</string>
+    <string name="settings_calendar_sync">Add jobs to my phone calendar</string>
+    <string name="settings_calendar_sync_desc">Keeps bookings in your calendar app up to date</string>
+    <string name="settings_calendar_denied">Calendar permission is needed to add jobs to your calendar</string>
 </resources>

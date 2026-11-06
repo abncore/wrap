@@ -15,6 +15,8 @@ import com.abaan.wrap.ui.settings.SettingsViewModel
 import com.abaan.wrap.files.InvoicePdf
 import com.abaan.wrap.files.ReceiptStore
 import com.abaan.wrap.reminders.BudgetNotifications
+import com.abaan.wrap.reminders.CalendarSync
+import com.abaan.wrap.ui.jobs.CalendarViewModel
 import com.abaan.wrap.reminders.ReminderScheduler
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -26,6 +28,7 @@ val appModule = module {
     single { BudgetNotifications(androidContext()) }
     single { ReceiptStore(androidContext()) }
     single { InvoicePdf(androidContext()) }
+    single { CalendarSync(androidContext(), get(), get(), get(), get()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
@@ -33,6 +36,7 @@ val appModule = module {
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { JobsViewModel(get(), get()) }
+    viewModel { CalendarViewModel(get(), get(), get()) }
     viewModel { (jobId: Long, finished: Boolean) ->
         JobEditViewModel(jobId, finished, get(), get(), get(), get(), get(), get())
     }

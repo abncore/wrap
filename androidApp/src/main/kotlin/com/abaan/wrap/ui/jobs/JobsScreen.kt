@@ -19,6 +19,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -45,6 +47,7 @@ fun JobsScreen(
     onOpenJob: (Long) -> Unit,
     requestedTab: JobsTab? = null,
     onRequestedTabShown: () -> Unit = {},
+    onOpenCalendar: () -> Unit = {},
     viewModel: JobsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -57,7 +60,16 @@ fun JobsScreen(
     val filter = state.filter
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.jobs_title)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.jobs_title)) },
+                actions = {
+                    IconButton(onClick = onOpenCalendar) {
+                        Icon(Icons.Filled.DateRange, contentDescription = stringResource(R.string.calendar_open))
+                    }
+                },
+            )
+        },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             PrimaryTabRow(selectedTabIndex = filter.tab.ordinal) {

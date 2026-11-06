@@ -1,0 +1,19 @@
+-- The phone calendar event made for each job. signature describes what was written, so unchanged jobs
+-- aren't rewritten. Added in schema version 9, see migrations/8.sqm.
+CREATE TABLE CalendarEventEntity (
+    jobId INTEGER PRIMARY KEY,
+    eventId INTEGER NOT NULL,
+    signature TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM CalendarEventEntity;
+
+upsert:
+INSERT OR REPLACE INTO CalendarEventEntity(jobId, eventId, signature) VALUES (?, ?, ?);
+
+deleteByJob:
+DELETE FROM CalendarEventEntity WHERE jobId = ?;
+
+deleteAll:
+DELETE FROM CalendarEventEntity;
