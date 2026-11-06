@@ -1,0 +1,32 @@
+-- Money columns are minor units (fils). Nullable terms/rate fall back to app settings.
+CREATE TABLE ClientEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    company TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
+    paymentTermsDays INTEGER,
+    defaultRate INTEGER,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+selectAll:
+SELECT * FROM ClientEntity ORDER BY name COLLATE NOCASE;
+
+selectById:
+SELECT * FROM ClientEntity WHERE id = ?;
+
+insert:
+INSERT INTO ClientEntity(name, company, phone, email, paymentTermsDays, defaultRate, notes)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE ClientEntity
+SET name = ?, company = ?, phone = ?, email = ?, paymentTermsDays = ?, defaultRate = ?, notes = ?
+WHERE id = ?;
+
+deleteById:
+DELETE FROM ClientEntity WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

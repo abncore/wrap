@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -32,13 +33,42 @@ kotlin {
         }
     }
 
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
+    }
+
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.datetime)
+            api(libs.koin.core)
+            implementation(libs.sqldelight.coroutines)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        androidMain.dependencies {
+            implementation(libs.sqldelight.android.driver)
+            implementation(libs.koin.android)
+        }
+        getByName("androidHostTest").dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.sqldelight.sqlite.driver)
+        }
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            iosMain.dependencies {
+                implementation(libs.sqldelight.native.driver)
+            }
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("WrapDatabase") {
+            packageName.set("com.abaan.wrap.shared.db")
         }
     }
 }

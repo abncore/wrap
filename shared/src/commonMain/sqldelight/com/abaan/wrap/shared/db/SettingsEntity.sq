@@ -1,0 +1,21 @@
+-- Single-row table holding app-wide defaults. defaultRate is minor units (fils).
+CREATE TABLE SettingsEntity (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    defaultRate INTEGER NOT NULL,
+    dayLengthHours REAL NOT NULL,
+    otMultiplier REAL NOT NULL,
+    paymentTermsDays INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    remindersEnabled INTEGER NOT NULL
+);
+
+INSERT INTO SettingsEntity(id, defaultRate, dayLengthHours, otMultiplier, paymentTermsDays, currency, remindersEnabled)
+VALUES (1, 0, 10.0, 1.5, 30, 'AED', 1);
+
+select:
+SELECT * FROM SettingsEntity WHERE id = 1;
+
+update:
+UPDATE SettingsEntity SET
+    defaultRate = ?, dayLengthHours = ?, otMultiplier = ?, paymentTermsDays = ?, currency = ?, remindersEnabled = ?
+WHERE id = 1;

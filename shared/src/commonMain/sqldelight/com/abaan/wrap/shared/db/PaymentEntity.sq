@@ -1,0 +1,35 @@
+-- amount is minor units (fils); dateReceived is an epoch day.
+CREATE TABLE PaymentEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jobId INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    dateReceived INTEGER NOT NULL,
+    method TEXT NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX PaymentEntity_jobId ON PaymentEntity(jobId);
+
+selectAll:
+SELECT * FROM PaymentEntity ORDER BY dateReceived DESC, id DESC;
+
+selectByJob:
+SELECT * FROM PaymentEntity WHERE jobId = ? ORDER BY dateReceived DESC, id DESC;
+
+selectById:
+SELECT * FROM PaymentEntity WHERE id = ?;
+
+insert:
+INSERT INTO PaymentEntity(jobId, amount, dateReceived, method, note) VALUES (?, ?, ?, ?, ?);
+
+update:
+UPDATE PaymentEntity SET amount = ?, dateReceived = ?, method = ?, note = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM PaymentEntity WHERE id = ?;
+
+deleteByJob:
+DELETE FROM PaymentEntity WHERE jobId = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

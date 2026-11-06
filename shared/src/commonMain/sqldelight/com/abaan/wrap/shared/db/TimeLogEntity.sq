@@ -1,0 +1,36 @@
+-- clockIn / clockOut are epoch milliseconds; clockOut is null while clocked in.
+CREATE TABLE TimeLogEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jobId INTEGER NOT NULL,
+    clockIn INTEGER NOT NULL,
+    clockOut INTEGER
+);
+
+CREATE INDEX TimeLogEntity_jobId ON TimeLogEntity(jobId);
+
+selectAll:
+SELECT * FROM TimeLogEntity ORDER BY clockIn;
+
+selectByJob:
+SELECT * FROM TimeLogEntity WHERE jobId = ? ORDER BY clockIn;
+
+selectOpen:
+SELECT * FROM TimeLogEntity WHERE clockOut IS NULL ORDER BY clockIn DESC LIMIT 1;
+
+insert:
+INSERT INTO TimeLogEntity(jobId, clockIn, clockOut) VALUES (?, ?, ?);
+
+update:
+UPDATE TimeLogEntity SET clockIn = ?, clockOut = ? WHERE id = ?;
+
+closeOpen:
+UPDATE TimeLogEntity SET clockOut = ? WHERE id = ? AND clockOut IS NULL;
+
+deleteById:
+DELETE FROM TimeLogEntity WHERE id = ?;
+
+deleteByJob:
+DELETE FROM TimeLogEntity WHERE jobId = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();

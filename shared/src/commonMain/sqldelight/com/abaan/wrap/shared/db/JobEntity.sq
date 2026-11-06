@@ -1,0 +1,53 @@
+-- Dates are epoch days, callTime is minutes after midnight, money is minor units (fils).
+CREATE TABLE JobEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    clientId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT '',
+    startDate INTEGER NOT NULL,
+    endDate INTEGER NOT NULL,
+    callTime INTEGER,
+    location TEXT NOT NULL DEFAULT '',
+    rateType TEXT NOT NULL,
+    rate INTEGER NOT NULL,
+    dayLengthHours REAL NOT NULL,
+    otMultiplier REAL NOT NULL,
+    kitRental INTEGER NOT NULL DEFAULT 0,
+    expenses INTEGER NOT NULL DEFAULT 0,
+    dueDate INTEGER,
+    status TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX JobEntity_clientId ON JobEntity(clientId);
+
+selectAll:
+SELECT * FROM JobEntity ORDER BY startDate, callTime;
+
+selectById:
+SELECT * FROM JobEntity WHERE id = ?;
+
+countByClient:
+SELECT COUNT(*) FROM JobEntity WHERE clientId = ?;
+
+insert:
+INSERT INTO JobEntity(
+    clientId, title, role, startDate, endDate, callTime, location, rateType, rate,
+    dayLengthHours, otMultiplier, kitRental, expenses, dueDate, status, notes
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE JobEntity SET
+    clientId = ?, title = ?, role = ?, startDate = ?, endDate = ?, callTime = ?, location = ?,
+    rateType = ?, rate = ?, dayLengthHours = ?, otMultiplier = ?, kitRental = ?, expenses = ?,
+    dueDate = ?, status = ?, notes = ?
+WHERE id = ?;
+
+updateStatus:
+UPDATE JobEntity SET status = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM JobEntity WHERE id = ?;
+
+lastInsertedId:
+SELECT last_insert_rowid();
