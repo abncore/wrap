@@ -1,0 +1,54 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.kotlin/
+
+# Local machine config (contains sdk.dir)
+local.properties
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.externalNativeBuild/
+.cxx/
+*.keystore
+*.jks
+google-services.json
+
+# Kotlin / Kotlin Native
+*.klib
+.konan/
+
+# IDEs
+.idea/
+*.iml
+.fleet/
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
+
+# Xcode (iosApp, added later on macOS)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+iosApp/Shared.framework/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

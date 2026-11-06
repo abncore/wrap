@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": ".\\gradlew.bat assembleDebug",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Install & Run",
+            "type": "shell",
+            "command": ".\\gradlew.bat installDebug; if ($?) { adb shell am start -n com.abaan.wrap/.MainActivity }",
+            "options": {
+                "shell": { "executable": "powershell.exe", "args": ["-NoProfile", "-Command"] }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": ".\\gradlew.bat :shared:allTests test",
+            "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Logcat (crashes)",
+            "type": "shell",
+            "command": "adb logcat -v color AndroidRuntime:E com.abaan.wrap:V *:S",
+            "isBackground": true,
+            "problemMatcher": []
+        }
+    ]
+}

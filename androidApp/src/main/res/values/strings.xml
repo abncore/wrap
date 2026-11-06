@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wrap</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_jobs">Jobs</string>
+    <string name="nav_clients">Clients</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_add">Add</string>
+
+    <!-- Add sheet -->
+    <string name="add_sheet_title">What would you like to add?</string>
+    <string name="add_upcoming_job">Add upcoming job</string>
+    <string name="add_upcoming_job_desc">A booking you haven\'t worked yet</string>
+    <string name="add_finished_job">Log finished job</string>
+    <string name="add_finished_job_desc">Work you\'ve already done</string>
+    <string name="add_payment">Record payment</string>
+    <string name="add_payment_desc">Money you\'ve received for a job</string>
+
+    <!-- Empty states -->
+    <string name="home_empty_title">Nothing on the books yet</string>
+    <string name="home_empty_body">Tap + to add your first job. Money owed, payments and your next call time will show up here.</string>
+    <string name="jobs_empty_title">No jobs yet</string>
+    <string name="jobs_empty_body">Upcoming bookings and finished work you log will be listed here.</string>
+    <string name="clients_empty_title">No clients yet</string>
+    <string name="clients_empty_body">Production companies and people you work for will appear here with what they owe you.</string>
+    <string name="settings_empty_title">Settings</string>
+    <string name="settings_empty_body">Your default rate, day length, overtime multiplier, payment terms and currency will live here.</string>
+</resources>
