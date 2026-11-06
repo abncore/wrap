@@ -1,16 +1,21 @@
 -- Money spent on work (fuel, kit, food...). amount is minor units (fils); date is an epoch day.
 -- Added in schema version 2, see migrations/1.sqm. recurringId (version 4) points at the monthly
--- cost that added the spend, if any.
+-- cost that added the spend, if any. jobId (version 5) is the job it is billed to, which adds it to
+-- what that client owes; receipt is the file name of a receipt photo, empty when there is none.
 CREATE TABLE SpendEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     amount INTEGER NOT NULL,
     category TEXT NOT NULL,
     date INTEGER NOT NULL,
     note TEXT NOT NULL DEFAULT '',
-    recurringId INTEGER
+    recurringId INTEGER,
+    jobId INTEGER,
+    receipt TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX SpendEntity_date ON SpendEntity(date);
+
+CREATE INDEX SpendEntity_jobId ON SpendEntity(jobId);
 
 selectAll:
 SELECT * FROM SpendEntity ORDER BY date DESC, id DESC;
@@ -21,17 +26,23 @@ SELECT CAST(coalesce(sum(amount), 0) AS INTEGER) FROM SpendEntity WHERE date BET
 selectById:
 SELECT * FROM SpendEntity WHERE id = ?;
 
+selectByJob:
+SELECT * FROM SpendEntity WHERE jobId = ? ORDER BY date, id;
+
 insert:
-INSERT INTO SpendEntity(amount, category, date, note, recurringId) VALUES (?, ?, ?, ?, ?);
+INSERT INTO SpendEntity(amount, category, date, note, recurringId, jobId, receipt) VALUES (?, ?, ?, ?, ?, ?, ?);
 
 update:
-UPDATE SpendEntity SET amount = ?, category = ?, date = ?, note = ? WHERE id = ?;
+UPDATE SpendEntity SET amount = ?, category = ?, date = ?, note = ?, jobId = ?, receipt = ? WHERE id = ?;
 
 setRecurring:
 UPDATE SpendEntity SET recurringId = ? WHERE id = ?;
 
 clearRecurring:
 UPDATE SpendEntity SET recurringId = NULL WHERE recurringId = ?;
+
+unlinkJob:
+UPDATE SpendEntity SET jobId = NULL WHERE jobId = ?;
 
 deleteById:
 DELETE FROM SpendEntity WHERE id = ?;

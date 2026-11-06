@@ -1,0 +1,5 @@
+-- Version 4 -> 5: receipt photos on spends, and spends billed to a job (added to what the client owes).
+ALTER TABLE SpendEntity ADD COLUMN jobId INTEGER;
+ALTER TABLE SpendEntity ADD COLUMN receipt TEXT NOT NULL DEFAULT '';
+
+CREATE INDEX SpendEntity_jobId ON SpendEntity(jobId);

@@ -25,11 +25,11 @@ class LedgerRepository(
     fun observeJobSummaries(): Flow<List<JobSummary>> = combine(
         jobs.observeJobs(),
         clients.observeClients(),
-        timeLogs.observeAll(),
-        payments.observeAll(),
+        combine(timeLogs.observeAll(), payments.observeAll(), ::Pair),
+        spends.observeAll(),
         today.observe(),
-    ) { jobList, clientList, logList, paymentList, date ->
-        Ledger.summarizeAll(jobList, clientList, logList, paymentList, date, today.timeZone)
+    ) { jobList, clientList, (logList, paymentList), spendList, date ->
+        Ledger.summarizeAll(jobList, clientList, logList, paymentList, date, today.timeZone, spendList)
     }
 
     fun observeJobSummary(jobId: Long): Flow<JobSummary?> =

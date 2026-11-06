@@ -41,9 +41,11 @@ import com.abaan.wrap.R
 import com.abaan.wrap.shared.model.SpendCategory
 import com.abaan.wrap.ui.components.ConfirmDialog
 import com.abaan.wrap.ui.components.DateInput
+import com.abaan.wrap.ui.components.DropdownInput
 import com.abaan.wrap.ui.components.MoneyInput
 import com.abaan.wrap.ui.components.SectionTitle
 import com.abaan.wrap.ui.components.TextInput
+import com.abaan.wrap.ui.components.formatMedium
 import com.abaan.wrap.ui.components.labelRes
 import com.abaan.wrap.ui.theme.color
 import kotlinx.coroutines.Dispatchers
@@ -130,6 +132,32 @@ fun SpendEditScreen(
                 label = stringResource(R.string.spend_field_note),
                 placeholder = stringResource(R.string.spend_field_note_hint),
                 modifier = Modifier.padding(top = 8.dp),
+            )
+
+            val jobOptions = listOf<Long?>(null) + state.jobs.map { it.job.id }
+            val jobsById = state.jobs.associateBy { it.job.id }
+            DropdownInput(
+                label = stringResource(R.string.spend_bill_to),
+                options = jobOptions,
+                selected = state.jobId,
+                optionLabel = { id ->
+                    jobsById[id]?.let { stringResource(R.string.job_option, it.job.title, it.job.startDate.formatMedium()) }
+                        ?: stringResource(R.string.spend_bill_none)
+                },
+                onSelect = viewModel::setJob,
+                placeholder = stringResource(R.string.spend_bill_none),
+                supportingText = stringResource(R.string.spend_bill_desc),
+                modifier = Modifier.padding(top = 8.dp),
+            )
+
+            SectionTitle(stringResource(R.string.receipt_title))
+            ReceiptSection(
+                receipt = state.receipt,
+                importing = state.importingReceipt,
+                error = stringResource(R.string.receipt_unreadable).takeIf { SpendFormError.RECEIPT_UNREADABLE in state.errors },
+                cameraUri = viewModel::cameraUri,
+                onPicked = viewModel::attachReceipt,
+                onRemove = viewModel::removeReceipt,
             )
 
             ListItem(

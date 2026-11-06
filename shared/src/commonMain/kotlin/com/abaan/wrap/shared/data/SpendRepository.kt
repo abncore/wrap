@@ -28,6 +28,7 @@ data class BudgetAlert(
 class SpendRepository(
     private val db: WrapDatabase,
     private val io: CoroutineDispatcher,
+    private val statusUpdater: StatusUpdater,
 ) {
     private val queries get() = db.spendEntityQueries
 
@@ -40,18 +41,22 @@ class SpendRepository(
 
     /**
      * Inserts a new spend (when [Spend.id] is [NEW_ID]) or updates it. Returns its id. Which monthly
-     * cost a spend belongs to is set by [RecurringSpendRepository], never changed here.
+     * cost a spend belongs to is set by [RecurringSpendRepository], never changed here. Billing a spend
+     * to a job (or moving it off one) updates that job's status, since it changes what is owed.
      */
     suspend fun save(spend: Spend): Long = withContext(io) {
         require(spend.amount > 0) { "Spend amount must be positive" }
         queries.transactionWithResult {
-            if (spend.id == NEW_ID) {
+            val previousJobId = if (spend.id == NEW_ID) null else queries.selectById(spend.id).executeAsOneOrNull()?.jobId
+            val id = if (spend.id == NEW_ID) {
                 queries.insert(
                     amount = spend.amount,
                     category = spend.category.name,
                     date = spend.date.toDb(),
                     note = spend.note.trim(),
                     recurringId = spend.recurringId,
+                    jobId = spend.jobId,
+                    receipt = spend.receipt,
                 )
                 queries.lastInsertedId().executeAsOne()
             } else {
@@ -60,15 +65,23 @@ class SpendRepository(
                     category = spend.category.name,
                     date = spend.date.toDb(),
                     note = spend.note.trim(),
+                    jobId = spend.jobId,
+                    receipt = spend.receipt,
                     id = spend.id,
                 )
                 spend.id
             }
+            setOfNotNull(previousJobId, spend.jobId).forEach(statusUpdater::refresh)
+            id
         }
     }
 
     suspend fun delete(id: Long) = withContext(io) {
-        queries.deleteById(id)
+        db.transaction {
+            val jobId = queries.selectById(id).executeAsOneOrNull()?.jobId
+            queries.deleteById(id)
+            jobId?.let(statusUpdater::refresh)
+        }
     }
 
     /** Total spent in the calendar month containing [date]. */

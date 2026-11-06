@@ -265,6 +265,12 @@ private fun MoneyCard(summary: JobSummary, currency: String) {
             }
             if (money.kitRental > 0) MoneyRow(stringResource(R.string.job_kit_rental), money(money.kitRental, currency))
             if (money.expenses > 0) MoneyRow(stringResource(R.string.job_expenses), money(money.expenses, currency))
+            if (money.billedSpends > 0) {
+                MoneyRow(
+                    stringResource(R.string.job_billed_spends, summary.billedSpends.size),
+                    money(money.billedSpends, currency),
+                )
+            }
             HorizontalDivider()
             MoneyRow(stringResource(R.string.job_total), money(money.total, currency), bold = true)
             if (money.paid > 0) {

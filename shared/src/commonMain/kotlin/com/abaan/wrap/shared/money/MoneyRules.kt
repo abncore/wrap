@@ -3,6 +3,7 @@ package com.abaan.wrap.shared.money
 import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.RateType
+import com.abaan.wrap.shared.model.Spend
 import com.abaan.wrap.shared.model.TimeLog
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -22,6 +23,8 @@ data class MoneyBreakdown(
     val overtime: Long,
     val kitRental: Long,
     val expenses: Long,
+    /** Spends billed to this job, charged back to the client. */
+    val billedSpends: Long,
     val total: Long,
     val paid: Long,
     /** What is still owed; never negative. */
@@ -35,13 +38,19 @@ data class MoneyBreakdown(
  * - DAY: rate per day; HALF_DAY: rate / 2 per day; HOUR: hours x rate; FIXED: rate.
  * - Overtime (DAY only): hours beyond the day length x (rate / day length) x OT multiplier,
  *   worked out per calendar day from time logs.
- * - total = base + overtime + kit rental + expenses; owed = total - payments.
+ * - total = base + overtime + kit rental + expenses + spends billed to the job; owed = total - payments.
  *
  * HOUR jobs with no time logs yet are estimated from the planned day length.
  */
 object MoneyRules {
 
-    fun breakdown(job: Job, timeLogs: List<TimeLog>, payments: List<Payment>, timeZone: TimeZone): MoneyBreakdown =
+    fun breakdown(
+        job: Job,
+        timeLogs: List<TimeLog>,
+        payments: List<Payment>,
+        timeZone: TimeZone,
+        billedSpends: List<Spend> = emptyList(),
+    ): MoneyBreakdown =
         calculate(
             rateType = job.rateType,
             rate = job.rate,
@@ -52,6 +61,7 @@ object MoneyRules {
             kitRental = job.kitRental,
             expenses = job.expenses,
             paid = payments.sumOf { it.amount },
+            billedSpends = billedSpends.sumOf { it.amount },
         )
 
     /**
@@ -68,6 +78,7 @@ object MoneyRules {
         kitRental: Long,
         expenses: Long,
         paid: Long,
+        billedSpends: Long = 0,
     ): MoneyBreakdown {
         val safeRate = rate.coerceAtLeast(0)
         val safeDays = days.coerceAtLeast(1)
@@ -97,7 +108,8 @@ object MoneyRules {
 
         val safeKit = kitRental.coerceAtLeast(0)
         val safeExpenses = expenses.coerceAtLeast(0)
-        val total = base + overtime + safeKit + safeExpenses
+        val safeBilled = billedSpends.coerceAtLeast(0)
+        val total = base + overtime + safeKit + safeExpenses + safeBilled
         val safePaid = paid.coerceAtLeast(0)
 
         return MoneyBreakdown(
@@ -108,6 +120,7 @@ object MoneyRules {
             overtime = overtime,
             kitRental = safeKit,
             expenses = safeExpenses,
+            billedSpends = safeBilled,
             total = total,
             paid = safePaid,
             owed = (total - safePaid).coerceAtLeast(0),

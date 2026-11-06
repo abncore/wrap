@@ -351,4 +351,20 @@
     <string name="recurring_stop">Stop repeating</string>
     <string name="recurring_stop_title">Stop this monthly cost?</string>
     <string name="recurring_stop_body">It won\'t be added again. Months already added stay in your spending.</string>
+
+    <!-- Receipts and billing spending to a job -->
+    <string name="action_close">Close</string>
+    <string name="receipt_title">Receipt</string>
+    <string name="receipt_take">Take photo</string>
+    <string name="receipt_pick">Choose photo</string>
+    <string name="receipt_view">View receipt</string>
+    <string name="receipt_remove">Remove</string>
+    <string name="receipt_unreadable">That photo couldn\'t be opened. Try another one.</string>
+    <string name="receipt_attached">Has a receipt</string>
+    <string name="spend_bill_to">Bill to a job</string>
+    <string name="spend_bill_none">Not billed to a job</string>
+    <string name="spend_bill_desc">Added to the job\'s total so the client pays it back</string>
+    <string name="spend_billed">Billed to a job</string>
+    <string name="job_option">%1$s · %2$s</string>
+    <string name="job_billed_spends">Billed spending (%1$d)</string>
 </resources>

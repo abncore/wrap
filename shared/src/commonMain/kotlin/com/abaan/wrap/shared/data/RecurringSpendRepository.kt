@@ -74,6 +74,8 @@ class RecurringSpendRepository(
                         date = date.toDb(),
                         note = rule.note,
                         recurringId = rule.id,
+                        jobId = null,
+                        receipt = "",
                     )
                 }
                 dates.lastOrNull()?.let { last ->

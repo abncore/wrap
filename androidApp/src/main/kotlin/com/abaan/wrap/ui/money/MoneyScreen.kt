@@ -453,12 +453,28 @@ private fun SpendRow(spend: Spend, currency: String, onClick: () -> Unit) {
             )
         },
         supportingContent = {
+            val details = if (spend.note.isBlank()) {
+                spend.date.formatWeekday()
+            } else {
+                stringResource(R.string.separator_dot, category, spend.date.formatWeekday())
+            }
             Text(
-                if (spend.note.isBlank()) spend.date.formatWeekday() else stringResource(R.string.separator_dot, category, spend.date.formatWeekday()),
+                if (spend.jobId == null) details else stringResource(R.string.separator_dot, details, stringResource(R.string.spend_billed)),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         },
         trailingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                if (spend.receipt.isNotBlank()) {
+                    Icon(
+                        painterResource(R.drawable.ic_receipt),
+                        contentDescription = stringResource(R.string.receipt_attached),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
+                }
                 if (spend.recurringId != null) {
                     Icon(
                         painterResource(R.drawable.ic_repeat),

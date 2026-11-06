@@ -40,7 +40,7 @@ val sharedModule = module {
     single { JobRepository(get(), get(), get()) }
     single { TimeLogRepository(get(), get(), get(), get()) }
     single { PaymentRepository(get(), get(), get()) }
-    single { SpendRepository(get(), get()) }
+    single { SpendRepository(get(), get(), get()) }
     single { RecurringSpendRepository(get(), get()) }
     single { LedgerRepository(get(), get(), get(), get(), get(), get(), get()) }
 }

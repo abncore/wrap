@@ -71,11 +71,12 @@ class JobRepository(
         }
     }
 
-    /** Deletes the job together with its time logs and payments. */
+    /** Deletes the job together with its time logs and payments. Spends billed to it are kept, unbilled. */
     suspend fun delete(id: Long) = withContext(io) {
         db.transaction {
             db.timeLogEntityQueries.deleteByJob(id)
             db.paymentEntityQueries.deleteByJob(id)
+            db.spendEntityQueries.unlinkJob(id)
             queries.deleteById(id)
         }
     }

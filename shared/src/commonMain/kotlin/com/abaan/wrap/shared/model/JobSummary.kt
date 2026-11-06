@@ -15,6 +15,8 @@ data class JobSummary(
     val workDoneAutomatically: Boolean,
     val timeLogs: List<TimeLog>,
     val payments: List<Payment>,
+    /** Spends billed to this job. */
+    val billedSpends: List<Spend>,
     /** True when today falls within the job's dates. */
     val isOnToday: Boolean,
     /** The running log for this job, if the freelancer is clocked in on it. */

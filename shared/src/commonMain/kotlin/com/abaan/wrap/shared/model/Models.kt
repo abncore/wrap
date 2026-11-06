@@ -69,7 +69,8 @@ data class Payment(
 
 /**
  * Money spent on work (fuel, kit, food...). [amount] is in minor units. [recurringId] is the monthly
- * cost that added it, if any.
+ * cost that added it, if any. A spend with a [jobId] is billed to that job: it is added to the job's
+ * total so the client pays it back. [receipt] is the receipt photo's file name, empty when there is none.
  */
 data class Spend(
     val id: Long = NEW_ID,
@@ -78,6 +79,8 @@ data class Spend(
     val date: LocalDate,
     val note: String = "",
     val recurringId: Long? = null,
+    val jobId: Long? = null,
+    val receipt: String = "",
 )
 
 /** A cost that repeats every month on [dayOfMonth]; [nextDate] is when it is next added. */

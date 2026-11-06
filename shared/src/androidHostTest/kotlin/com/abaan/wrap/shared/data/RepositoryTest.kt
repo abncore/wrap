@@ -45,7 +45,7 @@ class RepositoryTest {
     private val payments = PaymentRepository(db, io, statusUpdater)
     private val timeLogs = TimeLogRepository(db, io, clock, statusUpdater)
     private val settings = SettingsRepository(db, io)
-    private val spends = SpendRepository(db, io)
+    private val spends = SpendRepository(db, io, statusUpdater)
     private val recurring = RecurringSpendRepository(db, io)
     private val ledger = LedgerRepository(clients, jobs, timeLogs, payments, settings, spends, today)
 
@@ -255,6 +255,37 @@ class RepositoryTest {
 
         assertEquals(1_000_00, settings.getSettings().monthlyBudget)
         assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
+    }
+
+    @Test
+    fun billedSpendsAddToWhatTheClientOwes() = runTest {
+        val clientId = clients.save(Client(name = "Falcon Productions"))
+        val jobId = jobs.save(job(clientId))
+        jobs.setWorkDone(jobId, true)
+        payments.save(payment(jobId, 1_500_00))
+        assertEquals(JobStatus.PAID, jobs.getJob(jobId)!!.status)
+
+        val parkingId = spends.save(
+            Spend(amount = 60_00, category = SpendCategory.TRANSPORT, date = LocalDate(2026, 3, 10), jobId = jobId, receipt = "r1.jpg"),
+        )
+        assertEquals("r1.jpg", spends.getSpend(parkingId)!!.receipt)
+        val summary = ledger.observeJobSummary(jobId).first()!!
+        assertEquals(60_00, summary.money.billedSpends)
+        assertEquals(1_560_00, summary.money.total)
+        assertEquals(60_00, summary.money.owed)
+        assertEquals(JobStatus.PART_PAID, jobs.getJob(jobId)!!.status)
+        // Still counts as money spent.
+        assertEquals(60_00, ledger.observeMoneyOverview(flowOf(InsightPeriod.THIS_MONTH)).first().spentLifetime)
+
+        // Taking it off the job puts the job back to paid.
+        spends.save(spends.getSpend(parkingId)!!.copy(jobId = null))
+        assertEquals(JobStatus.PAID, jobs.getJob(jobId)!!.status)
+        spends.save(spends.getSpend(parkingId)!!.copy(jobId = jobId))
+        assertEquals(JobStatus.PART_PAID, jobs.getJob(jobId)!!.status)
+
+        // Deleting the job keeps the spend, unbilled.
+        jobs.delete(jobId)
+        assertNull(spends.getSpend(parkingId)!!.jobId)
     }
 
     @Test

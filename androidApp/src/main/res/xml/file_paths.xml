@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Folders whose files can be handed to other apps (camera, share sheet, viewers). -->
+<paths>
+    <!-- Receipt photos kept with the app's data. -->
+    <files-path name="receipts" path="receipts/" />
+    <!-- Photos being taken by the camera app, before they are shrunk into receipts/. -->
+    <cache-path name="camera" path="camera/" />
+    <!-- Invoices, reports and backups being shared. -->
+    <cache-path name="shared" path="shared/" />
+</paths>

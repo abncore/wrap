@@ -23,8 +23,9 @@ object Ledger {
         payments: List<Payment>,
         today: LocalDate,
         timeZone: TimeZone,
+        billedSpends: List<Spend> = emptyList(),
     ): JobSummary {
-        val money = MoneyRules.breakdown(job, timeLogs, payments, timeZone)
+        val money = MoneyRules.breakdown(job, timeLogs, payments, timeZone, billedSpends)
         val workDone = JobStatusRules.isWorkDone(job.status, job.endDate, timeLogs, today, timeZone)
         val status = JobStatusRules.storedStatus(workDone, money.total, money.paid)
         return JobSummary(
@@ -36,6 +37,7 @@ object Ledger {
             workDoneAutomatically = JobStatusRules.isWorkDone(JobStatus.UPCOMING, job.endDate, timeLogs, today, timeZone),
             timeLogs = timeLogs,
             payments = payments,
+            billedSpends = billedSpends,
             isOnToday = today in job.startDate..job.endDate,
             openLog = timeLogs.firstOrNull { it.clockOut == null },
         )
@@ -48,10 +50,12 @@ object Ledger {
         payments: List<Payment>,
         today: LocalDate,
         timeZone: TimeZone,
+        spends: List<Spend> = emptyList(),
     ): List<JobSummary> {
         val clientsById = clients.associateBy { it.id }
         val logsByJob = timeLogs.groupBy { it.jobId }
         val paymentsByJob = payments.groupBy { it.jobId }
+        val billedByJob = spends.filter { it.jobId != null }.groupBy { it.jobId }
         return jobs.map { job ->
             summarize(
                 job = job,
@@ -60,6 +64,7 @@ object Ledger {
                 payments = paymentsByJob[job.id].orEmpty(),
                 today = today,
                 timeZone = timeZone,
+                billedSpends = billedByJob[job.id].orEmpty(),
             )
         }
     }

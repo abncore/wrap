@@ -9,8 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Clock
 
 class MigrationTest {
     private val io = Dispatchers.Unconfined
@@ -30,7 +32,7 @@ class MigrationTest {
         WrapDatabase.Schema.migrate(driver, 1, WrapDatabase.Schema.version)
 
         val db = WrapDatabase(driver)
-        assertEquals(4L, WrapDatabase.Schema.version)
+        assertEquals(5L, WrapDatabase.Schema.version)
         assertEquals("Sandstorm Films", ClientRepository(db, io).observeClients().first().single().name)
 
         val settings = SettingsRepository(db, io)
@@ -38,7 +40,7 @@ class MigrationTest {
         settings.save(settings.getSettings().copy(monthlyBudget = 3_000_00, budgetAlertsEnabled = false))
         assertEquals(3_000_00, settings.getSettings().monthlyBudget)
 
-        val spends = SpendRepository(db, io)
+        val spends = SpendRepository(db, io, StatusUpdater(db, Today(Clock.System, TimeZone.UTC)))
         spends.save(Spend(amount = 99_00, category = SpendCategory.KIT, date = LocalDate(2026, 3, 1)))
         assertEquals(99_00, spends.observeAll().first().single().amount)
 

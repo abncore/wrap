@@ -10,6 +10,7 @@ import com.abaan.wrap.ui.money.MoneyViewModel
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
+import com.abaan.wrap.files.ReceiptStore
 import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
 import org.koin.android.ext.koin.androidContext
@@ -20,6 +21,7 @@ import org.koin.dsl.module
 val appModule = module {
     single { ReminderScheduler(androidContext(), get(), get(), get(), get()) }
     single { BudgetNotifications(androidContext()) }
+    single { ReceiptStore(androidContext()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
@@ -34,5 +36,5 @@ val appModule = module {
         PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
     }
     viewModel { MoneyViewModel(get(), get(), get()) }
-    viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get(), get()) }
+    viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get(), get(), get(), get()) }
 }

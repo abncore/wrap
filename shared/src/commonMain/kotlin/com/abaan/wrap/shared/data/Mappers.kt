@@ -84,6 +84,8 @@ internal fun SpendEntity.toModel() = Spend(
     date = date.toLocalDate(),
     note = note,
     recurringId = recurringId,
+    jobId = jobId,
+    receipt = receipt,
 )
 
 internal fun RecurringSpendEntity.toModel() = RecurringSpend(
