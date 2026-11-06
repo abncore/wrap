@@ -82,6 +82,7 @@ object Ledger {
         return Dashboard(
             currency = settings.currency,
             owedTotal = summaries.sumOf(::owedOf),
+            unpaidCount = summaries.count { owedOf(it) > 0 },
             receivedThisMonth = payments
                 .filter { it.dateReceived.year == today.year && it.dateReceived.month == today.month }
                 .sumOf { it.amount },

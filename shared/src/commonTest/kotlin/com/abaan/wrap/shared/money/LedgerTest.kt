@@ -81,6 +81,7 @@ class LedgerTest {
         val dashboard = Ledger.dashboard(summaries, payments, null, AppSettings(), today)
 
         assertEquals(1_600_00, dashboard.owedTotal)
+        assertEquals(2, dashboard.unpaidCount)
         assertEquals(1_200_00, dashboard.receivedThisMonth)
         assertEquals(1, dashboard.overdueCount)
         assertEquals(600_00, dashboard.overdueTotal)

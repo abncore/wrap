@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,11 +35,14 @@ import com.abaan.wrap.ui.navigation.SettingsRoute
 import com.abaan.wrap.ui.navigation.TopLevelDestination
 import com.abaan.wrap.ui.navigation.WrapBottomBar
 import com.abaan.wrap.ui.payments.PaymentEditScreen
-import com.abaan.wrap.ui.screens.HomeScreen
+import com.abaan.wrap.ui.home.HomeScreen
 import com.abaan.wrap.ui.jobs.JobDetailScreen
 import com.abaan.wrap.ui.jobs.JobEditScreen
 import com.abaan.wrap.ui.jobs.JobsScreen
+import com.abaan.wrap.ui.jobs.JobsTab
 import com.abaan.wrap.ui.settings.SettingsScreen
+
+private const val REQUESTED_JOBS_TAB = "requested_jobs_tab"
 
 @Composable
 fun WrapApp() {
@@ -69,10 +73,22 @@ fun WrapApp() {
             modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
         ) {
             composable<HomeRoute> {
-                HomeScreen(onAddJob = { showAddSheet = true })
+                HomeScreen(
+                    onAddJob = { showAddSheet = true },
+                    onOpenJob = { navController.navigate(JobDetailRoute(it)) },
+                    onOpenUnpaid = {
+                        navController.navigateToTab(TopLevelDestination.JOBS)
+                        navController.getBackStackEntry<JobsRoute>().savedStateHandle[REQUESTED_JOBS_TAB] = JobsTab.UNPAID.name
+                    },
+                )
             }
-            composable<JobsRoute> {
-                JobsScreen(onOpenJob = { navController.navigate(JobDetailRoute(it)) })
+            composable<JobsRoute> { entry ->
+                val requestedTab by entry.savedStateHandle.getStateFlow<String?>(REQUESTED_JOBS_TAB, null).collectAsState()
+                JobsScreen(
+                    onOpenJob = { navController.navigate(JobDetailRoute(it)) },
+                    requestedTab = requestedTab?.let(JobsTab::valueOf),
+                    onRequestedTabShown = { entry.savedStateHandle[REQUESTED_JOBS_TAB] = null },
+                )
             }
             composable<ClientsRoute> {
                 ClientsScreen(

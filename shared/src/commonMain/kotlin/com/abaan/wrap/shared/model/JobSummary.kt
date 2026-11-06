@@ -29,6 +29,8 @@ data class JobSummary(
 data class Dashboard(
     val currency: String,
     val owedTotal: Long,
+    /** Finished jobs that still have money owed. */
+    val unpaidCount: Int,
     val receivedThisMonth: Long,
     val overdueCount: Int,
     val overdueTotal: Long,

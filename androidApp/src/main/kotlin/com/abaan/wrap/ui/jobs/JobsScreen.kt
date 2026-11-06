@@ -25,6 +25,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,9 +43,17 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun JobsScreen(
     onOpenJob: (Long) -> Unit,
+    requestedTab: JobsTab? = null,
+    onRequestedTabShown: () -> Unit = {},
     viewModel: JobsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(requestedTab) {
+        if (requestedTab != null) {
+            viewModel.selectTab(requestedTab)
+            onRequestedTabShown()
+        }
+    }
     val filter = state.filter
 
     Scaffold(
