@@ -317,7 +317,7 @@ fun JobEditScreen(
                                 money(estimate.base, currency),
                                 money(estimate.overtime, currency),
                                 money(estimate.kitRental + estimate.expenses, currency),
-                            ),
+                            ) + if (estimate.vat > 0) stringResource(R.string.job_estimate_vat, money(estimate.vat, currency)) else "",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )

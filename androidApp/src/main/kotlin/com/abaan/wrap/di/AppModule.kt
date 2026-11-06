@@ -7,6 +7,7 @@ import com.abaan.wrap.ui.jobs.JobDetailViewModel
 import com.abaan.wrap.ui.jobs.JobEditViewModel
 import com.abaan.wrap.ui.jobs.JobsViewModel
 import com.abaan.wrap.ui.money.MoneyViewModel
+import com.abaan.wrap.ui.money.ReportViewModel
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.ProfileViewModel
@@ -40,5 +41,6 @@ val appModule = module {
         PaymentEditViewModel(jobId, paymentId, get(), get(), get(), get())
     }
     viewModel { MoneyViewModel(get(), get(), get()) }
+    viewModel { ReportViewModel(androidContext(), get()) }
     viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get(), get(), get(), get()) }
 }

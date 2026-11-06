@@ -207,6 +207,7 @@
     <string name="job_field_start_time">Start time</string>
     <string name="job_estimate">Estimated total</string>
     <string name="job_estimate_detail">%1$s base + %2$s overtime + %3$s extras</string>
+    <string name="job_estimate_vat">\u0020+ %1$s VAT</string>
     <string name="job_new_client_title">New client</string>
     <string name="job_no_clients">Add a client first</string>
     <string name="job_reset_due">Reset to default</string>
@@ -478,4 +479,38 @@
     <string name="invoice_balance">Balance due</string>
     <string name="invoice_payment_details">PAYMENT DETAILS</string>
     <string name="invoice_thanks">Thank you for your business.</string>
+
+    <!-- Year report -->
+    <string name="report_title">Year report</string>
+    <string name="report_open">Year report and export</string>
+    <string name="report_received">Received in %1$d</string>
+    <string name="report_spent">Spent</string>
+    <string name="report_net">Kept after spending</string>
+    <string name="report_invoiced">Jobs worked</string>
+    <string name="report_owed">Still owed on them</string>
+    <string name="report_vat">VAT charged</string>
+    <string name="report_billed">Spending billed back</string>
+    <string name="report_by_client">Income by client</string>
+    <string name="report_by_category">Spending by category</string>
+    <string name="report_by_month">Month by month</string>
+    <string name="report_no_income">No payments received this year.</string>
+    <string name="report_no_spending">No spending this year.</string>
+    <string name="report_unknown_client">Removed client</string>
+    <plurals name="report_jobs">
+        <item quantity="one">%1$d job</item>
+        <item quantity="other">%1$d jobs</item>
+    </plurals>
+    <string name="report_export">Export CSV</string>
+    <string name="report_export_desc">Every payment and spend for the year, ready for Excel, Google Sheets or your accountant.</string>
+    <string name="report_csv_name">Wrap %1$d.csv</string>
+    <string name="report_csv_date">Date</string>
+    <string name="report_csv_type">Type</string>
+    <string name="report_csv_description">Description</string>
+    <string name="report_csv_client">Client</string>
+    <string name="report_csv_category">Category</string>
+    <string name="report_csv_billed">Billed to job</string>
+    <string name="report_csv_amount">Amount</string>
+    <string name="report_csv_currency">Currency</string>
+    <string name="report_csv_income">Income</string>
+    <string name="report_csv_spend">Spending</string>
 </resources>

@@ -40,6 +40,7 @@ import com.abaan.wrap.ui.navigation.JobsRoute
 import com.abaan.wrap.ui.navigation.MoneyRoute
 import com.abaan.wrap.ui.navigation.PaymentEditRoute
 import com.abaan.wrap.ui.navigation.ProfileRoute
+import com.abaan.wrap.ui.navigation.ReportRoute
 import com.abaan.wrap.ui.navigation.SettingsRoute
 import com.abaan.wrap.ui.navigation.SpendEditRoute
 import com.abaan.wrap.ui.navigation.TopLevelDestination
@@ -51,6 +52,7 @@ import com.abaan.wrap.ui.jobs.JobEditScreen
 import com.abaan.wrap.ui.jobs.JobsScreen
 import com.abaan.wrap.ui.jobs.JobsTab
 import com.abaan.wrap.ui.money.MoneyScreen
+import com.abaan.wrap.ui.money.ReportScreen
 import com.abaan.wrap.ui.money.SpendEditScreen
 import com.abaan.wrap.ui.settings.ProfileScreen
 import com.abaan.wrap.ui.settings.SettingsScreen
@@ -139,8 +141,10 @@ fun WrapApp(
                 MoneyScreen(
                     onAddSpend = { navController.navigate(SpendEditRoute()) },
                     onOpenSpend = { navController.navigate(SpendEditRoute(it)) },
+                    onOpenReport = { navController.navigate(ReportRoute) },
                 )
             }
+            composable<ReportRoute> { ReportScreen(onBack = { navController.popBackStack() }) }
             composable<SettingsRoute> {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },

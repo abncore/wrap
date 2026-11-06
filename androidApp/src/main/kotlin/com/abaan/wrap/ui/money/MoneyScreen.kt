@@ -79,6 +79,7 @@ import kotlin.math.roundToInt
 fun MoneyScreen(
     onAddSpend: () -> Unit,
     onOpenSpend: (Long) -> Unit,
+    onOpenReport: () -> Unit,
     viewModel: MoneyViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -89,6 +90,9 @@ fun MoneyScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.money_title)) },
                 actions = {
+                    IconButton(onClick = onOpenReport) {
+                        Icon(painterResource(R.drawable.ic_report), contentDescription = stringResource(R.string.report_open))
+                    }
                     IconButton(onClick = onAddSpend) {
                         Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.money_add))
                     }

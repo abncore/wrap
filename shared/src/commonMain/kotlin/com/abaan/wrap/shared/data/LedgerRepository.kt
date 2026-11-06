@@ -7,10 +7,17 @@ import com.abaan.wrap.shared.model.MoneyOverview
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.money.Insights
 import com.abaan.wrap.shared.money.Ledger
+import com.abaan.wrap.shared.money.ReportRow
+import com.abaan.wrap.shared.money.Reports
+import com.abaan.wrap.shared.money.YearReport
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+
+/** A year's report plus the years there is anything to report on, newest first. */
+data class YearReportView(val years: List<Int>, val report: YearReport)
 
 /** Live, fully calculated views over all jobs, built from the raw repositories. */
 class LedgerRepository(
@@ -63,6 +70,25 @@ class LedgerRepository(
             today = date,
         )
     }
+
+    /** The report for [year], or for the current year while [year] is null. */
+    fun observeYearReport(year: Flow<Int?>): Flow<YearReportView> = combine(
+        observeJobSummaries(),
+        combine(payments.observeAll(), spends.observeAll(), ::Pair),
+        settings.observeSettings(),
+        year,
+        today.observe(),
+    ) { summaries, (paymentList, spendList), appSettings, selected, date ->
+        val chosen = selected ?: date.year
+        YearReportView(
+            years = Reports.years(summaries, paymentList, spendList, date.year),
+            report = Reports.yearReport(chosen, summaries, paymentList, spendList, appSettings.currency),
+        )
+    }
+
+    /** Every payment and spend in [year], for the CSV export. */
+    suspend fun reportRows(year: Int): List<ReportRow> =
+        Reports.rows(year, observeJobSummaries().first(), payments.observeAll().first(), spends.observeAll().first())
 
     fun observeClientSummaries(): Flow<List<ClientSummary>> = combine(
         clients.observeClients(),

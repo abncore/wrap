@@ -31,6 +31,9 @@ data object SettingsRoute
 data object ProfileRoute
 
 @Serializable
+data object ReportRoute
+
+@Serializable
 data class JobDetailRoute(val jobId: Long)
 
 /** Add ([jobId] = [NEW_ID]) or edit a job; [finished] opens the "log finished job" form. */
