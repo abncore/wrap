@@ -41,6 +41,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.BuildConfig
 import com.abaan.wrap.R
 import com.abaan.wrap.reminders.CalendarSync
+import com.abaan.wrap.files.BackupManager
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import java.time.LocalDate
 import com.abaan.wrap.AppLock
 import org.koin.compose.koinInject
 import androidx.compose.ui.platform.LocalContext
@@ -75,6 +79,26 @@ fun SettingsScreen(
             Toast.makeText(context, R.string.settings_calendar_denied, Toast.LENGTH_LONG).show()
         }
     }
+    val backupViewModel: BackupViewModel = koinViewModel()
+    val backup by backupViewModel.state.collectAsStateWithLifecycle()
+    val saveBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(BackupManager.MIME_TYPE)) { uri ->
+        uri?.let(backupViewModel::save)
+    }
+    val openBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let(backupViewModel::open)
+    }
+    LaunchedEffect(backup.message) {
+        val message = backup.message ?: return@LaunchedEffect
+        val text = when (message) {
+            BackupMessage.SAVED -> R.string.backup_saved
+            BackupMessage.SAVE_FAILED -> R.string.backup_save_failed
+            BackupMessage.NOT_A_BACKUP -> R.string.backup_not_a_backup
+            BackupMessage.RESTORED -> R.string.backup_restored
+            BackupMessage.RESTORE_FAILED -> R.string.backup_restore_failed
+        }
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+        backupViewModel.messageShown()
+    }
     val setCalendarSync: (Boolean) -> Unit = { on ->
         if (on && !calendarSync.hasPermission()) {
             calendarPermission.launch(CalendarSync.PERMISSIONS)
@@ -107,6 +131,24 @@ fun SettingsScreen(
                 value = profile.displayName.ifBlank { stringResource(R.string.settings_profile_empty) },
                 onClick = onOpenProfile,
             )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsHeader(stringResource(R.string.settings_section_backup))
+            val backupFileName = stringResource(R.string.backup_file_name, LocalDate.now().toString())
+            SettingRow(
+                title = stringResource(R.string.backup_now),
+                value = backup.lastBackupAt?.let { stringResource(R.string.backup_last, formatDateTime(it)) }
+                    ?: stringResource(R.string.backup_never),
+                onClick = { if (!backup.working) saveBackup.launch(backupFileName) },
+            )
+            SettingRow(
+                title = stringResource(R.string.backup_restore),
+                value = stringResource(R.string.backup_restore_desc),
+                onClick = {
+                    if (!backup.working) openBackup.launch(arrayOf(BackupManager.MIME_TYPE, "application/octet-stream", "application/x-zip-compressed"))
+                },
+            )
+            if (backup.working) LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             SettingsHeader(stringResource(R.string.settings_section_defaults))
             SettingRow(
@@ -218,6 +260,25 @@ fun SettingsScreen(
                 supportingContent = { Text(BuildConfig.VERSION_NAME) },
             )
         }
+    }
+
+    backup.pending?.let { pending ->
+        val summary = pending.summary
+        AlertDialog(
+            onDismissRequest = backupViewModel::cancelRestore,
+            title = { Text(stringResource(R.string.backup_confirm_title, formatDateTime(summary.createdAt))) },
+            text = {
+                Text(stringResource(R.string.backup_confirm_body, summary.clients, summary.jobs, summary.payments, summary.spends))
+            },
+            confirmButton = {
+                TextButton(onClick = backupViewModel::confirmRestore) {
+                    Text(stringResource(R.string.backup_confirm_action), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = backupViewModel::cancelRestore) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
     }
 
     when (dialog) {
@@ -337,6 +398,11 @@ private fun <T> OptionsDialog(
         },
     )
 }
+
+/** "7 Nov 2026, 12:50" in the phone's time zone. */
+private fun formatDateTime(epochMillis: Long): String =
+    java.time.Instant.ofEpochMilli(epochMillis).atZone(java.time.ZoneId.systemDefault())
+        .format(java.time.format.DateTimeFormatter.ofLocalizedDateTime(java.time.format.FormatStyle.MEDIUM, java.time.format.FormatStyle.SHORT))
 
 @Composable
 private fun SettingsHeader(text: String) {

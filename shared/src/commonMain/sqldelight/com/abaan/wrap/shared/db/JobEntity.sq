@@ -60,3 +60,10 @@ DELETE FROM JobEntity WHERE id = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO JobEntity VALUES ?;
+
+deleteAll:
+DELETE FROM JobEntity;

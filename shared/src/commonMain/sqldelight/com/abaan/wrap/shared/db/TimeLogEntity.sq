@@ -37,3 +37,10 @@ DELETE FROM TimeLogEntity WHERE jobId = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO TimeLogEntity VALUES ?;
+
+deleteAll:
+DELETE FROM TimeLogEntity;

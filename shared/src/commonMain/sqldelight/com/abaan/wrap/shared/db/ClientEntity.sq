@@ -30,3 +30,10 @@ DELETE FROM ClientEntity WHERE id = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO ClientEntity VALUES ?;
+
+deleteAll:
+DELETE FROM ClientEntity;

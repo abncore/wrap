@@ -68,6 +68,11 @@ class CalendarSync(
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    /** Removes every event Wrap added, e.g. before a backup replaces the jobs they came from. */
+    suspend fun removeAllEvents() = withContext(Dispatchers.IO) {
+        if (hasPermission()) runCatching { removeAll() } else links.clear()
+    }
+
     private suspend fun sync(jobs: List<JobSummary>) {
         val calendarId = calendarId() ?: return
         val existing = links.all().associateBy { it.jobId }

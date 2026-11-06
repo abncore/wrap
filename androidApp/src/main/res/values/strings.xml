@@ -558,4 +558,21 @@
     <string name="lock_unlock">Unlock</string>
     <string name="lock_prompt_title">Unlock Wrap</string>
     <string name="lock_prompt_subtitle">Use your fingerprint, face or screen lock</string>
+
+    <!-- Backup -->
+    <string name="settings_section_backup">Backup</string>
+    <string name="backup_now">Back up now</string>
+    <string name="backup_never">Never. Save a copy to Google Drive or your phone.</string>
+    <string name="backup_last">Last backup: %1$s</string>
+    <string name="backup_restore">Restore from a backup</string>
+    <string name="backup_restore_desc">Replaces everything on this phone</string>
+    <string name="backup_file_name">Wrap backup %1$s.zip</string>
+    <string name="backup_saved">Backup saved</string>
+    <string name="backup_save_failed">The backup couldn\'t be saved. Try another place.</string>
+    <string name="backup_not_a_backup">That file isn\'t a Wrap backup, or it\'s from a newer version of Wrap.</string>
+    <string name="backup_restored">Backup restored</string>
+    <string name="backup_restore_failed">Restoring failed. Nothing was changed.</string>
+    <string name="backup_confirm_title">Restore the backup from %1$s?</string>
+    <string name="backup_confirm_body">Everything in Wrap on this phone is replaced with the backup.\n\nClients: %1$d · Jobs: %2$d · Payments: %3$d · Spending: %4$d</string>
+    <string name="backup_confirm_action">Replace and restore</string>
 </resources>

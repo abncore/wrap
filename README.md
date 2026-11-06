@@ -11,18 +11,37 @@ Kotlin Multiplatform `shared` module.
 - **Home**: what you're owed, received this month, overdue jobs, today's job with
   Clock in / Clock out, and your next booking.
 - **Jobs**: Upcoming / Unpaid / Paid tabs, filter by client and month, overdue in red.
-- **Job detail**: full money breakdown (base, overtime, kit, expenses, paid, owed),
-  time logs, payment history, Add payment, and **Chase** (opens WhatsApp with a polite
-  reminder of the amount owed).
+- **Job detail**: full money breakdown (base, overtime, kit, expenses, billed spending, VAT,
+  paid, owed), time logs, payment history, Add payment, and **Chase** (opens WhatsApp with a
+  polite reminder of the amount owed; each chase is logged).
+- **Call sheet**: unit base and parking (address or pasted maps link) with Directions, crew
+  contacts with call and WhatsApp buttons, and a reminder before call time on each job day
+  (how long before is set in Settings).
+- **Invoices**: an A4 PDF from any job, shared through WhatsApp, email or Drive. Your name,
+  bank details, TRN and invoice numbering live in Settings > Your details. A job keeps its
+  invoice number. Jobs can add 5% VAT (on by default when you're VAT registered).
+- **Chase reminders**: each morning, overdue jobs (3+ days past due) that haven't been chased
+  or reminded about for a week get a notification.
+- **Calendar**: month view of bookings with double-booked and free days; optionally copies
+  every job into the phone's calendar and keeps it up to date.
 - **Money**: earned all time (payments received), spent and kept after spending, a
   6-month earned vs spent chart, spending by category (this month / year / all time) and a
-  spending log for fuel, kit, food, permits and other work costs.
+  spending log for fuel, kit, food, permits and other work costs. Spending can have a receipt
+  photo, be **billed to a job** (added to what the client owes) and **repeat monthly** (phone,
+  software, visa; missed months are filled in).
+- **Year report**: received, spent, kept, jobs worked, still owed, VAT charged, income by
+  client, spending by category and month by month, with a CSV export for an accountant.
 - **Monthly budget**: progress bar with what's left per day for the rest of the month, warning
   colours on Money and Home, and a notification the first time spending reaches 80% and again
   when it goes over (toggle in Settings).
 - **Clients** with total owed each; **Settings** (gear on Home) for default rate, day length,
   overtime multiplier, payment terms, currency and reminders.
 - **Reminders** at 8 PM the night before each job (WorkManager).
+- **Home-screen widget**: owed total, today's or the next job, and Clock in / Clock out.
+- **App lock** with fingerprint, face or screen lock (asks again after 30 s in the background).
+- **Backup and restore**: a .zip with all data (`wrap.json`) and receipt photos, saved wherever
+  you choose (Google Drive, Downloads...). Restoring replaces everything, in one transaction.
+  Android's own app backup to Google also covers the database.
 
 ### Money rules (in `shared/`, unit tested)
 
@@ -34,7 +53,8 @@ Kotlin Multiplatform `shared` module.
 | Fixed     | rate |
 
 Overtime (day rate only) = hours beyond the day length on each day × (rate ÷ day length) ×
-OT multiplier. Total = base + overtime + kit rental + expenses; owed = total − payments.
+OT multiplier. Subtotal = base + overtime + kit rental + expenses + spending billed to the
+job; total = subtotal + VAT at the job's rate; owed = total − payments.
 Status moves UPCOMING → DONE_UNPAID → PART_PAID → PAID automatically; OVERDUE is shown
 when money is owed after the due date (end date + payment terms by default).
 

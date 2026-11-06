@@ -33,3 +33,10 @@ DELETE FROM PaymentEntity WHERE jobId = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO PaymentEntity VALUES ?;
+
+deleteAll:
+DELETE FROM PaymentEntity;

@@ -33,3 +33,10 @@ DELETE FROM RecurringSpendEntity WHERE id = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO RecurringSpendEntity VALUES ?;
+
+deleteAll:
+DELETE FROM RecurringSpendEntity;

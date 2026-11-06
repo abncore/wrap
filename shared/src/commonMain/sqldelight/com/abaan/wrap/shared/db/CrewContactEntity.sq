@@ -23,3 +23,10 @@ DELETE FROM CrewContactEntity WHERE id = ?;
 
 deleteByJob:
 DELETE FROM CrewContactEntity WHERE jobId = ?;
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO CrewContactEntity VALUES ?;
+
+deleteAll:
+DELETE FROM CrewContactEntity;

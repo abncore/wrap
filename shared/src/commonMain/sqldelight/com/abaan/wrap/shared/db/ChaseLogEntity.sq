@@ -20,3 +20,10 @@ INSERT INTO ChaseLogEntity(jobId, at, kind) VALUES (?, ?, ?);
 
 deleteByJob:
 DELETE FROM ChaseLogEntity WHERE jobId = ?;
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO ChaseLogEntity VALUES ?;
+
+deleteAll:
+DELETE FROM ChaseLogEntity;

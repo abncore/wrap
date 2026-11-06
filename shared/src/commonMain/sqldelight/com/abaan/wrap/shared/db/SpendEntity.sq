@@ -49,3 +49,10 @@ DELETE FROM SpendEntity WHERE id = ?;
 
 lastInsertedId:
 SELECT last_insert_rowid();
+
+-- Backup restore: rows go back in with their original ids.
+restore:
+INSERT INTO SpendEntity VALUES ?;
+
+deleteAll:
+DELETE FROM SpendEntity;

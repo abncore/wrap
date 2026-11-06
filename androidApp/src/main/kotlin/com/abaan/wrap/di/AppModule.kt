@@ -10,8 +10,10 @@ import com.abaan.wrap.ui.money.MoneyViewModel
 import com.abaan.wrap.ui.money.ReportViewModel
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
+import com.abaan.wrap.ui.settings.BackupViewModel
 import com.abaan.wrap.ui.settings.ProfileViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
+import com.abaan.wrap.files.BackupManager
 import com.abaan.wrap.files.InvoicePdf
 import com.abaan.wrap.files.ReceiptStore
 import com.abaan.wrap.reminders.BudgetNotifications
@@ -31,12 +33,14 @@ val appModule = module {
     single { InvoicePdf(androidContext()) }
     single { CalendarSync(androidContext(), get(), get(), get(), get()) }
     single { WidgetUpdater(androidContext(), get(), get()) }
+    single { BackupManager(androidContext(), get(), get(), get()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
     viewModel { (clientId: Long) -> ClientEditViewModel(clientId, get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
+    viewModel { BackupViewModel(get()) }
     viewModel { JobsViewModel(get(), get()) }
     viewModel { CalendarViewModel(get(), get(), get()) }
     viewModel { (jobId: Long, finished: Boolean) ->
