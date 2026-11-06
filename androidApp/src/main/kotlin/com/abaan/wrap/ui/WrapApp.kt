@@ -25,13 +25,17 @@ import com.abaan.wrap.ui.navigation.AddAction
 import com.abaan.wrap.ui.navigation.AddSheet
 import com.abaan.wrap.ui.navigation.ClientEditRoute
 import com.abaan.wrap.ui.navigation.ClientsRoute
+import com.abaan.wrap.ui.navigation.JobDetailRoute
+import com.abaan.wrap.ui.navigation.JobEditRoute
 import com.abaan.wrap.ui.navigation.HomeRoute
 import com.abaan.wrap.ui.navigation.JobsRoute
 import com.abaan.wrap.ui.navigation.SettingsRoute
 import com.abaan.wrap.ui.navigation.TopLevelDestination
 import com.abaan.wrap.ui.navigation.WrapBottomBar
 import com.abaan.wrap.ui.screens.HomeScreen
-import com.abaan.wrap.ui.screens.JobsScreen
+import com.abaan.wrap.ui.jobs.JobDetailScreen
+import com.abaan.wrap.ui.jobs.JobEditScreen
+import com.abaan.wrap.ui.jobs.JobsScreen
 import com.abaan.wrap.ui.settings.SettingsScreen
 
 @Composable
@@ -65,7 +69,9 @@ fun WrapApp() {
             composable<HomeRoute> {
                 HomeScreen(onAddJob = { showAddSheet = true })
             }
-            composable<JobsRoute> { JobsScreen() }
+            composable<JobsRoute> {
+                JobsScreen(onOpenJob = { navController.navigate(JobDetailRoute(it)) })
+            }
             composable<ClientsRoute> {
                 ClientsScreen(
                     onAddClient = { navController.navigate(ClientEditRoute()) },
@@ -73,6 +79,31 @@ fun WrapApp() {
                 )
             }
             composable<SettingsRoute> { SettingsScreen() }
+            composable<JobDetailRoute> { entry ->
+                val route = entry.toRoute<JobDetailRoute>()
+                JobDetailScreen(
+                    jobId = route.jobId,
+                    onBack = { navController.popBackStack() },
+                    onEdit = { navController.navigate(JobEditRoute(jobId = route.jobId)) },
+                )
+            }
+            composable<JobEditRoute> { entry ->
+                val route = entry.toRoute<JobEditRoute>()
+                JobEditScreen(
+                    jobId = route.jobId,
+                    finished = route.finished,
+                    onClose = { navController.popBackStack() },
+                    onSaved = { id, isNew ->
+                        if (isNew) {
+                            navController.navigate(JobDetailRoute(id)) {
+                                popUpTo<JobEditRoute> { inclusive = true }
+                            }
+                        } else {
+                            navController.popBackStack()
+                        }
+                    },
+                )
+            }
             composable<ClientEditRoute> { entry ->
                 val route = entry.toRoute<ClientEditRoute>()
                 ClientEditScreen(clientId = route.clientId, onClose = { navController.popBackStack() })
@@ -98,9 +129,8 @@ private fun NavHostController.navigateToTab(tab: TopLevelDestination) {
 
 private fun NavHostController.handleAddAction(action: AddAction) {
     when (action) {
-        AddAction.UPCOMING_JOB,
-        AddAction.FINISHED_JOB,
-        AddAction.PAYMENT,
-        -> navigateToTab(TopLevelDestination.JOBS)
+        AddAction.UPCOMING_JOB -> navigate(JobEditRoute())
+        AddAction.FINISHED_JOB -> navigate(JobEditRoute(finished = true))
+        AddAction.PAYMENT -> navigateToTab(TopLevelDestination.JOBS)
     }
 }
