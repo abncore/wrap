@@ -2,6 +2,7 @@ package com.abaan.wrap.ui.money
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.shared.data.SpendRepository
 import com.abaan.wrap.shared.data.Today
@@ -36,7 +37,8 @@ class SpendEditViewModel(
     private val spendId: Long,
     private val spends: SpendRepository,
     private val settings: SettingsRepository,
-    today: Today,
+    private val today: Today,
+    private val budgetNotifications: BudgetNotifications,
 ) : ViewModel() {
     private var editing: Spend? = null
 
@@ -82,15 +84,23 @@ class SpendEditViewModel(
             return
         }
         viewModelScope.launch {
-            spends.save(
-                Spend(
+            val appSettings = settings.getSettings()
+            val result = spends.saveAndCheckBudget(
+                spend = Spend(
                     id = editing?.id ?: NEW_ID,
                     amount = amount,
                     category = state.category,
                     date = state.date,
                     note = state.note,
                 ),
+                monthlyBudget = appSettings.monthlyBudget,
+                today = today.date(),
             )
+            val level = result.level
+            val status = result.status
+            if (appSettings.budgetAlertsEnabled && level != null && status != null) {
+                budgetNotifications.show(level, status, appSettings.currency)
+            }
             _state.update { it.copy(done = true) }
         }
     }

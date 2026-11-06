@@ -13,6 +13,9 @@ CREATE INDEX SpendEntity_date ON SpendEntity(date);
 selectAll:
 SELECT * FROM SpendEntity ORDER BY date DESC, id DESC;
 
+sumBetween:
+SELECT CAST(coalesce(sum(amount), 0) AS INTEGER) FROM SpendEntity WHERE date BETWEEN ? AND ?;
+
 selectById:
 SELECT * FROM SpendEntity WHERE id = ?;
 

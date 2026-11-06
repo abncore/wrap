@@ -1,4 +1,5 @@
--- Single-row table holding app-wide defaults. defaultRate is minor units (fils).
+-- Single-row table holding app-wide defaults. defaultRate and monthlyBudget are minor units (fils);
+-- monthlyBudget 0 means no budget. monthlyBudget and budgetAlerts were added in version 3 (migrations/2.sqm).
 CREATE TABLE SettingsEntity (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     defaultRate INTEGER NOT NULL,
@@ -6,7 +7,9 @@ CREATE TABLE SettingsEntity (
     otMultiplier REAL NOT NULL,
     paymentTermsDays INTEGER NOT NULL,
     currency TEXT NOT NULL,
-    remindersEnabled INTEGER NOT NULL
+    remindersEnabled INTEGER NOT NULL,
+    monthlyBudget INTEGER NOT NULL DEFAULT 0,
+    budgetAlerts INTEGER NOT NULL DEFAULT 1
 );
 
 INSERT INTO SettingsEntity(id, defaultRate, dayLengthHours, otMultiplier, paymentTermsDays, currency, remindersEnabled)
@@ -17,5 +20,6 @@ SELECT * FROM SettingsEntity WHERE id = 1;
 
 update:
 UPDATE SettingsEntity SET
-    defaultRate = ?, dayLengthHours = ?, otMultiplier = ?, paymentTermsDays = ?, currency = ?, remindersEnabled = ?
+    defaultRate = ?, dayLengthHours = ?, otMultiplier = ?, paymentTermsDays = ?, currency = ?, remindersEnabled = ?,
+    monthlyBudget = ?, budgetAlerts = ?
 WHERE id = 1;

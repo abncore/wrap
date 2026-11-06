@@ -45,3 +45,11 @@ enum class InsightPeriod {
     THIS_YEAR,
     ALL_TIME,
 }
+
+/** How this month's spending compares with the monthly budget. */
+enum class BudgetLevel {
+    UNDER,
+    /** At least 80% of the budget is spent. */
+    NEAR,
+    OVER,
+}

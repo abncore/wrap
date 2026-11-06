@@ -2,6 +2,7 @@ package com.abaan.wrap
 
 import android.app.Application
 import com.abaan.wrap.di.appModule
+import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.ReminderNotifications
 import com.abaan.wrap.reminders.ReminderScheduler
 import com.abaan.wrap.shared.di.initKoin
@@ -21,6 +22,7 @@ class WrapApplication : Application() {
             modules(appModule)
         }
         ReminderNotifications.createChannel(this)
+        BudgetNotifications.createChannel(this)
         get<ReminderScheduler>().start(appScope)
     }
 }

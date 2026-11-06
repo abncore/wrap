@@ -17,6 +17,9 @@ Kotlin Multiplatform `shared` module.
 - **Money**: earned all time (payments received), spent and kept after spending, a
   6-month earned vs spent chart, spending by category (this month / year / all time) and a
   spending log for fuel, kit, food, permits and other work costs.
+- **Monthly budget**: progress bar with what's left per day for the rest of the month, warning
+  colours on Money and Home, and a notification the first time spending reaches 80% and again
+  when it goes over (toggle in Settings).
 - **Clients** with total owed each; **Settings** (gear on Home) for default rate, day length,
   overtime multiplier, payment terms, currency and reminders.
 - **Reminders** at 8 PM the night before each job (WorkManager).

@@ -77,6 +77,7 @@ class InsightsTest {
             ),
             owedTotal = 750_00,
             currency = "AED",
+            monthlyBudget = 0,
             period = InsightPeriod.ALL_TIME,
             today = today,
         )
@@ -87,6 +88,7 @@ class InsightsTest {
         assertEquals(2_000_00, overview.thisMonth.earned)
         assertEquals(70_00, overview.thisMonth.spent)
         assertEquals(750_00, overview.owedTotal)
+        assertEquals(null, overview.budget)
         // Newest first; same day falls back to newest id.
         assertEquals(listOf(3L, 2L, 1L), overview.spends.map { it.id })
     }

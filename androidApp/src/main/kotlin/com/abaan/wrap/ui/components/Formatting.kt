@@ -26,6 +26,7 @@ private val weekdayDate = DateTimeFormatter.ofPattern("EEE d MMM")
 private val fullWeekdayDate = DateTimeFormatter.ofPattern("EEEE d MMMM")
 private val monthYear = DateTimeFormatter.ofPattern("MMMM yyyy")
 private val monthShort = DateTimeFormatter.ofPattern("MMM")
+private val monthName = DateTimeFormatter.ofPattern("MMMM")
 
 fun money(minor: Long, currency: String): String = MoneyFormat.format(minor, currency)
 
@@ -33,6 +34,7 @@ fun LocalDate.formatMedium(): String = toJavaLocalDate().format(mediumDate)
 fun LocalDate.formatWeekday(): String = toJavaLocalDate().format(weekdayDate)
 fun LocalDate.formatFullWeekday(): String = toJavaLocalDate().format(fullWeekdayDate)
 fun LocalDate.formatMonthShort(): String = toJavaLocalDate().format(monthShort).uppercase()
+fun LocalDate.formatMonthName(): String = toJavaLocalDate().format(monthName)
 fun LocalTime.formatShort(): String = toJavaLocalTime().format(shortTime)
 
 /** "March 2026" for the first day of a month. */

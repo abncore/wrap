@@ -76,7 +76,10 @@ data class Spend(
     val note: String = "",
 )
 
-/** App-wide defaults. [defaultRate] is in minor units; [currency] is an ISO 4217 code. */
+/**
+ * App-wide defaults. [defaultRate] and [monthlyBudget] are in minor units; [currency] is an ISO 4217
+ * code. A [monthlyBudget] of 0 means no budget.
+ */
 data class AppSettings(
     val defaultRate: Long = 0,
     val dayLengthHours: Double = 10.0,
@@ -84,6 +87,8 @@ data class AppSettings(
     val paymentTermsDays: Int = 30,
     val currency: String = DEFAULT_CURRENCY,
     val remindersEnabled: Boolean = true,
+    val monthlyBudget: Long = 0,
+    val budgetAlertsEnabled: Boolean = true,
 ) {
     companion object {
         const val DEFAULT_CURRENCY = "AED"

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.R
+import com.abaan.wrap.shared.model.BudgetLevel
 import com.abaan.wrap.shared.model.Dashboard
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.ui.components.ClockButton
@@ -46,6 +47,7 @@ import com.abaan.wrap.ui.components.money
 import com.abaan.wrap.ui.components.rememberNow
 import com.abaan.wrap.ui.jobs.JobCard
 import com.abaan.wrap.ui.screens.EmptyState
+import com.abaan.wrap.ui.theme.LocalStatusColors
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -128,9 +130,19 @@ fun HomeScreen(
                 onClick = onOpenMoney,
                 modifier = Modifier.weight(1f),
             )
+            val budget = dashboard.budget
             StatCard(
                 label = stringResource(R.string.home_spent_month),
                 value = money(dashboard.spentThisMonth, dashboard.currency),
+                detail = budget?.let {
+                    if (it.level == BudgetLevel.OVER) {
+                        stringResource(R.string.budget_over_by, money(-it.remaining, dashboard.currency))
+                    } else {
+                        stringResource(R.string.home_budget_left, money(it.remaining, dashboard.currency))
+                    }
+                },
+                alert = budget?.level == BudgetLevel.OVER,
+                warning = budget?.level == BudgetLevel.NEAR,
                 onClick = onOpenMoney,
                 modifier = Modifier.weight(1f),
             )
@@ -227,16 +239,26 @@ private fun StatCard(
     modifier: Modifier = Modifier,
     detail: String? = null,
     alert: Boolean = false,
+    warning: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
+    val statusColors = LocalStatusColors.current
     val colors = CardDefaults.cardColors(
-        containerColor = if (alert) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainer,
-        contentColor = if (alert) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
+        containerColor = when {
+            alert -> MaterialTheme.colorScheme.errorContainer
+            warning -> statusColors.warningContainer
+            else -> MaterialTheme.colorScheme.surfaceContainer
+        },
+        contentColor = when {
+            alert -> MaterialTheme.colorScheme.onErrorContainer
+            warning -> statusColors.onWarningContainer
+            else -> MaterialTheme.colorScheme.onSurface
+        },
     )
     val content: @Composable () -> Unit = {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (alert) {
+                if (alert || warning) {
                     Icon(Icons.Filled.Warning, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
                 }

@@ -64,6 +64,7 @@ object Insights {
         spends: List<Spend>,
         owedTotal: Long,
         currency: String,
+        monthlyBudget: Long,
         period: InsightPeriod,
         today: LocalDate,
     ): MoneyOverview {
@@ -75,6 +76,7 @@ object Insights {
             spentLifetime = spends.sumOf { it.amount },
             owedTotal = owedTotal,
             thisMonth = months.last(),
+            budget = BudgetRules.status(monthlyBudget, months.last().spent, today),
             months = months,
             period = period,
             periodSpent = categories.sumOf { it.amount },

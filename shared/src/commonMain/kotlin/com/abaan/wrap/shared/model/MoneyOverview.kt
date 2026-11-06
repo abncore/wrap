@@ -11,6 +11,21 @@ data class MonthTotals(
     val net: Long get() = earned - spent
 }
 
+/** This month's spending against the monthly budget. Amounts are minor units. */
+data class BudgetStatus(
+    val budget: Long,
+    val spent: Long,
+    /** Negative when over budget. */
+    val remaining: Long,
+    /** spent / budget; above 1 when over. */
+    val share: Double,
+    val level: BudgetLevel,
+    /** Days left in the month, counting today. */
+    val daysLeft: Int,
+    /** What can still be spent per day for the rest of the month; 0 when nothing is left. */
+    val dailyAllowance: Long,
+)
+
 /** Spending in one category over the selected period, with its share of the period's total. */
 data class CategoryTotal(
     val category: SpendCategory,
@@ -27,6 +42,8 @@ data class MoneyOverview(
     /** Money still owed on finished jobs: earned but not received yet. */
     val owedTotal: Long,
     val thisMonth: MonthTotals,
+    /** Null when no monthly budget is set. */
+    val budget: BudgetStatus?,
     /** The last few months, oldest first, ending with the current month. */
     val months: List<MonthTotals>,
     val period: InsightPeriod,

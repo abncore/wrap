@@ -59,6 +59,8 @@ private const val REQUESTED_JOBS_TAB = "requested_jobs_tab"
 fun WrapApp(
     openJobId: Long? = null,
     onJobOpened: () -> Unit = {},
+    openMoney: Boolean = false,
+    onMoneyOpened: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -72,6 +74,12 @@ fun WrapApp(
         if (openJobId != null) {
             navController.navigate(JobDetailRoute(openJobId))
             onJobOpened()
+        }
+    }
+    LaunchedEffect(openMoney) {
+        if (openMoney) {
+            navController.navigateToTab(TopLevelDestination.MONEY)
+            onMoneyOpened()
         }
     }
     val backStackEntry by navController.currentBackStackEntryAsState()

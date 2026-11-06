@@ -90,4 +90,6 @@ internal fun SettingsEntity.toModel() = AppSettings(
     paymentTermsDays = paymentTermsDays.toInt(),
     currency = currency,
     remindersEnabled = remindersEnabled != 0L,
+    monthlyBudget = monthlyBudget,
+    budgetAlertsEnabled = budgetAlerts != 0L,
 )

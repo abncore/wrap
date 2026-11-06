@@ -28,6 +28,8 @@ class SettingsRepository(
             paymentTermsDays = settings.paymentTermsDays.toLong(),
             currency = settings.currency,
             remindersEnabled = if (settings.remindersEnabled) 1L else 0L,
+            monthlyBudget = settings.monthlyBudget.coerceAtLeast(0),
+            budgetAlerts = if (settings.budgetAlertsEnabled) 1L else 0L,
         )
     }
 }

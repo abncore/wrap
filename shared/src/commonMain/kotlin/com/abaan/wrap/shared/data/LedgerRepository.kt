@@ -58,6 +58,7 @@ class LedgerRepository(
             spends = spendList,
             owedTotal = summaries.sumOf(Ledger::owedOf),
             currency = appSettings.currency,
+            monthlyBudget = appSettings.monthlyBudget,
             period = selected,
             today = date,
         )

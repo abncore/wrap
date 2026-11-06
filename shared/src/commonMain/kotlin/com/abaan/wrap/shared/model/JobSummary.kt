@@ -39,6 +39,8 @@ data class Dashboard(
     /** Every payment ever received. */
     val earnedLifetime: Long,
     val spentThisMonth: Long,
+    /** Null when no monthly budget is set. */
+    val budget: BudgetStatus?,
     val overdueCount: Int,
     val overdueTotal: Long,
     /** Today's unfinished (or clocked-in) job, if any, so the freelancer can clock in or out. */

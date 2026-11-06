@@ -95,6 +95,7 @@
     </plurals>
     <string name="home_earned_lifetime">Earned all time</string>
     <string name="home_spent_month">Spent this month</string>
+    <string name="home_budget_left">%1$s left in budget</string>
     <string name="home_today">Today</string>
     <string name="home_next_job">Next up</string>
     <string name="home_no_next_job">No upcoming jobs booked</string>
@@ -244,6 +245,32 @@
     <string name="money_log_empty_body">Track fuel, kit, food and other work costs to see where your money goes.</string>
     <string name="money_month_total">%1$s spent</string>
 
+    <!-- Budget -->
+    <string name="budget_title">%1$s budget</string>
+    <string name="budget_edit">Change budget</string>
+    <string name="budget_of">of %1$s</string>
+    <plurals name="budget_left">
+        <item quantity="one">%1$s left · %2$s for the last day</item>
+        <item quantity="other">%1$s left · %2$s a day for %3$d days</item>
+    </plurals>
+    <string name="budget_over_by">%1$s over budget</string>
+    <string name="budget_set_title">Set a monthly budget</string>
+    <string name="budget_set_body">See what\'s left to spend each day and get a heads-up at 80% and when you go over.</string>
+    <string name="budget_set_action">Set budget</string>
+    <string name="budget_dialog_title">Monthly budget</string>
+    <string name="budget_dialog_body">The most you want to spend on work costs each month.</string>
+    <string name="budget_dialog_field">Budget per month</string>
+    <string name="budget_remove">Remove</string>
+    <string name="budget_channel_name">Budget alerts</string>
+    <string name="budget_channel_desc">When spending nears or passes your monthly budget</string>
+    <string name="budget_alert_near_title">You\'ve used %1$d%% of this month\'s budget</string>
+    <plurals name="budget_alert_near_body">
+        <item quantity="one">%1$s left for today.</item>
+        <item quantity="other">%1$s left, about %2$s a day for the next %3$d days.</item>
+    </plurals>
+    <string name="budget_alert_over_title">You\'re over this month\'s budget</string>
+    <string name="budget_alert_over_body">Spent %1$s of %2$s, %3$s over.</string>
+
     <!-- Spend edit -->
     <string name="spend_new">Add spending</string>
     <string name="spend_edit">Edit spending</string>
@@ -292,6 +319,10 @@
         <item quantity="one">%d day after wrap</item>
         <item quantity="other">%d days after wrap</item>
     </plurals>
+    <string name="settings_section_spending">Spending</string>
+    <string name="settings_budget">Monthly budget</string>
+    <string name="settings_budget_alerts">Budget alerts</string>
+    <string name="settings_budget_alerts_desc">Notify me at 80% of my budget and when I go over</string>
     <string name="settings_section_app">App</string>
     <string name="settings_currency">Currency</string>
     <string name="settings_currency_note">Changing currency only changes how amounts are labelled.</string>

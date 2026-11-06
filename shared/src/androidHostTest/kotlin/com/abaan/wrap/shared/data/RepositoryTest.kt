@@ -1,6 +1,7 @@
 package com.abaan.wrap.shared.data
 
 import com.abaan.wrap.shared.model.AppSettings
+import com.abaan.wrap.shared.model.BudgetLevel
 import com.abaan.wrap.shared.model.Client
 import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
@@ -231,5 +232,27 @@ class RepositoryTest {
 
         spends.delete(fuelId)
         assertEquals(1, spends.observeAll().first().size)
+    }
+
+    @Test
+    fun savingASpendReportsBudgetAlertsOnce() = runTest {
+        settings.save(AppSettings(monthlyBudget = 1_000_00))
+        val day = LocalDate(2026, 3, 10)
+        val first = spends.saveAndCheckBudget(Spend(amount = 700_00, category = SpendCategory.KIT, date = day), 1_000_00, day)
+        assertNull(first.level)
+        val near = spends.saveAndCheckBudget(Spend(amount = 150_00, category = SpendCategory.FUEL, date = day), 1_000_00, day)
+        assertEquals(BudgetLevel.NEAR, near.level)
+        val still = spends.saveAndCheckBudget(Spend(amount = 50_00, category = SpendCategory.FOOD, date = day), 1_000_00, day)
+        assertNull(still.level)
+        val over = spends.saveAndCheckBudget(Spend(amount = 200_00, category = SpendCategory.FOOD, date = day), 1_000_00, day)
+        assertEquals(BudgetLevel.OVER, over.level)
+        assertEquals(-100_00, over.status!!.remaining)
+        // Last month's spending doesn't count towards this month.
+        assertEquals(1_100_00, spends.spentInMonth(day))
+        spends.save(Spend(amount = 999_00, category = SpendCategory.KIT, date = LocalDate(2026, 2, 28)))
+        assertEquals(1_100_00, spends.spentInMonth(day))
+
+        assertEquals(1_000_00, settings.getSettings().monthlyBudget)
+        assertEquals(BudgetLevel.OVER, ledger.observeDashboard().first().budget!!.level)
     }
 }

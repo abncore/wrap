@@ -63,6 +63,7 @@ import com.abaan.wrap.shared.model.MoneyOverview
 import com.abaan.wrap.shared.model.MonthTotals
 import com.abaan.wrap.shared.model.Spend
 import com.abaan.wrap.shared.money.Insights
+import com.abaan.wrap.ui.components.formatMonthName
 import com.abaan.wrap.ui.components.formatMonthShort
 import com.abaan.wrap.ui.components.formatMonthYear
 import com.abaan.wrap.ui.components.formatWeekday
@@ -103,6 +104,15 @@ fun MoneyScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
             item(key = "lifetime") { LifetimeCard(overview) }
+            item(key = "budget") {
+                BudgetCard(
+                    budget = overview.budget,
+                    monthName = overview.thisMonth.month.formatMonthName(),
+                    currency = overview.currency,
+                    onSetBudget = viewModel::setBudget,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
             item(key = "chart") { ChartCard(overview.months, overview.currency) }
             item(key = "categories") { CategoryCard(overview, onSelectPeriod = viewModel::setPeriod) }
             spendLog(overview, onAddSpend, onOpenSpend)

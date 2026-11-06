@@ -43,9 +43,10 @@ import com.abaan.wrap.ui.components.DecimalInput
 import com.abaan.wrap.ui.components.MoneyInput
 import com.abaan.wrap.ui.components.formatDecimal
 import com.abaan.wrap.ui.components.money
+import com.abaan.wrap.ui.money.BudgetDialog
 import org.koin.compose.viewmodel.koinViewModel
 
-private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRENCY }
+private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRENCY, BUDGET }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,6 +96,27 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_payment_terms),
                 value = pluralStringResource(R.plurals.settings_payment_terms_value, settings.paymentTermsDays, settings.paymentTermsDays),
                 onClick = { dialog = SettingDialog.TERMS },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsHeader(stringResource(R.string.settings_section_spending))
+            SettingRow(
+                title = stringResource(R.string.settings_budget),
+                value = if (settings.monthlyBudget > 0) money(settings.monthlyBudget, settings.currency) else stringResource(R.string.settings_not_set),
+                onClick = { dialog = SettingDialog.BUDGET },
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_budget_alerts)) },
+                supportingContent = { Text(stringResource(R.string.settings_budget_alerts_desc)) },
+                trailingContent = {
+                    Switch(
+                        checked = settings.budgetAlertsEnabled,
+                        onCheckedChange = { checked -> viewModel.update { it.copy(budgetAlertsEnabled = checked) } },
+                    )
+                },
+                modifier = Modifier.clickable {
+                    viewModel.update { it.copy(budgetAlertsEnabled = !it.budgetAlertsEnabled) }
+                },
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -174,6 +196,15 @@ fun SettingsScreen(
             onDismiss = { dialog = null },
             onSelect = { currency ->
                 viewModel.update { it.copy(currency = currency) }
+                dialog = null
+            },
+        )
+        SettingDialog.BUDGET -> BudgetDialog(
+            current = settings.monthlyBudget,
+            currency = settings.currency,
+            onDismiss = { dialog = null },
+            onSave = { value ->
+                viewModel.update { it.copy(monthlyBudget = value) }
                 dialog = null
             },
         )

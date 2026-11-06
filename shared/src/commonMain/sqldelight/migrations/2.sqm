@@ -1,0 +1,3 @@
+-- Version 2 -> 3: monthly spending budget (minor units, 0 = no budget) and budget alerts.
+ALTER TABLE SettingsEntity ADD COLUMN monthlyBudget INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE SettingsEntity ADD COLUMN budgetAlerts INTEGER NOT NULL DEFAULT 1;

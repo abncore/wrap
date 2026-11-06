@@ -4,7 +4,6 @@ import com.abaan.wrap.shared.model.AppSettings
 import com.abaan.wrap.shared.model.Client
 import com.abaan.wrap.shared.model.ClientSummary
 import com.abaan.wrap.shared.model.Dashboard
-import com.abaan.wrap.shared.model.InsightPeriod
 import com.abaan.wrap.shared.model.Job
 import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.JobSummary
@@ -92,9 +91,8 @@ object Ledger {
                 .filter { it.dateReceived.year == today.year && it.dateReceived.month == today.month }
                 .sumOf { it.amount },
             earnedLifetime = payments.sumOf { it.amount },
-            spentThisMonth = spends
-                .filter { Insights.isInPeriod(it.date, InsightPeriod.THIS_MONTH, today) }
-                .sumOf { it.amount },
+            spentThisMonth = BudgetRules.spentInMonth(spends, today),
+            budget = BudgetRules.status(settings.monthlyBudget, BudgetRules.spentInMonth(spends, today), today),
             overdueCount = overdue.size,
             overdueTotal = overdue.sumOf { it.money.owed },
             todayJob = todayJob,
