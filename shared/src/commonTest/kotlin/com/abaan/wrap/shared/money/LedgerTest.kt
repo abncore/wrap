@@ -56,6 +56,16 @@ class LedgerTest {
         assertTrue(summary.workDone)
         assertEquals(JobStatus.OVERDUE, summary.status)
         assertTrue(summary.isUnpaid)
+        assertTrue(summary.workDoneAutomatically)
+    }
+
+    @Test
+    fun manuallyFinishedFutureJobCanBeUndone() {
+        val future = job(1, 1, LocalDate(2026, 5, 20), status = JobStatus.DONE_UNPAID)
+        val summary = Ledger.summarize(future, clientA, emptyList(), emptyList(), today, tz)
+        assertTrue(summary.workDone)
+        assertFalse(summary.workDoneAutomatically)
+        assertFalse(summary.canClock)
     }
 
     @Test
@@ -100,7 +110,8 @@ class LedgerTest {
         val summaries = Ledger.summarizeAll(jobs, listOf(clientA), emptyList(), emptyList(), today, tz)
         val dashboard = Ledger.dashboard(summaries, emptyList(), null, AppSettings(), today)
         assertEquals(2L, dashboard.nextJob?.job?.id)
-        assertEquals(1L, dashboard.todayJob?.job?.id)
+        // Today's job is already done, so there's nothing to clock in on.
+        assertNull(dashboard.todayJob)
     }
 
     @Test

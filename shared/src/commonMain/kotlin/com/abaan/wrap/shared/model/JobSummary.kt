@@ -11,6 +11,8 @@ data class JobSummary(
     /** Status to display; OVERDUE when money is owed past the due date. */
     val status: JobStatus,
     val workDone: Boolean,
+    /** True when the dates or time logs alone make the job done, so it can't be marked not done. */
+    val workDoneAutomatically: Boolean,
     val timeLogs: List<TimeLog>,
     val payments: List<Payment>,
     /** True when today falls within the job's dates. */
@@ -20,6 +22,8 @@ data class JobSummary(
 ) {
     val isOverdue: Boolean get() = status == JobStatus.OVERDUE
     val isPaid: Boolean get() = status == JobStatus.PAID
+    /** The freelancer can clock in: it's a job day and the work isn't finished, or a clock is running. */
+    val canClock: Boolean get() = (isOnToday && !workDone) || openLog != null
     val isUnpaid: Boolean
         get() = status == JobStatus.DONE_UNPAID || status == JobStatus.PART_PAID || status == JobStatus.OVERDUE
     val dateRange: ClosedRange<LocalDate> get() = job.startDate..job.endDate
@@ -34,7 +38,7 @@ data class Dashboard(
     val receivedThisMonth: Long,
     val overdueCount: Int,
     val overdueTotal: Long,
-    /** Today's job, if any, so the freelancer can clock in or out. */
+    /** Today's unfinished (or clocked-in) job, if any, so the freelancer can clock in or out. */
     val todayJob: JobSummary?,
     /** The next job that hasn't started yet (or today's, if it isn't done). */
     val nextJob: JobSummary?,

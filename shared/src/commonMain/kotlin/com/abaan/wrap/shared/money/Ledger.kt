@@ -5,6 +5,7 @@ import com.abaan.wrap.shared.model.Client
 import com.abaan.wrap.shared.model.ClientSummary
 import com.abaan.wrap.shared.model.Dashboard
 import com.abaan.wrap.shared.model.Job
+import com.abaan.wrap.shared.model.JobStatus
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.model.Payment
 import com.abaan.wrap.shared.model.TimeLog
@@ -31,6 +32,7 @@ object Ledger {
             money = money,
             status = JobStatusRules.displayStatus(status, money.owed, job.dueDate, today),
             workDone = workDone,
+            workDoneAutomatically = JobStatusRules.isWorkDone(JobStatus.UPCOMING, job.endDate, timeLogs, today, timeZone),
             timeLogs = timeLogs,
             payments = payments,
             isOnToday = today in job.startDate..job.endDate,
@@ -73,7 +75,7 @@ object Ledger {
     ): Dashboard {
         val overdue = summaries.filter { it.isOverdue }
         val todayJob = summaries
-            .filter { it.isOnToday }
+            .filter { it.canClock }
             .sortedWith(compareBy<JobSummary> { it.openLog == null }.thenBy { it.job.callTime })
             .firstOrNull()
         val nextJob = summaries

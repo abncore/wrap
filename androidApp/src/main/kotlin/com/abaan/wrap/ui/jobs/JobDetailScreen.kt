@@ -125,7 +125,7 @@ fun JobDetailScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 JobHeader(summary)
-                if (summary.isOnToday || summary.openLog != null) {
+                if (summary.canClock) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                         modifier = Modifier.fillMaxWidth(),
@@ -157,11 +157,13 @@ fun JobDetailScreen(
                         }
                     }
                 }
-                OutlinedButton(
-                    onClick = { viewModel.setWorkDone(!summary.workDone) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(if (summary.workDone) R.string.job_mark_not_done else R.string.job_mark_done))
+                if (!summary.workDoneAutomatically) {
+                    OutlinedButton(
+                        onClick = { viewModel.setWorkDone(!summary.workDone) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(if (summary.workDone) R.string.job_mark_not_done else R.string.job_mark_done))
+                    }
                 }
                 TimeLogsSection(
                     logs = summary.timeLogs,

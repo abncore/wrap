@@ -129,10 +129,9 @@ fun ClientEditScreen(
                 onValueChange = { v -> viewModel.update { it.copy(defaultRate = v) } },
                 label = stringResource(R.string.client_field_rate),
                 currency = state.settings.currency,
-                supportingText = stringResource(
-                    R.string.client_field_rate_hint,
-                    money(state.settings.defaultRate, state.settings.currency),
-                ),
+                supportingText = state.settings.defaultRate.takeIf { it > 0 }?.let {
+                    stringResource(R.string.client_field_rate_hint, money(it, state.settings.currency))
+                },
                 error = stringResource(R.string.error_invalid_amount).takeIf { ClientFormError.RATE_INVALID in state.errors },
             )
             TextInput(

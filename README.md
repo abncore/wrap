@@ -6,6 +6,32 @@ upcoming work, finished work, payments received and money still owed.
 Android first (Kotlin + Jetpack Compose); iOS (SwiftUI) later on top of the same
 Kotlin Multiplatform `shared` module.
 
+## Features
+
+- **Home**: what you're owed, received this month, overdue jobs, today's job with
+  Clock in / Clock out, and your next booking.
+- **Jobs**: Upcoming / Unpaid / Paid tabs, filter by client and month, overdue in red.
+- **Job detail**: full money breakdown (base, overtime, kit, expenses, paid, owed),
+  time logs, payment history, Add payment, and **Chase** (opens WhatsApp with a polite
+  reminder of the amount owed).
+- **Clients** with total owed each; **Settings** for default rate, day length,
+  overtime multiplier, payment terms, currency and reminders.
+- **Reminders** at 8 PM the night before each job (WorkManager).
+
+### Money rules (in `shared/`, unit tested)
+
+| Rate type | Base pay |
+|-----------|----------|
+| Day       | rate × days |
+| Half day  | rate ÷ 2 × days |
+| Hourly    | logged hours × rate (planned day length until time is logged) |
+| Fixed     | rate |
+
+Overtime (day rate only) = hours beyond the day length on each day × (rate ÷ day length) ×
+OT multiplier. Total = base + overtime + kit rental + expenses; owed = total − payments.
+Status moves UPCOMING → DONE_UNPAID → PART_PAID → PAID automatically; OVERDUE is shown
+when money is owed after the due date (end date + payment terms by default).
+
 ## Project layout
 
 | Module        | What lives there                                                                 |
