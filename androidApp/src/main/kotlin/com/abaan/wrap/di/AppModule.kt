@@ -16,6 +16,7 @@ import com.abaan.wrap.files.InvoicePdf
 import com.abaan.wrap.files.ReceiptStore
 import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.CalendarSync
+import com.abaan.wrap.widget.WidgetUpdater
 import com.abaan.wrap.ui.jobs.CalendarViewModel
 import com.abaan.wrap.reminders.ReminderScheduler
 import org.koin.android.ext.koin.androidContext
@@ -29,6 +30,7 @@ val appModule = module {
     single { ReceiptStore(androidContext()) }
     single { InvoicePdf(androidContext()) }
     single { CalendarSync(androidContext(), get(), get(), get(), get()) }
+    single { WidgetUpdater(androidContext(), get(), get()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }

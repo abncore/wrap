@@ -536,4 +536,15 @@
     <string name="settings_calendar_sync">Add jobs to my phone calendar</string>
     <string name="settings_calendar_sync_desc">Keeps bookings in your calendar app up to date</string>
     <string name="settings_calendar_denied">Calendar permission is needed to add jobs to your calendar</string>
+
+    <!-- Home-screen widget -->
+    <string name="widget_description">What you\'re owed, your next call time and a clock in button</string>
+    <string name="widget_owed">Owed to you</string>
+    <string name="widget_placeholder_amount">–</string>
+    <string name="widget_no_jobs">No upcoming jobs</string>
+    <string name="widget_today">Today: %1$s</string>
+    <string name="widget_next">Next: %1$s</string>
+    <string name="widget_on_clock">On the clock: %1$s since %2$s</string>
+    <string name="widget_clock_in">Clock in</string>
+    <string name="widget_clock_out">Clock out</string>
 </resources>
