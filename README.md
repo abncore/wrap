@@ -29,10 +29,10 @@ Kotlin Multiplatform `shared` module.
   spending log for fuel, kit, food, permits and other work costs. Spending can have a receipt
   photo, be **billed to a job** (added to what the client owes) and **repeat monthly** (phone,
   software, visa; missed months are filled in).
-- **Reports** (Money tab): a **year report** (received, spent, kept, VAT, income by client,
+- **Reports** (its own tab): a **year report** (received, spent, kept, VAT, income by client,
   spending by category, month by month, CSV export for an accountant); **client performance**
   (income share, days worked, rates, how many days each client takes to pay and how often on
-  time, with a page per client, also opened from the client's screen); **who owes you**
+  time, with a page per client); **who owes you**
   (owed money grouped as not due, 1-30, 31-60, 61-90 and 90+ days late, per client and job);
   and **work and rates** (days, hours, overtime, average day rate, earnings per day, by role,
   last 12 months).

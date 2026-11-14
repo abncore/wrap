@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import com.abaan.wrap.R
 
 /**
- * Bottom navigation with the four tabs split two-and-two around a central + button.
+ * Bottom navigation: Home and Jobs, the + button, then the remaining tabs.
  */
 @Composable
 fun WrapBottomBar(
@@ -26,7 +26,7 @@ fun WrapBottomBar(
     onAddClick: () -> Unit,
 ) {
     val destinations = TopLevelDestination.entries
-    val half = destinations.size / 2
+    val half = TABS_BEFORE_ADD
 
     NavigationBar {
         destinations.take(half).forEach { destination ->
@@ -52,6 +52,9 @@ fun WrapBottomBar(
         }
     }
 }
+
+/** How many tabs sit before the + button. */
+private const val TABS_BEFORE_ADD = 2
 
 @Composable
 private fun RowScope.TabItem(

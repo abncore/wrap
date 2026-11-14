@@ -72,17 +72,16 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.roundToInt
 
-/** The list of reports, opened from the Money tab. */
+/** The Reports tab: a list of the reports. */
 @Composable
 fun ReportsScreen(
-    onBack: () -> Unit,
     onOpenYear: () -> Unit,
     onOpenClients: () -> Unit,
     onOpenAging: () -> Unit,
     onOpenWork: () -> Unit,
 ) {
-    ReportScaffold(stringResource(R.string.reports_title), onBack) {
-        ReportLink(painterResource(R.drawable.ic_report), R.string.reports_year_title, R.string.reports_year_desc, onOpenYear)
+    ReportScaffold(stringResource(R.string.reports_title), onBack = null) {
+        ReportLink(painterResource(R.drawable.ic_insights), R.string.reports_year_title, R.string.reports_year_desc, onOpenYear)
         ReportLink(rememberVectorPainter(Icons.Filled.Person), R.string.reports_clients_title, R.string.reports_clients_desc, onOpenClients)
         ReportLink(painterResource(R.drawable.ic_payments), R.string.reports_aging_title, R.string.reports_aging_desc, onOpenAging)
         ReportLink(painterResource(R.drawable.ic_schedule), R.string.reports_work_title, R.string.reports_work_desc, onOpenWork)
@@ -371,14 +370,17 @@ private fun DaysChart(work: WorkReport) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReportScaffold(title: String, onBack: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+private fun ReportScaffold(title: String, onBack: (() -> Unit)?, content: @Composable ColumnScope.() -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                    // Sub-reports have a back arrow; the Reports tab itself doesn't.
+                    if (onBack != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                        }
                     }
                 },
             )

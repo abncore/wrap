@@ -5,6 +5,7 @@
     <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_jobs">Jobs</string>
+    <string name="nav_reports">Reports</string>
     <string name="nav_money">Money</string>
     <string name="nav_clients">Clients</string>
     <string name="nav_settings">Settings</string>
@@ -482,7 +483,6 @@
 
     <!-- Year report -->
     <string name="report_title">Year report</string>
-    <string name="report_open">Reports</string>
     <string name="report_received">Received in %1$d</string>
     <string name="report_spent">Spent</string>
     <string name="report_net">Kept after spending</string>
@@ -590,7 +590,6 @@
     <string name="report_share">%1$d%% of your income</string>
     <string name="report_share_label">Share of your income</string>
     <string name="report_percent">%1$d%%</string>
-    <string name="client_report_open">Performance report</string>
     <string name="client_report_received">Received from them</string>
     <string name="client_report_billed">Billed</string>
     <string name="client_report_owed">Still owed</string>
@@ -662,7 +661,7 @@
     <string name="tutorial_spend_title">Track your spending</string>
     <string name="tutorial_spend_body">Log fuel, kit and other costs with a receipt photo. Bill a cost to a job to charge it back, make it repeat every month, and set a monthly budget on the Money tab.</string>
     <string name="tutorial_reports_title">See how you\'re doing</string>
-    <string name="tutorial_reports_body">Money tab, then Reports: your year with a CSV for your accountant, how each client performs, who owes you and for how long, and your days and rates.</string>
+    <string name="tutorial_reports_body">The Reports tab: your year with a CSV for your accountant, how each client performs, who owes you and for how long, and your days and rates.</string>
     <string name="tutorial_safe_title">Keep it safe</string>
     <string name="tutorial_safe_body">In Settings, add your details for invoices, back up to Google Drive, and lock the app with your fingerprint. You can open this tour again from Settings.</string>
     <string name="settings_tutorial">How to use Wrap</string>

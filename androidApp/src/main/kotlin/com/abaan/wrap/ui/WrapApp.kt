@@ -168,13 +168,11 @@ fun WrapApp(
                 MoneyScreen(
                     onAddSpend = { navController.navigate(SpendEditRoute()) },
                     onOpenSpend = { navController.navigate(SpendEditRoute(it)) },
-                    onOpenReport = { navController.navigate(ReportsRoute) },
                 )
             }
             composable<ReportRoute> { ReportScreen(onBack = { navController.popBackStack() }) }
             composable<ReportsRoute> {
                 ReportsScreen(
-                    onBack = { navController.popBackStack() },
                     onOpenYear = { navController.navigate(ReportRoute) },
                     onOpenClients = { navController.navigate(ClientPerformanceRoute) },
                     onOpenAging = { navController.navigate(AgingRoute) },
@@ -257,7 +255,6 @@ fun WrapApp(
                 ClientEditScreen(
                     clientId = route.clientId,
                     onClose = { navController.popBackStack() },
-                    onOpenReport = { navController.navigate(ClientReportRoute(route.clientId)) },
                 )
             }
             composable<SpendEditRoute> { entry ->

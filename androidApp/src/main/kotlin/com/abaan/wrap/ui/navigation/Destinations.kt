@@ -72,7 +72,7 @@ data class ClientEditRoute(val clientId: Long = NEW_ID)
 @Serializable
 data class SpendEditRoute(val spendId: Long = NEW_ID)
 
-/** The four top-level tabs shown in the bottom bar. Settings opens from Home's top bar. */
+/** The top-level tabs shown in the bottom bar. Settings opens from Home's top bar. */
 enum class TopLevelDestination(
     val route: Any,
     @StringRes val labelRes: Int,
@@ -81,6 +81,7 @@ enum class TopLevelDestination(
     HOME(HomeRoute, R.string.nav_home, { Icons.Filled.Home }),
     JOBS(JobsRoute, R.string.nav_jobs, { Icons.AutoMirrored.Filled.List }),
     MONEY(MoneyRoute, R.string.nav_money, { ImageVector.vectorResource(R.drawable.ic_insights) }),
+    REPORTS(ReportsRoute, R.string.nav_reports, { ImageVector.vectorResource(R.drawable.ic_report) }),
     CLIENTS(ClientsRoute, R.string.nav_clients, { Icons.Filled.Person }),
 }
 
