@@ -6,7 +6,11 @@ import com.abaan.wrap.shared.model.InsightPeriod
 import com.abaan.wrap.shared.model.MoneyOverview
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.shared.money.Insights
+import com.abaan.wrap.shared.money.AgingReport
+import com.abaan.wrap.shared.money.ClientPerformance
 import com.abaan.wrap.shared.money.Ledger
+import com.abaan.wrap.shared.money.PerformanceReports
+import com.abaan.wrap.shared.money.WorkReport
 import com.abaan.wrap.shared.money.ReportRow
 import com.abaan.wrap.shared.money.Reports
 import com.abaan.wrap.shared.money.YearReport
@@ -85,6 +89,33 @@ class LedgerRepository(
             report = Reports.yearReport(chosen, summaries, paymentList, spendList, appSettings.currency),
         )
     }
+
+    /** Every client with finished work in [period], biggest earners first. */
+    fun observeClientPerformance(period: Flow<InsightPeriod>): Flow<List<ClientPerformance>> = combine(
+        clients.observeClients(),
+        observeJobSummaries(),
+        period,
+        today.observe(),
+    ) { clientList, summaries, selected, date -> PerformanceReports.clients(clientList, summaries, selected, date) }
+
+    /** One client's report over [period]; null if the client no longer exists. */
+    fun observeClientReport(clientId: Long, period: Flow<InsightPeriod>): Flow<ClientPerformance?> = combine(
+        clients.observeClients(),
+        observeJobSummaries(),
+        period,
+        today.observe(),
+    ) { clientList, summaries, selected, date ->
+        clientList.firstOrNull { it.id == clientId }?.let { PerformanceReports.client(it, summaries, selected, date) }
+    }
+
+    fun observeAging(): Flow<AgingReport> =
+        combine(observeJobSummaries(), today.observe()) { summaries, date -> PerformanceReports.aging(summaries, date) }
+
+    fun observeWorkReport(period: Flow<InsightPeriod>): Flow<WorkReport> = combine(
+        observeJobSummaries(),
+        period,
+        today.observe(),
+    ) { summaries, selected, date -> PerformanceReports.work(summaries, selected, date) }
 
     /** Every payment and spend in [year], for the CSV export. */
     suspend fun reportRows(year: Int): List<ReportRow> =

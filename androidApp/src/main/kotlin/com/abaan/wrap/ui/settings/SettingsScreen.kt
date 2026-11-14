@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.BuildConfig
 import com.abaan.wrap.R
+import androidx.compose.ui.text.style.TextAlign
 import com.abaan.wrap.reminders.CalendarSync
 import com.abaan.wrap.files.BackupManager
 import androidx.compose.material3.LinearProgressIndicator
@@ -64,6 +65,7 @@ private enum class SettingDialog { RATE, DAY_LENGTH, OT_MULTIPLIER, TERMS, CURRE
 fun SettingsScreen(
     onBack: () -> Unit,
     onOpenProfile: () -> Unit,
+    onOpenTutorial: () -> Unit,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -255,9 +257,21 @@ fun SettingsScreen(
                 value = callReminderLabel(settings.callReminderMinutes),
                 onClick = { dialog = SettingDialog.CALL_REMINDER },
             )
+            SettingRow(
+                title = stringResource(R.string.settings_tutorial),
+                value = stringResource(R.string.settings_tutorial_desc),
+                onClick = onOpenTutorial,
+            )
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_version)) },
                 supportingContent = { Text(BuildConfig.VERSION_NAME) },
+            )
+            Text(
+                text = stringResource(R.string.settings_credits),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 32.dp),
             )
         }
     }

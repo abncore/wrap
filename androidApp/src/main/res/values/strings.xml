@@ -482,7 +482,7 @@
 
     <!-- Year report -->
     <string name="report_title">Year report</string>
-    <string name="report_open">Year report and export</string>
+    <string name="report_open">Reports</string>
     <string name="report_received">Received in %1$d</string>
     <string name="report_spent">Spent</string>
     <string name="report_net">Kept after spending</string>
@@ -575,4 +575,97 @@
     <string name="backup_confirm_title">Restore the backup from %1$s?</string>
     <string name="backup_confirm_body">Everything in Wrap on this phone is replaced with the backup.\n\nClients: %1$d · Jobs: %2$d · Payments: %3$d · Spending: %4$d</string>
     <string name="backup_confirm_action">Replace and restore</string>
+
+    <!-- Reports hub -->
+    <string name="reports_title">Reports</string>
+    <string name="reports_year_title">Year report</string>
+    <string name="reports_year_desc">Received, spent and kept for a year, with a CSV export for your accountant</string>
+    <string name="reports_clients_title">Client performance</string>
+    <string name="reports_clients_desc">Who pays you most, how fast they pay and how often on time</string>
+    <string name="reports_aging_title">Who owes you</string>
+    <string name="reports_aging_desc">Money owed, grouped by how late it is</string>
+    <string name="reports_work_title">Work and rates</string>
+    <string name="reports_work_desc">Days worked, overtime, your average day rate and roles</string>
+    <string name="reports_empty">No finished jobs in this period yet.</string>
+    <string name="report_share">%1$d%% of your income</string>
+    <string name="report_share_label">Share of your income</string>
+    <string name="report_percent">%1$d%%</string>
+    <string name="client_report_open">Performance report</string>
+    <string name="client_report_received">Received from them</string>
+    <string name="client_report_billed">Billed</string>
+    <string name="client_report_owed">Still owed</string>
+    <string name="client_report_owes">owes %1$s</string>
+    <string name="client_report_overdue">%1$s of that is overdue</string>
+    <string name="client_report_paying">How they pay</string>
+    <string name="client_report_pays_label">Pays</string>
+    <plurals name="client_report_pays_in">
+        <item quantity="one">in %1$d day on average</item>
+        <item quantity="other">in %1$d days on average</item>
+    </plurals>
+    <string name="client_report_pays_same_day">on the day, on average</string>
+    <string name="client_report_on_time">Paid on time</string>
+    <string name="client_report_not_paid_yet">Nothing paid in full yet</string>
+    <string name="client_report_work">Work</string>
+    <string name="client_report_since">Working together since %1$s · last job %2$s</string>
+    <string name="client_report_jobs">Jobs</string>
+    <string name="aging_total">Owed to you</string>
+    <string name="aging_by_age">By how late</string>
+    <string name="aging_by_client">By client</string>
+    <string name="aging_not_due">Not due yet</string>
+    <plurals name="aging_client_overdue">
+        <item quantity="one">%1$s overdue · oldest %2$d day late</item>
+        <item quantity="other">%1$s overdue · oldest %2$d days late</item>
+    </plurals>
+    <string name="aging_empty">Nobody owes you anything right now.</string>
+    <string name="aging_bucket_not_due">Not due yet</string>
+    <string name="aging_bucket_30">1 to 30 days late</string>
+    <string name="aging_bucket_60">31 to 60 days late</string>
+    <string name="aging_bucket_90">61 to 90 days late</string>
+    <string name="aging_bucket_over_90">Over 90 days late</string>
+    <string name="work_billed">Earned from work (before VAT)</string>
+    <string name="work_jobs">Jobs</string>
+    <string name="work_days">Days worked</string>
+    <plurals name="work_days_count">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="work_rates">Rates</string>
+    <string name="work_average_day_rate">Average day rate</string>
+    <string name="work_per_day">Earned per day worked</string>
+    <string name="work_per_job">Average per job</string>
+    <string name="work_hours_logged">Hours logged</string>
+    <string name="work_overtime">Overtime</string>
+    <string name="work_overtime_value">%1$s · %2$s</string>
+    <string name="work_busiest">Busiest month</string>
+    <plurals name="work_busiest_value">
+        <item quantity="one">%1$s, %2$d day</item>
+        <item quantity="other">%1$s, %2$d days</item>
+    </plurals>
+    <string name="work_by_role">By role</string>
+    <string name="work_no_role">No role set</string>
+    <string name="work_chart_title">Days worked, last 12 months</string>
+
+    <!-- Tutorial -->
+    <string name="tutorial_skip">Skip</string>
+    <string name="tutorial_back">Back</string>
+    <string name="tutorial_next">Next</string>
+    <string name="tutorial_start">Get started</string>
+    <string name="tutorial_progress">Page %1$d of %2$d</string>
+    <string name="tutorial_welcome_title">Welcome to Wrap</string>
+    <string name="tutorial_welcome_body">Every booking, every hour on set and every dirham you\'re owed, in one place. Here\'s a quick tour.</string>
+    <string name="tutorial_jobs_title">Add your jobs</string>
+    <string name="tutorial_jobs_body">Tap + to add an upcoming booking or log a job you\'ve already done. Set the day rate, call time and location. Wrap works out overtime, VAT and when you should be paid.</string>
+    <string name="tutorial_day_title">On the day</string>
+    <string name="tutorial_day_body">Clock in and out from Home, the job or the home-screen widget. You get a reminder the night before and before call time. Keep crew contacts, unit base and parking on the job\'s call sheet.</string>
+    <string name="tutorial_paid_title">Get paid</string>
+    <string name="tutorial_paid_body">Record payments as they come in. Send an invoice PDF from the job and tap Chase to send a polite WhatsApp reminder. Wrap reminds you when a payment has gone a week overdue.</string>
+    <string name="tutorial_spend_title">Track your spending</string>
+    <string name="tutorial_spend_body">Log fuel, kit and other costs with a receipt photo. Bill a cost to a job to charge it back, make it repeat every month, and set a monthly budget on the Money tab.</string>
+    <string name="tutorial_reports_title">See how you\'re doing</string>
+    <string name="tutorial_reports_body">Money tab, then Reports: your year with a CSV for your accountant, how each client performs, who owes you and for how long, and your days and rates.</string>
+    <string name="tutorial_safe_title">Keep it safe</string>
+    <string name="tutorial_safe_body">In Settings, add your details for invoices, back up to Google Drive, and lock the app with your fingerprint. You can open this tour again from Settings.</string>
+    <string name="settings_tutorial">How to use Wrap</string>
+    <string name="settings_tutorial_desc">A quick tour of everything the app does</string>
+    <string name="settings_credits">Made with kasthapad by Abaan (;</string>
 </resources>

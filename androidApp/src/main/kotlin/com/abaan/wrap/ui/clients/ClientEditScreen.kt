@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +47,7 @@ import org.koin.core.parameter.parametersOf
 fun ClientEditScreen(
     clientId: Long,
     onClose: () -> Unit,
+    onOpenReport: () -> Unit = {},
     viewModel: ClientEditViewModel = koinViewModel(key = "client-$clientId") { parametersOf(clientId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle(context = Dispatchers.Main.immediate)
@@ -64,6 +66,9 @@ fun ClientEditScreen(
                 },
                 actions = {
                     if (!state.isNew) {
+                        IconButton(onClick = onOpenReport) {
+                            Icon(painterResource(R.drawable.ic_report), contentDescription = stringResource(R.string.client_report_open))
+                        }
                         IconButton(onClick = { confirmDelete = true }) {
                             Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete))
                         }

@@ -31,7 +31,21 @@ import com.abaan.wrap.ui.clients.ClientEditScreen
 import com.abaan.wrap.ui.clients.ClientsScreen
 import com.abaan.wrap.ui.navigation.AddAction
 import com.abaan.wrap.ui.navigation.AddSheet
+import com.abaan.wrap.ui.navigation.AgingRoute
 import com.abaan.wrap.ui.navigation.CalendarRoute
+import com.abaan.wrap.ui.navigation.ClientPerformanceRoute
+import com.abaan.wrap.ui.navigation.ClientReportRoute
+import com.abaan.wrap.ui.navigation.ReportsRoute
+import com.abaan.wrap.ui.navigation.TutorialRoute
+import com.abaan.wrap.ui.navigation.WorkReportRoute
+import com.abaan.wrap.ui.reports.AgingScreen
+import com.abaan.wrap.ui.reports.ClientPerformanceScreen
+import com.abaan.wrap.ui.reports.ClientReportScreen
+import com.abaan.wrap.ui.reports.ReportsScreen
+import com.abaan.wrap.ui.reports.WorkReportScreen
+import com.abaan.wrap.ui.tutorial.Onboarding
+import com.abaan.wrap.ui.tutorial.TutorialScreen
+import org.koin.compose.koinInject
 import com.abaan.wrap.ui.navigation.ClientEditRoute
 import com.abaan.wrap.ui.navigation.ClientsRoute
 import com.abaan.wrap.ui.navigation.JobDetailRoute
@@ -75,6 +89,10 @@ fun WrapApp(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !ReminderNotifications.canNotify(context)) {
             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+    val onboarding = koinInject<Onboarding>()
+    LaunchedEffect(Unit) {
+        if (!onboarding.tutorialSeen) navController.navigate(TutorialRoute)
     }
     LaunchedEffect(openJobId) {
         if (openJobId != null) {
@@ -150,14 +168,51 @@ fun WrapApp(
                 MoneyScreen(
                     onAddSpend = { navController.navigate(SpendEditRoute()) },
                     onOpenSpend = { navController.navigate(SpendEditRoute(it)) },
-                    onOpenReport = { navController.navigate(ReportRoute) },
+                    onOpenReport = { navController.navigate(ReportsRoute) },
                 )
             }
             composable<ReportRoute> { ReportScreen(onBack = { navController.popBackStack() }) }
+            composable<ReportsRoute> {
+                ReportsScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenYear = { navController.navigate(ReportRoute) },
+                    onOpenClients = { navController.navigate(ClientPerformanceRoute) },
+                    onOpenAging = { navController.navigate(AgingRoute) },
+                    onOpenWork = { navController.navigate(WorkReportRoute) },
+                )
+            }
+            composable<ClientPerformanceRoute> {
+                ClientPerformanceScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenClient = { navController.navigate(ClientReportRoute(it)) },
+                )
+            }
+            composable<ClientReportRoute> { entry ->
+                ClientReportScreen(
+                    clientId = entry.toRoute<ClientReportRoute>().clientId,
+                    onBack = { navController.popBackStack() },
+                    onOpenJob = { navController.navigate(JobDetailRoute(it)) },
+                )
+            }
+            composable<AgingRoute> {
+                AgingScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenJob = { navController.navigate(JobDetailRoute(it)) },
+                    onOpenClient = { navController.navigate(ClientReportRoute(it)) },
+                )
+            }
+            composable<WorkReportRoute> { WorkReportScreen(onBack = { navController.popBackStack() }) }
+            composable<TutorialRoute> {
+                TutorialScreen(onDone = {
+                    onboarding.markTutorialSeen()
+                    navController.popBackStack()
+                })
+            }
             composable<SettingsRoute> {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
                     onOpenProfile = { navController.navigate(ProfileRoute) },
+                    onOpenTutorial = { navController.navigate(TutorialRoute) },
                 )
             }
             composable<ProfileRoute> { ProfileScreen(onClose = { navController.popBackStack() }) }
@@ -199,7 +254,11 @@ fun WrapApp(
             }
             composable<ClientEditRoute> { entry ->
                 val route = entry.toRoute<ClientEditRoute>()
-                ClientEditScreen(clientId = route.clientId, onClose = { navController.popBackStack() })
+                ClientEditScreen(
+                    clientId = route.clientId,
+                    onClose = { navController.popBackStack() },
+                    onOpenReport = { navController.navigate(ClientReportRoute(route.clientId)) },
+                )
             }
             composable<SpendEditRoute> { entry ->
                 val route = entry.toRoute<SpendEditRoute>()

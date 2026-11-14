@@ -8,6 +8,11 @@ import com.abaan.wrap.ui.jobs.JobEditViewModel
 import com.abaan.wrap.ui.jobs.JobsViewModel
 import com.abaan.wrap.ui.money.MoneyViewModel
 import com.abaan.wrap.ui.money.ReportViewModel
+import com.abaan.wrap.ui.reports.AgingViewModel
+import com.abaan.wrap.ui.reports.ClientPerformanceViewModel
+import com.abaan.wrap.ui.reports.ClientReportViewModel
+import com.abaan.wrap.ui.reports.WorkReportViewModel
+import com.abaan.wrap.ui.tutorial.Onboarding
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.BackupViewModel
@@ -34,6 +39,7 @@ val appModule = module {
     single { CalendarSync(androidContext(), get(), get(), get(), get()) }
     single { WidgetUpdater(androidContext(), get(), get()) }
     single { BackupManager(androidContext(), get(), get(), get()) }
+    single { Onboarding(androidContext()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
@@ -52,5 +58,9 @@ val appModule = module {
     }
     viewModel { MoneyViewModel(get(), get(), get()) }
     viewModel { ReportViewModel(androidContext(), get()) }
+    viewModel { ClientPerformanceViewModel(get(), get()) }
+    viewModel { (clientId: Long) -> ClientReportViewModel(clientId, get(), get()) }
+    viewModel { AgingViewModel(get(), get()) }
+    viewModel { WorkReportViewModel(get(), get()) }
     viewModel { (spendId: Long) -> SpendEditViewModel(spendId, get(), get(), get(), get(), get(), get(), get()) }
 }

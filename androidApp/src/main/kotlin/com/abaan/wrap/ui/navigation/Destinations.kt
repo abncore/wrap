@@ -37,6 +37,24 @@ data object ReportRoute
 data object CalendarRoute
 
 @Serializable
+data object ReportsRoute
+
+@Serializable
+data object ClientPerformanceRoute
+
+@Serializable
+data class ClientReportRoute(val clientId: Long)
+
+@Serializable
+data object AgingRoute
+
+@Serializable
+data object WorkReportRoute
+
+@Serializable
+data object TutorialRoute
+
+@Serializable
 data class JobDetailRoute(val jobId: Long)
 
 /** Add ([jobId] = [NEW_ID]) or edit a job; [finished] opens the "log finished job" form. */
