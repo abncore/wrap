@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 
@@ -23,6 +24,22 @@ private val DarkColors = darkColorScheme(
     primary = Teal80,
     secondary = Sand80,
     tertiary = Slate80,
+)
+
+/** The hidden "Night shoot" look: always dark, with amber accents like a work light. */
+private val NightShootColors = darkColorScheme(
+    primary = Color(0xFFFFB951),
+    onPrimary = Color(0xFF432C00),
+    primaryContainer = Color(0xFF5F4100),
+    onPrimaryContainer = Color(0xFFFFDDB3),
+    secondary = Color(0xFFDDC2A1),
+    secondaryContainer = Color(0xFF56432A),
+    onSecondaryContainer = Color(0xFFFADEBC),
+    tertiary = Color(0xFFB9CEA1),
+    background = Color(0xFF100E0B),
+    surface = Color(0xFF100E0B),
+    surfaceContainer = Color(0xFF1E1A15),
+    surfaceContainerHighest = Color(0xFF332D25),
 )
 
 private val baseTypography = Typography()
@@ -40,9 +57,12 @@ private val WrapTypography = baseTypography.copy(
 fun WrapTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
+    nightShoot: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    val dark = darkTheme || nightShoot
     val colorScheme = when {
+        nightShoot -> NightShootColors
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -51,7 +71,7 @@ fun WrapTheme(
         else -> LightColors
     }
 
-    CompositionLocalProvider(LocalStatusColors provides if (darkTheme) DarkStatusColors else LightStatusColors) {
+    CompositionLocalProvider(LocalStatusColors provides if (dark) DarkStatusColors else LightStatusColors) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = WrapTypography,

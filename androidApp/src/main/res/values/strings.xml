@@ -667,4 +667,40 @@
     <string name="settings_tutorial">How to use Wrap</string>
     <string name="settings_tutorial_desc">A quick tour of everything the app does</string>
     <string name="settings_credits">Made with kasthapad by Abaan (;</string>
+
+    <!-- Easter eggs in the credits line -->
+    <string name="egg_reel_title">Blooper reel 🎬</string>
+    <string name="egg_reel_empty">Nothing to show yet. Go book some jobs!</string>
+    <string name="egg_reel_close">That\'s a wrap</string>
+    <string name="egg_reel_on_set">⏱ %1$s on the clock, all time</string>
+    <plurals name="egg_reel_days">
+        <item quantity="one">%1$d day on set</item>
+        <item quantity="other">%1$d days on set</item>
+    </plurals>
+    <plurals name="egg_reel_days_line">
+        <item quantity="one">🎬 %1$d day on set</item>
+        <item quantity="other">🎬 %1$d days on set</item>
+    </plurals>
+    <string name="egg_reel_longest">😴 Longest shift: %1$s on %2$s (%3$s)</string>
+    <string name="egg_reel_overtime">⏰ %1$s of overtime. One more take, right?</string>
+    <string name="egg_reel_earliest">🌅 Earliest call: %1$s for %2$s</string>
+    <plurals name="egg_reel_loyal">
+        <item quantity="one">🤝 Most loyal client: %1$s (%2$d job)</item>
+        <item quantity="other">🤝 Most loyal client: %1$s (%2$d jobs)</item>
+    </plurals>
+    <string name="egg_reel_payday">💰 Biggest payday: %1$s on %2$s</string>
+    <string name="egg_reel_spend">🧾 You spend most on %1$s: %2$s</string>
+    <string name="egg_credits_starring">Starring</string>
+    <string name="egg_credits_you">You</string>
+    <string name="egg_credits_as">As</string>
+    <string name="egg_credits_produced">Produced by</string>
+    <string name="egg_credits_crew">With</string>
+    <string name="egg_credits_locations">Filmed on location at</string>
+    <string name="egg_credits_catering">Catering</string>
+    <string name="egg_credits_transport">Transport</string>
+    <string name="egg_credits_kit">Kit and repairs</string>
+    <string name="egg_credits_running_time">Running time</string>
+    <string name="egg_credits_wrap">That\'s a wrap.</string>
+    <string name="egg_night_on">🌙 Night shoot mode on</string>
+    <string name="egg_night_off">☀️ Back to day shoot</string>
 </resources>

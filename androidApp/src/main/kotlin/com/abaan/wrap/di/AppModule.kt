@@ -16,6 +16,8 @@ import com.abaan.wrap.ui.tutorial.Onboarding
 import com.abaan.wrap.ui.money.SpendEditViewModel
 import com.abaan.wrap.ui.payments.PaymentEditViewModel
 import com.abaan.wrap.ui.settings.BackupViewModel
+import com.abaan.wrap.ui.settings.CreditsViewModel
+import com.abaan.wrap.ui.settings.NightShoot
 import com.abaan.wrap.ui.settings.ProfileViewModel
 import com.abaan.wrap.ui.settings.SettingsViewModel
 import com.abaan.wrap.files.BackupManager
@@ -40,6 +42,7 @@ val appModule = module {
     single { WidgetUpdater(androidContext(), get(), get()) }
     single { BackupManager(androidContext(), get(), get(), get()) }
     single { Onboarding(androidContext()) }
+    single { NightShoot(androidContext()) }
 
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ClientsViewModel(get(), get()) }
@@ -47,6 +50,7 @@ val appModule = module {
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { BackupViewModel(get()) }
+    viewModel { CreditsViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { JobsViewModel(get(), get()) }
     viewModel { CalendarViewModel(get(), get(), get()) }
     viewModel { (jobId: Long, finished: Boolean) ->

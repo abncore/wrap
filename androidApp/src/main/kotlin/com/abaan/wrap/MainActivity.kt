@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import android.graphics.Color
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -17,6 +19,9 @@ import com.abaan.wrap.reminders.BudgetNotifications
 import com.abaan.wrap.reminders.ReminderNotifications
 import com.abaan.wrap.shared.data.SettingsRepository
 import com.abaan.wrap.ui.WrapApp
+import com.abaan.wrap.ui.settings.NightShoot
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.abaan.wrap.ui.theme.WrapTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -24,6 +29,7 @@ import org.koin.android.ext.android.inject
 // FragmentActivity (a ComponentActivity) because the system unlock prompt needs one.
 class MainActivity : FragmentActivity() {
     private val settings: SettingsRepository by inject()
+    private val nightShoot: NightShoot by inject()
 
     /** Job to open, set when the app is launched from a reminder notification. */
     private val pendingJobId = mutableStateOf<Long?>(null)
@@ -61,7 +67,17 @@ class MainActivity : FragmentActivity() {
             }
         }
         setContent {
-            WrapTheme {
+            val night by nightShoot.enabled.collectAsState()
+            // Night shoot is always dark, so the status bar icons must be light even in light mode.
+            LaunchedEffect(night) {
+                val style = if (night) {
+                    SystemBarStyle.dark(Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
+                }
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+            }
+            WrapTheme(nightShoot = night) {
                 if (!ready.value) {
                     Surface(Modifier.fillMaxSize()) {}
                     return@WrapTheme

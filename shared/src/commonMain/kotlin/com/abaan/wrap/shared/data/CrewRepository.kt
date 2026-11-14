@@ -16,6 +16,9 @@ class CrewRepository(
 ) {
     private val queries get() = db.crewContactEntityQueries
 
+    fun observeAll(): Flow<List<CrewContact>> =
+        queries.selectAll().asFlow().mapToList(io).map { rows -> rows.map { it.toModel() } }
+
     fun observeForJob(jobId: Long): Flow<List<CrewContact>> =
         queries.selectByJob(jobId).asFlow().mapToList(io).map { rows -> rows.map { it.toModel() } }
 

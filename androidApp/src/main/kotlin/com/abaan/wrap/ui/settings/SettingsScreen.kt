@@ -40,6 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abaan.wrap.BuildConfig
 import com.abaan.wrap.R
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.text.style.TextAlign
 import com.abaan.wrap.reminders.CalendarSync
 import com.abaan.wrap.files.BackupManager
@@ -266,13 +274,7 @@ fun SettingsScreen(
                 headlineContent = { Text(stringResource(R.string.settings_version)) },
                 supportingContent = { Text(BuildConfig.VERSION_NAME) },
             )
-            Text(
-                text = stringResource(R.string.settings_credits),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 32.dp),
-            )
+            CreditsLine()
         }
     }
 
@@ -412,6 +414,61 @@ private fun <T> OptionsDialog(
         },
     )
 }
+
+/**
+ * The credit line, with its easter eggs: a tap opens the blooper reel, a long press rolls the end
+ * credits, and ten quick taps switch the hidden Night shoot theme. The reel waits until the taps
+ * stop, so a run of taps towards ten doesn't keep opening it.
+ */
+@Composable
+private fun CreditsLine(viewModel: CreditsViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val nightShoot = koinInject<NightShoot>()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var taps by remember { mutableIntStateOf(0) }
+    var pendingReel by remember { mutableStateOf<Job?>(null) }
+    var showReel by rememberSaveable { mutableStateOf(false) }
+    var showCredits by rememberSaveable { mutableStateOf(false) }
+
+    Text(
+        text = stringResource(R.string.settings_credits),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    taps += 1
+                    pendingReel?.cancel()
+                    if (taps >= NightShoot.TAPS) {
+                        taps = 0
+                        val on = nightShoot.toggle()
+                        Toast.makeText(context, if (on) R.string.egg_night_on else R.string.egg_night_off, Toast.LENGTH_SHORT).show()
+                    } else {
+                        pendingReel = scope.launch {
+                            delay(TAP_PAUSE_MS)
+                            taps = 0
+                            showReel = true
+                        }
+                    }
+                },
+                onLongClick = { showCredits = true },
+            )
+            .padding(top = 16.dp, bottom = 32.dp),
+    )
+
+    val reel = state.reel
+    if (showReel && reel != null) BlooperReelDialog(reel, state.currency, onDismiss = { showReel = false })
+    val credits = state.credits
+    if (showCredits && credits != null) EndCreditsRoll(credits, state.currency, onDismiss = { showCredits = false })
+}
+
+/** How long after the last tap on the credits the blooper reel opens. */
+private const val TAP_PAUSE_MS = 600L
 
 /** "7 Nov 2026, 12:50" in the phone's time zone. */
 private fun formatDateTime(epochMillis: Long): String =
