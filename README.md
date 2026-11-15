@@ -7,7 +7,7 @@
 Track upcoming bookings, clock your hours on set, chase late payments and see what you
 actually kept, all offline on your phone.
 
-[![Latest release](https://img.shields.io/github/v/release/OWNER/REPO?include_prereleases&label=release)](../../releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/abncore/wrap?include_prereleases&label=release)](../../releases/latest)
 ![Android](https://img.shields.io/badge/Android-available-3DDC84?logo=android&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-coming%20soon-lightgrey?logo=apple&logoColor=white)
 ![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=white)
