@@ -1,0 +1,76 @@
+# Changelog
+
+All notable changes to Wrap are listed here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
+[Semantic Versioning](https://semver.org/). APKs for every version are on the
+[Releases](../../releases) page.
+
+## [Unreleased]
+
+### Planned
+- iOS app (SwiftUI) on top of the shared Kotlin Multiplatform module.
+
+## [0.5.0] - 2026-11-14
+
+### Added
+- Easter eggs in the credits line at the bottom of Settings: tap for a blooper reel of your
+  own stats, long-press for an end-credits roll of your work, and tap ten times for the
+  hidden Night shoot theme.
+
+## [0.4.0] - 2026-11-14
+
+### Added
+- **Reports** tab in the bottom bar with:
+  - Client performance: income share, days worked, rates, days to pay and on-time rate, with
+    a page per client.
+  - Who owes you: owed money grouped as not due, 1-30, 31-60, 61-90 and 90+ days late.
+  - Work and rates: days, hours, overtime, average day rate and earnings per day, by role.
+- Swipe-through tutorial on first launch, reopened from Settings > How to use Wrap.
+- Credits at the bottom of Settings.
+
+### Changed
+- The year report moved into the Reports tab.
+
+## [0.3.0] - 2026-11-07
+
+### Added
+- Chase log, and weekly reminders for overdue payments.
+- Invoice PDFs with your details (name, bank, TRN, numbering) and VAT per job.
+- Year report with CSV export for your accountant.
+- Calendar view with double-booked and free days, and optional sync to the phone's calendar.
+- Home-screen widget with the owed total, today's or the next job, and Clock in / Clock out.
+- App lock with fingerprint, face or screen lock.
+- Backup and restore to a .zip (all data and receipt photos).
+
+## [0.2.0] - 2026-11-06
+
+### Added
+- Lifetime earnings, spending tracker and a 6-month earned vs spent chart.
+- Monthly spending budget with alerts at 80% and when it goes over.
+- Recurring monthly costs.
+- Receipt photos, and spending billed to a job.
+- Call sheet: unit base, parking, crew contacts and a reminder before call time.
+
+## [0.1.0] - 2026-11-06
+
+First release.
+
+### Added
+- Clients, with the total each one owes.
+- Jobs with day, half-day, hourly and fixed rates, overtime and kit rental.
+- Upcoming / Unpaid / Paid tabs, with job status updated automatically.
+- Clock in / Clock out with time logs.
+- Payments, including partial payments, with overdue tracking.
+- Home dashboard with live numbers.
+- Chase late payers on WhatsApp, and a reminder the night before each job.
+- Settings for default rate, day length, overtime, payment terms and currency.
+
+### Fixed
+- Clocking in on finished jobs, and other issues found while testing on a device.
+
+[Unreleased]: ../../compare/v0.5.0...HEAD
+[0.5.0]: ../../compare/v0.4.0...v0.5.0
+[0.4.0]: ../../compare/v0.3.0...v0.4.0
+[0.3.0]: ../../compare/v0.2.0...v0.3.0
+[0.2.0]: ../../compare/v0.1.0...v0.2.0
+[0.1.0]: ../../releases/tag/v0.1.0

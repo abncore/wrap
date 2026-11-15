@@ -9,6 +9,7 @@ local.properties
 
 # Android
 *.apk
+releases/
 *.aab
 *.ap_
 *.dex

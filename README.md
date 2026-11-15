@@ -1,10 +1,44 @@
-# Wrap
+<div align="center">
 
-Job and payment tracker for freelancers who work on film sets and on-site gigs:
-upcoming work, finished work, payments received and money still owed.
+# 🎬 Wrap
 
-Android first (Kotlin + Jetpack Compose); iOS (SwiftUI) later on top of the same
-Kotlin Multiplatform `shared` module.
+**Jobs, hours and payments for film-set freelancers.**
+
+Track upcoming bookings, clock your hours on set, chase late payments and see what you
+actually kept, all offline on your phone.
+
+[![Latest release](https://img.shields.io/github/v/release/OWNER/REPO?include_prereleases&label=release)](../../releases/latest)
+![Android](https://img.shields.io/badge/Android-available-3DDC84?logo=android&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-coming%20soon-lightgrey?logo=apple&logoColor=white)
+![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack-Compose-4285F4?logo=jetpackcompose&logoColor=white)
+
+[Download](#download) · [Features](#features) · [Changelog](CHANGELOG.md) · [Build from source](#build-from-source)
+
+</div>
+
+---
+
+## Why Wrap
+
+Freelance crew work day to day for many productions, and the money side gets messy fast:
+different rates, overtime, kit rental, invoices, and clients who pay 60 days late. Wrap keeps
+all of it in one place, works without an account or internet, and does the maths for you.
+
+## Platforms
+
+| Platform | Status |
+|----------|--------|
+| 🤖 Android 8.0+ | ✅ Available ([download](../../releases/latest)) |
+| 🍎 iOS | 🚧 **Coming soon.** All business logic already lives in the shared Kotlin Multiplatform module; the SwiftUI app is next. |
+
+## Download
+
+Grab the latest APK from [**Releases**](../../releases/latest), open it on your phone and
+allow installing from your browser or file manager when asked. Installing a newer version
+over an older one keeps all your data.
+
+> Builds are currently pre-release (`0.x`). Expect changes before 1.0.
 
 ## Features
 
@@ -49,7 +83,9 @@ Kotlin Multiplatform `shared` module.
   you choose (Google Drive, Downloads...). Restoring replaces everything, in one transaction.
   Android's own app backup to Google also covers the database.
 
-### Money rules (in `shared/`, unit tested)
+## How the money works
+
+The rules live in `shared/` and are unit tested.
 
 | Rate type | Base pay |
 |-----------|----------|
@@ -81,7 +117,9 @@ so installing a new build over an old one keeps all data. `MigrationTest` checks
 
 iOS targets (`iosArm64`, `iosSimulatorArm64`) are only registered when building on macOS.
 
-## Requirements
+## Build from source
+
+### Requirements
 
 - JDK 17 or newer (built and tested with JDK 25). `JAVA_HOME` must point at it.
 - Android SDK with platform 37 installed.
@@ -93,7 +131,7 @@ iOS targets (`iosArm64`, `iosSimulatorArm64`) are only registered when building 
 
 - `adb` on `PATH` (`<sdk>\platform-tools`) for install / logcat.
 
-## Commands (PowerShell)
+### Commands (PowerShell)
 
 ```powershell
 # Build
@@ -114,7 +152,23 @@ adb logcat AndroidRuntime:E com.abaan.wrap:V *:S
 & "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd Medium_Phone
 ```
 
-## VS Code
+### VS Code
 
 `.vscode/tasks.json` provides **Build**, **Install & Run**, **Test** and **Logcat (crashes)**
 (`Ctrl+Shift+P` → *Tasks: Run Task*). `Ctrl+Shift+B` runs Build.
+
+## Roadmap
+
+- [x] Android app
+- [x] Reports, invoices, backups and app lock
+- [ ] iOS app (SwiftUI)
+- [ ] Play Store release
+
+See the [changelog](CHANGELOG.md) for what changed in each version.
+
+## License
+
+Copyright © 2026 Abaan Arakkal. All rights reserved. The source is public to read, but may
+not be copied or reused without permission. See [LICENSE](LICENSE).
+
+<div align="center"><sub>Made with kasthapad by Abaan (;</sub></div>
