@@ -40,6 +40,7 @@ import com.abaan.wrap.ui.reports.ReportsScreen
 import com.abaan.wrap.ui.reports.WorkReportScreen
 import com.abaan.wrap.ui.tutorial.Onboarding
 import com.abaan.wrap.ui.tutorial.TutorialScreen
+import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 import com.abaan.wrap.ui.navigation.ClientEditRoute
 import com.abaan.wrap.ui.navigation.ClientsRoute
@@ -81,16 +82,21 @@ fun WrapApp(
     RequestNotificationPermission()
     val onboarding = koinInject<Onboarding>()
     LaunchedEffect(Unit) {
-        if (!onboarding.tutorialSeen) navController.navigate(TutorialRoute)
+        if (!onboarding.tutorialSeen) {
+            navController.awaitGraph()
+            navController.navigate(TutorialRoute)
+        }
     }
     LaunchedEffect(openJobId) {
         if (openJobId != null) {
+            navController.awaitGraph()
             navController.navigate(JobDetailRoute(openJobId))
             onJobOpened()
         }
     }
     LaunchedEffect(openMoney) {
         if (openMoney) {
+            navController.awaitGraph()
             navController.navigateToTab(TopLevelDestination.MONEY)
             onMoneyOpened()
         }
@@ -259,6 +265,14 @@ fun WrapApp(
             onAction = { action -> navController.handleAddAction(action) },
         )
     }
+}
+
+/**
+ * Waits until the NavHost has set its graph. Effects can run before that (on iOS they do), and
+ * navigating earlier crashes.
+ */
+private suspend fun NavHostController.awaitGraph() {
+    currentBackStackEntryFlow.first()
 }
 
 private fun NavHostController.navigateToTab(tab: TopLevelDestination) {
