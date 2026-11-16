@@ -16,8 +16,8 @@ import com.abaan.wrap.R
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.ui.components.formatShort
 import com.abaan.wrap.ui.components.money
-import com.abaan.wrap.ui.jobs.isLink
-import com.abaan.wrap.ui.jobs.mapsIntent
+import com.abaan.wrap.ui.platform.isLink
+import com.abaan.wrap.ui.platform.mapsIntent
 
 object ReminderNotifications {
     const val CHANNEL_ID = "job_reminders"

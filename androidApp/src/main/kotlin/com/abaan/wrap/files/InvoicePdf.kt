@@ -1,5 +1,8 @@
 package com.abaan.wrap.files
 
+import org.jetbrains.compose.resources.getString
+import com.abaan.wrap.shared.model.SpendCategory
+import com.abaan.wrap.ui.platform.InvoiceWriter
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -22,14 +25,15 @@ import java.io.File
 import kotlin.math.roundToInt
 
 /** Draws an [Invoice] as an A4 PDF in the share folder and returns the file. */
-class InvoicePdf(private val context: Context) {
+class InvoicePdf(private val context: Context) : InvoiceWriter {
 
-    suspend fun write(invoice: Invoice): File = withContext(Dispatchers.IO) {
+    override suspend fun write(invoice: Invoice): String = withContext(Dispatchers.IO) {
+        val categories = SpendCategory.entries.associateWith { getString(it.labelRes()) }
         val document = PdfDocument()
         val writer = PageWriter(document)
         drawHeader(writer, invoice)
         drawParties(writer, invoice)
-        drawLines(writer, invoice)
+        drawLines(writer, invoice, categories)
         drawTotals(writer, invoice)
         drawPaymentDetails(writer, invoice)
         writer.finish()
@@ -37,7 +41,7 @@ class InvoicePdf(private val context: Context) {
         val file = SharedFiles.file(context, "Invoice ${invoice.number}.pdf".replace('/', '-'))
         file.outputStream().use(document::writeTo)
         document.close()
-        file
+        file.path
     }
 
     private fun drawHeader(w: PageWriter, invoice: Invoice) {
@@ -84,7 +88,7 @@ class InvoicePdf(private val context: Context) {
         w.y = maxOf(w.y, leftBottom) + SECTION_GAP
     }
 
-    private fun drawLines(w: PageWriter, invoice: Invoice) {
+    private fun drawLines(w: PageWriter, invoice: Invoice, categories: Map<SpendCategory, String>) {
         fun header() {
             w.fill(LEFT, w.y - 2, RIGHT, w.y + ROW_HEIGHT - 4, TABLE_HEADER)
             val baseline = w.y + 13
@@ -96,7 +100,7 @@ class InvoicePdf(private val context: Context) {
         }
         header()
         invoice.lines.forEach { line ->
-            val description = describe(line, invoice)
+            val description = describe(line, invoice, categories)
             val wrappedLines = w.wrap(description, w.body, QTY_RIGHT - 60 - LEFT)
             val height = wrappedLines.size * LINE_HEIGHT + 8
             if (w.needsPage(height)) {
@@ -148,7 +152,7 @@ class InvoicePdf(private val context: Context) {
         w.text(context.getString(R.string.invoice_thanks), w.muted, LEFT)
     }
 
-    private fun describe(line: InvoiceLine, invoice: Invoice): String = when (line.kind) {
+    private fun describe(line: InvoiceLine, invoice: Invoice, categories: Map<SpendCategory, String>): String = when (line.kind) {
         InvoiceLineKind.BASE -> context.getString(
             when (invoice.job.rateType) {
                 RateType.DAY -> R.string.invoice_line_day
@@ -161,7 +165,7 @@ class InvoicePdf(private val context: Context) {
         InvoiceLineKind.KIT_RENTAL -> context.getString(R.string.job_kit_rental)
         InvoiceLineKind.EXPENSES -> context.getString(R.string.job_expenses)
         InvoiceLineKind.SPEND -> {
-            val what = line.note.ifBlank { line.category?.let { context.getString(it.labelRes()) }.orEmpty() }
+            val what = line.note.ifBlank { line.category?.let(categories::get).orEmpty() }
             line.date?.let { context.getString(R.string.invoice_line_spend, what, it.formatMedium()) } ?: what
         }
     }

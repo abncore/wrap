@@ -11,6 +11,7 @@ import com.abaan.wrap.reminders.ReminderScheduler
 import com.abaan.wrap.shared.data.RecurringSpendRepository
 import com.abaan.wrap.shared.data.Today
 import com.abaan.wrap.shared.di.initKoin
+import com.abaan.wrap.ui.di.uiModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,7 +26,7 @@ class WrapApplication : Application() {
         super.onCreate()
         initKoin {
             androidContext(this@WrapApplication)
-            modules(appModule)
+            modules(uiModule, appModule)
         }
         ReminderNotifications.createChannel(this)
         BudgetNotifications.createChannel(this)

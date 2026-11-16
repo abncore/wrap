@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Clapperboard-style "W" mark on a 108dp adaptive icon canvas (safe zone 66dp). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,40 L74,40 L74,72 L34,72 Z" />
+    <path
+        android:fillColor="#1E5B4F"
+        android:pathData="M39,47 L44,47 L48,63 L52,51 L56,51 L60,63 L64,47 L69,47 L62,67 L58,67 L54,56 L50,67 L46,67 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,32 L74,32 L74,37 L34,37 Z" />
+    <path
+        android:fillColor="#1E5B4F"
+        android:pathData="M40,32 L46,32 L42,37 L36,37 Z M52,32 L58,32 L54,37 L48,37 Z M64,32 L70,32 L66,37 L60,37 Z" />
+</vector>

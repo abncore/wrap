@@ -32,7 +32,9 @@ google-services.json
 !.vscode/tasks.json
 !.vscode/extensions.json
 
-# Xcode (iosApp, added later on macOS)
+# Xcode (iosApp; the project is generated from iosApp/project.yml)
+iosApp/*.xcodeproj/
+iosApp/Wrap/Info.plist
 xcuserdata/
 *.xcuserstate
 *.xcscmblueprint
@@ -44,7 +46,6 @@ DerivedData/
 *.dSYM.zip
 *.dSYM
 Pods/
-iosApp/Shared.framework/
 
 # OS
 .DS_Store

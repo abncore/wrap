@@ -6,7 +6,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.FileProvider
+import com.abaan.wrap.ui.platform.ReceiptPhotos
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -17,20 +20,22 @@ import kotlin.math.max
  * Receipt photos, stored as JPEGs in the app's private files. The database keeps only the file name.
  * Photos are shrunk to [MAX_SIDE] pixels so a year of receipts stays small.
  */
-class ReceiptStore(private val context: Context) {
+class ReceiptStore(private val context: Context) : ReceiptPhotos {
     val directory: File get() = File(context.filesDir, DIRECTORY).apply { mkdirs() }
 
     fun file(name: String): File = File(directory, name)
 
     /** A content Uri the camera app can write a new photo to; pass it to [import] afterwards. */
-    fun newCameraUri(): Uri {
+    override fun newCameraTarget(): String {
         val dir = File(context.cacheDir, CAMERA_DIRECTORY).apply { mkdirs() }
         dir.listFiles()?.forEach { it.delete() }
-        return uriFor(File(dir, "capture.jpg"))
+        return uriFor(File(dir, "capture.jpg")).toString()
     }
 
     /** Copies the photo at [uri] into the receipts folder. Returns the new file name, or null if it can't be read. */
-    suspend fun import(uri: Uri): String? = withContext(Dispatchers.IO) {
+    override suspend fun import(uri: String): String? = import(Uri.parse(uri))
+
+    private suspend fun import(uri: Uri): String? = withContext(Dispatchers.IO) {
         runCatching {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
@@ -48,8 +53,10 @@ class ReceiptStore(private val context: Context) {
         }.getOrNull()
     }
 
+    override suspend fun load(name: String, maxSide: Int): ImageBitmap? = loadBitmap(name, maxSide)?.asImageBitmap()
+
     /** A downscaled copy for showing on screen. */
-    suspend fun load(name: String, maxSide: Int): Bitmap? = withContext(Dispatchers.IO) {
+    private suspend fun loadBitmap(name: String, maxSide: Int): Bitmap? = withContext(Dispatchers.IO) {
         val target = file(name)
         if (name.isBlank() || !target.exists()) return@withContext null
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -60,7 +67,7 @@ class ReceiptStore(private val context: Context) {
         BitmapFactory.decodeFile(target.path, options)
     }
 
-    fun delete(name: String) {
+    override fun delete(name: String) {
         if (name.isNotBlank()) file(name).delete()
     }
 

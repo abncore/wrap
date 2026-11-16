@@ -20,17 +20,14 @@ kotlin {
         withHostTest {}
     }
 
-    // iOS targets for the future SwiftUI app. They can only be built on macOS, so they are
-    // skipped elsewhere to avoid downloading the Kotlin/Native toolchain on Windows.
-    if (System.getProperty("os.name").startsWith("Mac")) {
-        listOf(
-            iosArm64(),
-            iosSimulatorArm64(),
-        ).forEach { iosTarget ->
-            iosTarget.binaries.framework {
-                baseName = "Shared"
-                isStatic = true
-            }
+    // iOS code compiles on any host; linking the framework for the app needs macOS (CI).
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "Shared"
+            isStatic = true
         }
     }
 
@@ -59,7 +56,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.sqldelight.sqlite.driver)
         }
-        if (System.getProperty("os.name").startsWith("Mac")) {
+        if (true) {
             iosMain.dependencies {
                 implementation(libs.sqldelight.native.driver)
             }

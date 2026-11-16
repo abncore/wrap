@@ -1,5 +1,6 @@
 package com.abaan.wrap.reminders
 
+import com.abaan.wrap.ui.platform.PhoneCalendar
 import android.Manifest
 import android.content.ContentUris
 import android.content.ContentValues
@@ -38,7 +39,7 @@ class CalendarSync(
     private val settings: SettingsRepository,
     private val links: CalendarEventRepository,
     private val today: Today,
-) {
+) : PhoneCalendar {
     /** Bumped after calendar permission is granted, so syncing starts without waiting for a change. */
     private val permissionChanged = MutableStateFlow(0)
 
@@ -60,11 +61,13 @@ class CalendarSync(
         }
     }
 
-    fun onPermissionChanged() {
+    override val permissions: List<String> = PERMISSIONS.toList()
+
+    override fun onPermissionChanged() {
         permissionChanged.value += 1
     }
 
-    fun hasPermission(): Boolean = PERMISSIONS.all {
+    override fun hasPermission(): Boolean = PERMISSIONS.all {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 

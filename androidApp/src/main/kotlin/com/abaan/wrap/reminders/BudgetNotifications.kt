@@ -11,13 +11,14 @@ import com.abaan.wrap.MainActivity
 import com.abaan.wrap.R
 import com.abaan.wrap.shared.model.BudgetLevel
 import com.abaan.wrap.shared.model.BudgetStatus
+import com.abaan.wrap.ui.platform.BudgetAlerts
 import com.abaan.wrap.ui.components.money
 import kotlin.math.roundToInt
 
 /** Posts "nearly at budget" and "over budget" notifications; tapping one opens the Money tab. */
-class BudgetNotifications(private val context: Context) {
+class BudgetNotifications(private val context: Context) : BudgetAlerts {
 
-    fun show(level: BudgetLevel, status: BudgetStatus, currency: String) {
+    override fun show(level: BudgetLevel, status: BudgetStatus, currency: String) {
         if (!ReminderNotifications.canNotify(context)) return
         val (title, body) = when (level) {
             BudgetLevel.UNDER -> return
