@@ -48,5 +48,37 @@ jobs:
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
       - name: Shared tests on the iOS simulator
         run: ./gradlew :shared:iosSimulatorArm64Test
-      - name: Build the iOS framework
-        run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 :shared:linkDebugFrameworkIosArm64
+      - name: Compile the shared screens for iPhone
+        run: ./gradlew :sharedUi:compileKotlinIosArm64
+      - name: Generate the Xcode project
+        run: |
+          brew install xcodegen
+          cd iosApp && xcodegen
+      - name: Build the app for the simulator
+        run: |
+          xcodebuild -project iosApp/Wrap.xcodeproj -scheme Wrap -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath iosApp/build CODE_SIGNING_ALLOWED=NO build
+      - name: Run it in the simulator and take a screenshot
+        run: |
+          udid=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone"))][-1].udid')
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl install "$udid" iosApp/build/Build/Products/Debug-iphonesimulator/Wrap.app
+          xcrun simctl launch "$udid" com.abaan.wrap
+          sleep 20
+          xcrun simctl io "$udid" screenshot ios-screenshot.png
+          # Fails the step if the app crashed instead of staying open.
+          xcrun simctl spawn "$udid" launchctl list | grep -q com.abaan.wrap
+      - name: Crash logs
+        if: failure()
+        run: ls ~/Library/Logs/DiagnosticReports/ && cat ~/Library/Logs/DiagnosticReports/Wrap* || true
+      - name: Keep the app and screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrap-ios-simulator
+          path: |
+            ios-screenshot.png
+            iosApp/build/Build/Products/Debug-iphonesimulator/Wrap.app

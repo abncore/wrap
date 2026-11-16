@@ -7,8 +7,14 @@ All notable changes to Wrap are listed here. The format follows
 
 ## [Unreleased]
 
-### Planned
-- iOS app (SwiftUI) on top of the shared Kotlin Multiplatform module.
+### Added
+- iOS app (in progress): the same screens as Android, built with Compose Multiplatform and
+  checked on every push by CI, which builds the app and runs it in the iPhone simulator.
+  Receipts, invoices, backups, calendar sync, app lock and reminders come to iOS next.
+
+### Changed
+- The screens moved into a shared `sharedUi` module so Android and iOS use the same UI code.
+  Nothing changes for Android users.
 
 ## [0.5.0] - 2026-11-14
 

@@ -12,8 +12,8 @@ android {
         applicationId = "com.abaan.wrap"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 5
-        versionName = "0.5.0"
+        versionCode = 6
+        versionName = "0.5.1"
     }
 
     buildTypes {
@@ -36,6 +36,7 @@ android {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(project(":sharedUi"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
