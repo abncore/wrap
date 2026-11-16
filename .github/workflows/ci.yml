@@ -66,14 +66,20 @@ jobs:
           xcrun simctl boot "$udid"
           xcrun simctl bootstatus "$udid" -b
           xcrun simctl install "$udid" iosApp/build/Build/Products/Debug-iphonesimulator/Wrap.app
-          xcrun simctl launch "$udid" com.abaan.wrap
-          sleep 20
+          # The app's own output (including any Kotlin exception) goes to app-console.log.
+          xcrun simctl launch --console-pty --terminate-running-process "$udid" com.abaan.wrap > app-console.log 2>&1 &
+          sleep 25
           xcrun simctl io "$udid" screenshot ios-screenshot.png
+          xcrun simctl spawn "$udid" log show --last 2m --style compact \
+            --predicate 'process == "Wrap" OR eventMessage CONTAINS "com.abaan.wrap"' > app-system.log || true
           # Fails the step if the app crashed instead of staying open.
-          xcrun simctl spawn "$udid" launchctl list | grep -q com.abaan.wrap
-      - name: Crash logs
-        if: failure()
-        run: ls ~/Library/Logs/DiagnosticReports/ && cat ~/Library/Logs/DiagnosticReports/Wrap* || true
+          xcrun simctl spawn "$udid" launchctl list | grep com.abaan.wrap | grep -qv '^-'
+      - name: App logs
+        if: always()
+        run: |
+          cat app-console.log || true
+          tail -n 80 app-system.log || true
+          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null | grep -i wrap && cat ~/Library/Logs/DiagnosticReports/Wrap* || true
       - name: Keep the app and screenshot
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,4 +87,6 @@ jobs:
           name: wrap-ios-simulator
           path: |
             ios-screenshot.png
+            app-console.log
+            app-system.log
             iosApp/build/Build/Products/Debug-iphonesimulator/Wrap.app
