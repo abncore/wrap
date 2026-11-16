@@ -27,25 +27,17 @@ all of it in one place, works without an account or internet, and does the maths
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td align="center"><img src="docs/screenshots/home.png" width="240" alt="Home dashboard"><br><sub><b>Home</b>: owed, overdue, budget and today's job</sub></td>
-    <td align="center"><img src="docs/screenshots/jobs.png" width="240" alt="Jobs list"><br><sub><b>Jobs</b>: upcoming, unpaid and paid, overdue in red</sub></td>
-    <td align="center"><img src="docs/screenshots/job-detail.png" width="240" alt="Job detail"><br><sub><b>Job detail</b>: money breakdown, chase and invoice</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/money.png" width="240" alt="Money"><br><sub><b>Money</b>: earned vs spent and monthly budget</sub></td>
-    <td align="center"><img src="docs/screenshots/client-performance.png" width="240" alt="Client performance report"><br><sub><b>Client performance</b>: who pays most and how fast</sub></td>
-    <td align="center"><img src="docs/screenshots/who-owes-you.png" width="240" alt="Who owes you report"><br><sub><b>Who owes you</b>: money owed by how late it is</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/calendar.png" width="240" alt="Calendar"><br><sub><b>Calendar</b>: bookings, free days and clashes</sub></td>
-    <td align="center"><img src="docs/screenshots/dark-mode.png" width="240" alt="Dark mode"><br><sub><b>Dark mode</b></sub></td>
-    <td align="center"><img src="docs/screenshots/tutorial.png" width="240" alt="Tutorial"><br><sub><b>Tutorial</b> on first launch</sub></td>
-  </tr>
-</table>
+<div align="center">
+
+| Home | Jobs | Money |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/home.png" width="250" alt="Home dashboard"> | <img src="docs/screenshots/jobs.png" width="250" alt="Jobs list"> | <img src="docs/screenshots/money.png" width="250" alt="Money"> |
+| **Who owes you** | **Calendar** | **Dark mode** |
+| <img src="docs/screenshots/who-owes-you.png" width="250" alt="Who owes you report"> | <img src="docs/screenshots/calendar.png" width="250" alt="Calendar"> | <img src="docs/screenshots/dark-mode.png" width="250" alt="Dark mode"> |
 
 <sub>Screenshots use made-up demo data.</sub>
+
+</div>
 
 ## Platforms
 
