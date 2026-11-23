@@ -1,5 +1,7 @@
 package com.abaan.wrap.ui.jobs
 
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +37,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -119,12 +120,10 @@ fun JobDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(Res.string.job_detail_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onBack)
                 },
                 actions = {
                     if (state.summary != null) {

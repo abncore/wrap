@@ -1,5 +1,8 @@
 package com.abaan.wrap.ui.money
 
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapSwitch
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,10 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -68,12 +69,10 @@ fun SpendEditScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(if (state.isNew) Res.string.spend_new else Res.string.spend_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onClose)
                 },
                 actions = {
                     if (!state.isNew) {
@@ -168,7 +167,7 @@ fun SpendEditScreen(
                 headlineContent = { Text(stringResource(Res.string.spend_repeat)) },
                 supportingContent = { Text(stringResource(Res.string.spend_repeat_desc, state.date.day)) },
                 trailingContent = {
-                    Switch(checked = state.repeatMonthly, onCheckedChange = viewModel::setRepeatMonthly)
+                    WrapSwitch(checked = state.repeatMonthly, onCheckedChange = viewModel::setRepeatMonthly)
                 },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )

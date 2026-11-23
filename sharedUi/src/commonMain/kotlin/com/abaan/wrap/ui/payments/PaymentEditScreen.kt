@@ -1,5 +1,8 @@
 package com.abaan.wrap.ui.payments
 
+import com.abaan.wrap.ui.components.ChoiceRow
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -66,12 +65,10 @@ fun PaymentEditScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(if (state.isNew) Res.string.payment_new else Res.string.payment_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onClose)
                 },
                 actions = {
                     if (!state.isNew) {
@@ -144,16 +141,11 @@ fun PaymentEditScreen(
                 )
 
                 SectionTitle(stringResource(Res.string.payment_field_method))
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    PaymentMethod.entries.forEachIndexed { index, method ->
-                        SegmentedButton(
-                            selected = state.method == method,
-                            onClick = { viewModel.setMethod(method) },
-                            shape = SegmentedButtonDefaults.itemShape(index, PaymentMethod.entries.size),
-                            label = { Text(stringResource(method.labelRes())) },
-                        )
-                    }
-                }
+                ChoiceRow(
+                    labels = PaymentMethod.entries.map { stringResource(it.labelRes()) },
+                    selected = state.method.ordinal,
+                    onSelect = { viewModel.setMethod(PaymentMethod.entries[it]) },
+                )
                 TextInput(
                     value = state.note,
                     onValueChange = viewModel::setNote,

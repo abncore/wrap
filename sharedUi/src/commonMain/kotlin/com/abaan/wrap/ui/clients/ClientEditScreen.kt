@@ -1,5 +1,7 @@
 package com.abaan.wrap.ui.clients
 
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,12 +56,10 @@ fun ClientEditScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(if (state.isNew) Res.string.client_new else Res.string.client_edit)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onClose)
                 },
                 actions = {
                     if (!state.isNew) {

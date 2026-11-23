@@ -1,6 +1,8 @@
 package com.abaan.wrap.ui.money
 
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +40,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,7 +70,9 @@ import com.abaan.wrap.ui.components.formatMonthShort
 import com.abaan.wrap.ui.components.formatMonthYear
 import com.abaan.wrap.ui.components.formatWeekday
 import com.abaan.wrap.ui.components.labelRes
+import com.abaan.wrap.ui.components.PaidOwedCard
 import com.abaan.wrap.ui.components.money
+import com.abaan.wrap.ui.theme.LocalStatusColors
 import com.abaan.wrap.ui.theme.color
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -86,7 +89,7 @@ fun MoneyScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(Res.string.money_title)) },
                 actions = {
                     IconButton(onClick = onAddSpend) {
@@ -133,35 +136,26 @@ fun MoneyScreen(
 
 @Composable
 private fun LifetimeCard(overview: MoneyOverview) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+    PaidOwedCard(
+        paidLabel = stringResource(Res.string.money_earned_lifetime),
+        paid = overview.earnedLifetime,
+        owedLabel = stringResource(Res.string.home_owed_to_you),
+        owed = overview.owedTotal,
+        currency = overview.currency,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(Res.string.money_earned_lifetime), style = MaterialTheme.typography.titleSmall)
-            Text(money(overview.earnedLifetime, overview.currency), style = MaterialTheme.typography.displaySmall)
-            if (overview.owedTotal > 0) {
-                Text(
-                    text = stringResource(Res.string.money_still_owed, money(overview.owedTotal, overview.currency)),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                LifetimeFigure(
-                    label = stringResource(Res.string.money_spent_lifetime),
-                    value = money(overview.spentLifetime, overview.currency),
-                    modifier = Modifier.weight(1f),
-                )
-                LifetimeFigure(
-                    label = stringResource(Res.string.money_net_lifetime),
-                    value = money(overview.netLifetime, overview.currency),
-                    modifier = Modifier.weight(1f),
-                )
-            }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            LifetimeFigure(
+                label = stringResource(Res.string.money_spent_lifetime),
+                value = money(overview.spentLifetime, overview.currency),
+                modifier = Modifier.weight(1f),
+            )
+            LifetimeFigure(
+                label = stringResource(Res.string.money_net_lifetime),
+                value = money(overview.netLifetime, overview.currency),
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }
@@ -169,7 +163,13 @@ private fun LifetimeCard(overview: MoneyOverview) {
 @Composable
 private fun LifetimeFigure(label: String, value: String, modifier: Modifier = Modifier) {
     Column(modifier) {
-        Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
         Text(value, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
@@ -177,12 +177,13 @@ private fun LifetimeFigure(label: String, value: String, modifier: Modifier = Mo
 @Composable
 private fun ChartCard(months: List<MonthTotals>, currency: String) {
     var selected by rememberSaveable(months.size) { mutableIntStateOf(months.lastIndex) }
-    val earnedColor = MaterialTheme.colorScheme.primary
-    val spentColor = MaterialTheme.colorScheme.tertiary
+    val earnedColor = LocalStatusColors.current.success
+    val spentColor = MaterialTheme.colorScheme.secondary
     val max = months.maxOf { maxOf(it.earned, it.spent) }.coerceAtLeast(1)
 
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -296,6 +297,7 @@ private fun MonthFigure(
 private fun CategoryCard(overview: MoneyOverview, onSelectPeriod: (InsightPeriod) -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

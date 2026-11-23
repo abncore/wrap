@@ -1,6 +1,16 @@
 package com.abaan.wrap.ui.settings
 
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.clip
+import com.abaan.wrap.ui.platform.LocalWrapStyle
+import com.abaan.wrap.ui.platform.WrapStyle
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapSwitch
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +30,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -130,12 +138,10 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(Res.string.settings_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onBack)
                 },
             )
         },
@@ -146,159 +152,161 @@ fun SettingsScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            SettingRow(
-                title = stringResource(Res.string.settings_profile),
-                value = profile.displayName.ifBlank { stringResource(Res.string.settings_profile_empty) },
-                onClick = onOpenProfile,
-            )
+            SettingsGroup {
+                SettingRow(
+                    title = stringResource(Res.string.settings_profile),
+                    value = profile.displayName.ifBlank { stringResource(Res.string.settings_profile_empty) },
+                    onClick = onOpenProfile,
+                )
+            }
             if (features.backups) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                SettingsHeader(stringResource(Res.string.settings_section_backup))
-                val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                val backupFileName = stringResource(Res.string.backup_file_name, today.toString())
-                SettingRow(
-                    title = stringResource(Res.string.backup_now),
-                    value = backup.lastBackupAt?.let { stringResource(Res.string.backup_last, formatDateTime(it)) }
-                        ?: stringResource(Res.string.backup_never),
-                    onClick = { if (!backup.working) saveBackup(backupFileName) },
-                )
-                SettingRow(
-                    title = stringResource(Res.string.backup_restore),
-                    value = stringResource(Res.string.backup_restore_desc),
-                    onClick = {
-                        if (!backup.working) openBackup(listOf(backupMimeType, "application/octet-stream", "application/x-zip-compressed"))
-                    },
-                )
-                if (backup.working) LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+                SettingsGroup(stringResource(Res.string.settings_section_backup)) {
+                    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                    val backupFileName = stringResource(Res.string.backup_file_name, today.toString())
+                    SettingRow(
+                        title = stringResource(Res.string.backup_now),
+                        value = backup.lastBackupAt?.let { stringResource(Res.string.backup_last, formatDateTime(it)) }
+                            ?: stringResource(Res.string.backup_never),
+                        onClick = { if (!backup.working) saveBackup(backupFileName) },
+                    )
+                    SettingRow(
+                        title = stringResource(Res.string.backup_restore),
+                        value = stringResource(Res.string.backup_restore_desc),
+                        onClick = {
+                            if (!backup.working) openBackup(listOf(backupMimeType, "application/octet-stream", "application/x-zip-compressed"))
+                        },
+                    )
+                    if (backup.working) LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+                }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SettingsHeader(stringResource(Res.string.settings_section_defaults))
-            SettingRow(
-                title = stringResource(Res.string.settings_default_rate),
-                value = if (settings.defaultRate > 0) money(settings.defaultRate, settings.currency) else stringResource(Res.string.settings_not_set),
-                onClick = { dialog = SettingDialog.RATE },
-            )
-            SettingRow(
-                title = stringResource(Res.string.settings_day_length),
-                value = stringResource(Res.string.settings_day_length_value, formatDecimal(settings.dayLengthHours)),
-                onClick = { dialog = SettingDialog.DAY_LENGTH },
-            )
-            SettingRow(
-                title = stringResource(Res.string.settings_ot_multiplier),
-                value = stringResource(Res.string.settings_ot_multiplier_value, formatDecimal(settings.otMultiplier)),
-                onClick = { dialog = SettingDialog.OT_MULTIPLIER },
-            )
-            SettingRow(
-                title = stringResource(Res.string.settings_payment_terms),
-                value = pluralStringResource(Res.plurals.settings_payment_terms_value, settings.paymentTermsDays, settings.paymentTermsDays),
-                onClick = { dialog = SettingDialog.TERMS },
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SettingsHeader(stringResource(Res.string.settings_section_spending))
-            SettingRow(
-                title = stringResource(Res.string.settings_budget),
-                value = if (settings.monthlyBudget > 0) money(settings.monthlyBudget, settings.currency) else stringResource(Res.string.settings_not_set),
-                onClick = { dialog = SettingDialog.BUDGET },
-            )
-            if (features.notifications) {
-                ListItem(
-                    headlineContent = { Text(stringResource(Res.string.settings_budget_alerts)) },
-                    supportingContent = { Text(stringResource(Res.string.settings_budget_alerts_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = settings.budgetAlertsEnabled,
-                            onCheckedChange = { checked -> viewModel.update { it.copy(budgetAlertsEnabled = checked) } },
-                        )
-                    },
-                    modifier = Modifier.clickable {
-                        viewModel.update { it.copy(budgetAlertsEnabled = !it.budgetAlertsEnabled) }
-                    },
+            SettingsGroup(stringResource(Res.string.settings_section_defaults)) {
+                SettingRow(
+                    title = stringResource(Res.string.settings_default_rate),
+                    value = if (settings.defaultRate > 0) money(settings.defaultRate, settings.currency) else stringResource(Res.string.settings_not_set),
+                    onClick = { dialog = SettingDialog.RATE },
                 )
+                SettingRow(
+                    title = stringResource(Res.string.settings_day_length),
+                    value = stringResource(Res.string.settings_day_length_value, formatDecimal(settings.dayLengthHours)),
+                    onClick = { dialog = SettingDialog.DAY_LENGTH },
+                )
+                SettingRow(
+                    title = stringResource(Res.string.settings_ot_multiplier),
+                    value = stringResource(Res.string.settings_ot_multiplier_value, formatDecimal(settings.otMultiplier)),
+                    onClick = { dialog = SettingDialog.OT_MULTIPLIER },
+                )
+                SettingRow(
+                    title = stringResource(Res.string.settings_payment_terms),
+                    value = pluralStringResource(Res.plurals.settings_payment_terms_value, settings.paymentTermsDays, settings.paymentTermsDays),
+                    onClick = { dialog = SettingDialog.TERMS },
+                )
+            }
+
+            SettingsGroup(stringResource(Res.string.settings_section_spending)) {
+                SettingRow(
+                    title = stringResource(Res.string.settings_budget),
+                    value = if (settings.monthlyBudget > 0) money(settings.monthlyBudget, settings.currency) else stringResource(Res.string.settings_not_set),
+                    onClick = { dialog = SettingDialog.BUDGET },
+                )
+                if (features.notifications) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(Res.string.settings_budget_alerts)) },
+                        supportingContent = { Text(stringResource(Res.string.settings_budget_alerts_desc)) },
+                        trailingContent = {
+                            WrapSwitch(
+                                checked = settings.budgetAlertsEnabled,
+                                onCheckedChange = { checked -> viewModel.update { it.copy(budgetAlertsEnabled = checked) } },
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            viewModel.update { it.copy(budgetAlertsEnabled = !it.budgetAlertsEnabled) }
+                        },
+                    )
+                }
             }
 
             if (features.appLock) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                SettingsHeader(stringResource(Res.string.settings_section_privacy))
-                val screenLock = koinInject<ScreenLock>()
-                val lockUnavailable = stringResource(Res.string.settings_app_lock_unavailable)
-                val setAppLock: (Boolean) -> Unit = { on ->
-                    if (on && !screenLock.isAvailable()) {
-                        actions.showMessage(lockUnavailable)
-                    } else {
-                        viewModel.update { it.copy(appLockEnabled = on) }
+                SettingsGroup(stringResource(Res.string.settings_section_privacy)) {
+                    val screenLock = koinInject<ScreenLock>()
+                    val lockUnavailable = stringResource(Res.string.settings_app_lock_unavailable)
+                    val setAppLock: (Boolean) -> Unit = { on ->
+                        if (on && !screenLock.isAvailable()) {
+                            actions.showMessage(lockUnavailable)
+                        } else {
+                            viewModel.update { it.copy(appLockEnabled = on) }
+                        }
                     }
+                    ListItem(
+                        headlineContent = { Text(stringResource(Res.string.settings_app_lock)) },
+                        supportingContent = { Text(stringResource(Res.string.settings_app_lock_desc)) },
+                        trailingContent = { WrapSwitch(checked = settings.appLockEnabled, onCheckedChange = setAppLock) },
+                        modifier = Modifier.clickable { setAppLock(!settings.appLockEnabled) },
+                    )
                 }
-                ListItem(
-                    headlineContent = { Text(stringResource(Res.string.settings_app_lock)) },
-                    supportingContent = { Text(stringResource(Res.string.settings_app_lock_desc)) },
-                    trailingContent = { Switch(checked = settings.appLockEnabled, onCheckedChange = setAppLock) },
-                    modifier = Modifier.clickable { setAppLock(!settings.appLockEnabled) },
-                )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SettingsHeader(stringResource(Res.string.settings_section_app))
-            SettingRow(
-                title = stringResource(Res.string.settings_currency),
-                value = settings.currency,
-                onClick = { dialog = SettingDialog.CURRENCY },
-            )
-            if (features.notifications) {
-                ListItem(
-                    headlineContent = { Text(stringResource(Res.string.settings_reminders)) },
-                    supportingContent = { Text(stringResource(Res.string.settings_reminders_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = settings.remindersEnabled,
-                            onCheckedChange = { checked -> viewModel.update { it.copy(remindersEnabled = checked) } },
-                        )
-                    },
-                    modifier = Modifier.clickable {
-                        viewModel.update { it.copy(remindersEnabled = !it.remindersEnabled) }
-                    },
-                )
-                ListItem(
-                    headlineContent = { Text(stringResource(Res.string.settings_chase_reminders)) },
-                    supportingContent = { Text(stringResource(Res.string.settings_chase_reminders_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = settings.chaseRemindersEnabled,
-                            onCheckedChange = { checked -> viewModel.update { it.copy(chaseRemindersEnabled = checked) } },
-                        )
-                    },
-                    modifier = Modifier.clickable {
-                        viewModel.update { it.copy(chaseRemindersEnabled = !it.chaseRemindersEnabled) }
-                    },
-                )
-            }
-            if (features.calendarSync) {
-                ListItem(
-                    headlineContent = { Text(stringResource(Res.string.settings_calendar_sync)) },
-                    supportingContent = { Text(stringResource(Res.string.settings_calendar_sync_desc)) },
-                    trailingContent = {
-                        Switch(checked = settings.calendarSyncEnabled, onCheckedChange = setCalendarSync)
-                    },
-                    modifier = Modifier.clickable { setCalendarSync(!settings.calendarSyncEnabled) },
-                )
-            }
-            if (features.notifications) {
+            SettingsGroup(stringResource(Res.string.settings_section_app)) {
                 SettingRow(
-                    title = stringResource(Res.string.settings_call_reminder),
-                    value = callReminderLabel(settings.callReminderMinutes),
-                    onClick = { dialog = SettingDialog.CALL_REMINDER },
+                    title = stringResource(Res.string.settings_currency),
+                    value = settings.currency,
+                    onClick = { dialog = SettingDialog.CURRENCY },
+                )
+                if (features.notifications) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(Res.string.settings_reminders)) },
+                        supportingContent = { Text(stringResource(Res.string.settings_reminders_desc)) },
+                        trailingContent = {
+                            WrapSwitch(
+                                checked = settings.remindersEnabled,
+                                onCheckedChange = { checked -> viewModel.update { it.copy(remindersEnabled = checked) } },
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            viewModel.update { it.copy(remindersEnabled = !it.remindersEnabled) }
+                        },
+                    )
+                    ListItem(
+                        headlineContent = { Text(stringResource(Res.string.settings_chase_reminders)) },
+                        supportingContent = { Text(stringResource(Res.string.settings_chase_reminders_desc)) },
+                        trailingContent = {
+                            WrapSwitch(
+                                checked = settings.chaseRemindersEnabled,
+                                onCheckedChange = { checked -> viewModel.update { it.copy(chaseRemindersEnabled = checked) } },
+                            )
+                        },
+                        modifier = Modifier.clickable {
+                            viewModel.update { it.copy(chaseRemindersEnabled = !it.chaseRemindersEnabled) }
+                        },
+                    )
+                }
+                if (features.calendarSync) {
+                    ListItem(
+                        headlineContent = { Text(stringResource(Res.string.settings_calendar_sync)) },
+                        supportingContent = { Text(stringResource(Res.string.settings_calendar_sync_desc)) },
+                        trailingContent = {
+                            WrapSwitch(checked = settings.calendarSyncEnabled, onCheckedChange = setCalendarSync)
+                        },
+                        modifier = Modifier.clickable { setCalendarSync(!settings.calendarSyncEnabled) },
+                    )
+                }
+                if (features.notifications) {
+                    SettingRow(
+                        title = stringResource(Res.string.settings_call_reminder),
+                        value = callReminderLabel(settings.callReminderMinutes),
+                        onClick = { dialog = SettingDialog.CALL_REMINDER },
+                    )
+                }
+                SettingRow(
+                    title = stringResource(Res.string.settings_tutorial),
+                    value = stringResource(Res.string.settings_tutorial_desc),
+                    onClick = onOpenTutorial,
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(Res.string.settings_version)) },
+                    supportingContent = { Text(koinInject<AppInfo>().versionName) },
                 )
             }
-            SettingRow(
-                title = stringResource(Res.string.settings_tutorial),
-                value = stringResource(Res.string.settings_tutorial_desc),
-                onClick = onOpenTutorial,
-            )
-            ListItem(
-                headlineContent = { Text(stringResource(Res.string.settings_version)) },
-                supportingContent = { Text(koinInject<AppInfo>().versionName) },
-            )
             CreditsLine()
         }
     }
@@ -497,6 +505,44 @@ private fun CreditsLine(viewModel: CreditsViewModel = koinViewModel()) {
 /** How long after the last tap on the credits the blooper reel opens. */
 private const val TAP_PAUSE_MS = 600L
 
+
+/**
+ * One block of settings. Android: a divider and a coloured header above the rows. iOS: a grey
+ * capitalised header above a white rounded group, like the Settings app.
+ */
+@Composable
+private fun SettingsGroup(header: String? = null, content: @Composable ColumnScope.() -> Unit) {
+    if (LocalWrapStyle.current != WrapStyle.IOS) {
+        if (header != null) {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsHeader(header)
+        }
+        Column(content = content)
+        return
+    }
+    val colors = MaterialTheme.colorScheme
+    if (header != null) {
+        Text(
+            text = header.uppercase(),
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.onSurfaceVariant,
+            modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 24.dp, bottom = 6.dp),
+        )
+    } else {
+        Spacer(Modifier.height(8.dp))
+    }
+    // Rows draw on `surface`, so the group swaps it for the card colour.
+    MaterialTheme(colorScheme = colors.copy(surface = colors.surfaceContainer)) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
+                .background(colors.surfaceContainer),
+            content = content,
+        )
+    }
+}
 
 @Composable
 private fun SettingsHeader(text: String) {

@@ -19,7 +19,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -74,7 +73,7 @@ fun TextInput(
     prefix: String? = null,
     suffix: String? = null,
 ) {
-    OutlinedTextField(
+    WrapTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
@@ -155,7 +154,7 @@ private fun PickerField(
     LaunchedEffect(interaction) {
         interaction.interactions.collect { if (it is PressInteraction.Release) onClick() }
     }
-    OutlinedTextField(
+    WrapTextField(
         value = value,
         onValueChange = {},
         readOnly = true,
@@ -294,7 +293,7 @@ fun <T> DropdownInput(
         onExpandedChange = { expanded = it },
         modifier = modifier,
     ) {
-        OutlinedTextField(
+        WrapTextField(
             value = selected?.let { optionLabel(it) } ?: placeholder,
             onValueChange = {},
             readOnly = true,

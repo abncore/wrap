@@ -1,5 +1,9 @@
 package com.abaan.wrap.ui.jobs
 
+import com.abaan.wrap.ui.components.ChoiceRow
+import com.abaan.wrap.ui.components.BackButton
+import com.abaan.wrap.ui.components.WrapSwitch
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,12 +26,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +51,6 @@ import com.abaan.wrap.ui.settings.vatPercent
 import com.abaan.wrap.shared.money.InvoiceRules
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.ui.graphics.Color
 import com.abaan.wrap.ui.components.TextInput
 import com.abaan.wrap.ui.components.TimeInput
@@ -85,12 +84,10 @@ fun JobEditScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(title)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
+                    BackButton(onClick = onClose)
                 },
                 actions = {
                     TextButton(onClick = viewModel::save, enabled = !state.loading) {
@@ -192,16 +189,11 @@ fun JobEditScreen(
             )
 
             SectionTitle(stringResource(Res.string.job_section_rate))
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                RateType.entries.forEachIndexed { index, type ->
-                    SegmentedButton(
-                        selected = form.rateType == type,
-                        onClick = { viewModel.update { it.copy(rateType = type) } },
-                        shape = SegmentedButtonDefaults.itemShape(index, RateType.entries.size),
-                        label = { Text(stringResource(type.labelRes()), maxLines = 1) },
-                    )
-                }
-            }
+            ChoiceRow(
+                labels = RateType.entries.map { stringResource(it.labelRes()) },
+                selected = form.rateType.ordinal,
+                onSelect = { index -> viewModel.update { it.copy(rateType = RateType.entries[index]) } },
+            )
             MoneyInput(
                 value = form.rate,
                 onValueChange = { v -> viewModel.update { it.copy(rate = v, rateEdited = true) } },
@@ -265,7 +257,7 @@ fun JobEditScreen(
                 headlineContent = { Text(stringResource(Res.string.job_field_vat, vatPercent(InvoiceRules.UAE_VAT_RATE))) },
                 supportingContent = { Text(stringResource(Res.string.job_field_vat_desc)) },
                 trailingContent = {
-                    Switch(checked = form.addVat, onCheckedChange = { v -> viewModel.update { it.copy(addVat = v) } })
+                    WrapSwitch(checked = form.addVat, onCheckedChange = { v -> viewModel.update { it.copy(addVat = v) } })
                 },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )

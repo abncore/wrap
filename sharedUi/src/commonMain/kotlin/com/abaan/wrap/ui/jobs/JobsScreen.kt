@@ -1,5 +1,7 @@
 package com.abaan.wrap.ui.jobs
 
+import com.abaan.wrap.ui.components.WrapTabs
+import com.abaan.wrap.ui.components.WrapTopBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +23,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,7 +60,7 @@ fun JobsScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            WrapTopBar(
                 title = { Text(stringResource(Res.string.jobs_title)) },
                 actions = {
                     IconButton(onClick = onOpenCalendar) {
@@ -72,8 +71,8 @@ fun JobsScreen(
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            PrimaryTabRow(selectedTabIndex = filter.tab.ordinal) {
-                JobsTab.entries.forEach { tab ->
+            WrapTabs(
+                labels = JobsTab.entries.map { tab ->
                     val label = stringResource(
                         when (tab) {
                             JobsTab.UPCOMING -> Res.string.jobs_tab_upcoming
@@ -82,13 +81,11 @@ fun JobsScreen(
                         },
                     )
                     val count = state.counts[tab] ?: 0
-                    Tab(
-                        selected = filter.tab == tab,
-                        onClick = { viewModel.selectTab(tab) },
-                        text = { Text(if (count > 0) stringResource(Res.string.jobs_tab_count, label, count) else label) },
-                    )
-                }
-            }
+                    if (count > 0) stringResource(Res.string.jobs_tab_count, label, count) else label
+                },
+                selected = filter.tab.ordinal,
+                onSelect = { viewModel.selectTab(JobsTab.entries[it]) },
+            )
 
             if (state.hasAnyJobs) {
                 Row(
