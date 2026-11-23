@@ -109,7 +109,7 @@ fun BudgetCard(
                         color = when (budget.level) {
                             BudgetLevel.OVER -> MaterialTheme.colorScheme.error
                             BudgetLevel.NEAR -> statusColors.warning
-                            BudgetLevel.UNDER -> MaterialTheme.colorScheme.primary
+                            BudgetLevel.UNDER -> statusColors.success
                         },
                     )
                     Text(

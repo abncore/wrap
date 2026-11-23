@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Single-colour Wrap mark for themed icons; the launcher tints it. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M64.45,36.95 A20,20 0 1,1 43.55,36.95"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="7"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M49.66,34 a4.34,4.34 0 1,0 8.68,0 a4.34,4.34 0 1,0 -8.68,0 z" />
+</vector>

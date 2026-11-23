@@ -38,8 +38,8 @@ fun statusColors(status: JobStatus): Pair<Color, Color> {
     val extra = LocalStatusColors.current
     return when (status) {
         JobStatus.UPCOMING -> colors.secondaryContainer to colors.onSecondaryContainer
-        JobStatus.DONE_UNPAID -> colors.tertiaryContainer to colors.onTertiaryContainer
-        JobStatus.PART_PAID -> extra.warningContainer to extra.onWarningContainer
+        JobStatus.DONE_UNPAID -> extra.warningContainer to extra.onWarningContainer
+        JobStatus.PART_PAID -> colors.secondaryContainer to extra.warning
         JobStatus.PAID -> extra.successContainer to extra.onSuccessContainer
         JobStatus.OVERDUE -> colors.errorContainer to colors.onErrorContainer
     }

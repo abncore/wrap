@@ -1,5 +1,9 @@
 package com.abaan.wrap.ui.home
 
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,6 +45,9 @@ import com.abaan.wrap.shared.model.BudgetLevel
 import com.abaan.wrap.shared.model.Dashboard
 import com.abaan.wrap.shared.model.JobSummary
 import com.abaan.wrap.ui.components.ClockButton
+import com.abaan.wrap.ui.components.DotLabel
+import com.abaan.wrap.ui.components.PaidOwedCard
+import com.abaan.wrap.ui.components.WrapMark
 import com.abaan.wrap.ui.components.formatFullWeekday
 import com.abaan.wrap.ui.components.formatShort
 import com.abaan.wrap.ui.components.money
@@ -81,12 +87,19 @@ fun HomeScreen(
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        Row(verticalAlignment = Alignment.Top) {
-            Greeting(today, state.timeZone, modifier = Modifier.weight(1f))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            WrapMark(Modifier.size(22.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(Res.string.app_name).lowercase(),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.weight(1f),
+            )
             IconButton(onClick = onOpenSettings) {
                 Icon(Icons.Filled.Settings, contentDescription = stringResource(Res.string.nav_settings))
             }
         }
+        Greeting(today, state.timeZone)
 
         if (!dashboard.hasAnyJobs) {
             EmptyState(
@@ -100,11 +113,29 @@ fun HomeScreen(
             return@Column
         }
 
-        OwedCard(dashboard)
+        PaidOwedCard(
+            paidLabel = stringResource(Res.string.home_earned_lifetime),
+            paid = dashboard.earnedLifetime,
+            owedLabel = stringResource(Res.string.home_owed_to_you),
+            owed = dashboard.owedTotal,
+            currency = dashboard.currency,
+            onClick = onOpenUnpaid,
+        ) {
+            Text(
+                text = if (dashboard.unpaidCount > 0) {
+                    pluralStringResource(Res.plurals.home_owed_jobs, dashboard.unpaidCount, dashboard.unpaidCount)
+                } else {
+                    stringResource(Res.string.home_all_paid)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StatCard(
                 label = stringResource(Res.string.home_received_month),
                 value = money(dashboard.receivedThisMonth, dashboard.currency),
+                dot = LocalStatusColors.current.success,
                 modifier = Modifier.weight(1f),
             )
             StatCard(
@@ -124,30 +155,22 @@ fun HomeScreen(
                 modifier = Modifier.weight(1f),
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatCard(
-                label = stringResource(Res.string.home_earned_lifetime),
-                value = money(dashboard.earnedLifetime, dashboard.currency),
-                onClick = onOpenMoney,
-                modifier = Modifier.weight(1f),
-            )
-            val budget = dashboard.budget
-            StatCard(
-                label = stringResource(Res.string.home_spent_month),
-                value = money(dashboard.spentThisMonth, dashboard.currency),
-                detail = budget?.let {
-                    if (it.level == BudgetLevel.OVER) {
-                        stringResource(Res.string.budget_over_by, money(-it.remaining, dashboard.currency))
-                    } else {
-                        stringResource(Res.string.home_budget_left, money(it.remaining, dashboard.currency))
-                    }
-                },
-                alert = budget?.level == BudgetLevel.OVER,
-                warning = budget?.level == BudgetLevel.NEAR,
-                onClick = onOpenMoney,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        val budget = dashboard.budget
+        StatCard(
+            label = stringResource(Res.string.home_spent_month),
+            value = money(dashboard.spentThisMonth, dashboard.currency),
+            detail = budget?.let {
+                if (it.level == BudgetLevel.OVER) {
+                    stringResource(Res.string.budget_over_by, money(-it.remaining, dashboard.currency))
+                } else {
+                    stringResource(Res.string.home_budget_left, money(it.remaining, dashboard.currency))
+                }
+            },
+            alert = budget?.level == BudgetLevel.OVER,
+            warning = budget?.level == BudgetLevel.NEAR,
+            onClick = onOpenMoney,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         val todayJob = dashboard.todayJob
         val openLog = dashboard.openLog
@@ -210,69 +233,47 @@ private fun Greeting(today: LocalDate, timeZone: TimeZone, modifier: Modifier = 
 }
 
 @Composable
-private fun OwedCard(dashboard: Dashboard) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(Res.string.home_owed_to_you), style = MaterialTheme.typography.titleSmall)
-            Text(money(dashboard.owedTotal, dashboard.currency), style = MaterialTheme.typography.displaySmall)
-            Text(
-                text = if (dashboard.unpaidCount > 0) {
-                    pluralStringResource(Res.plurals.home_owed_jobs, dashboard.unpaidCount, dashboard.unpaidCount)
-                } else {
-                    stringResource(Res.string.home_all_paid)
-                },
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-    }
-}
-
-@Composable
 private fun StatCard(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
     detail: String? = null,
+    dot: Color? = null,
     alert: Boolean = false,
     warning: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     val statusColors = LocalStatusColors.current
+    val accent = when {
+        alert -> MaterialTheme.colorScheme.error
+        warning -> statusColors.warning
+        else -> dot ?: MaterialTheme.colorScheme.outline
+    }
     val colors = CardDefaults.cardColors(
-        containerColor = when {
-            alert -> MaterialTheme.colorScheme.errorContainer
-            warning -> statusColors.warningContainer
-            else -> MaterialTheme.colorScheme.surfaceContainer
-        },
-        contentColor = when {
-            alert -> MaterialTheme.colorScheme.onErrorContainer
-            warning -> statusColors.onWarningContainer
-            else -> MaterialTheme.colorScheme.onSurface
-        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onSurface,
     )
+    val border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     val content: @Composable () -> Unit = {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (alert || warning) {
-                    Icon(Icons.Filled.Warning, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                }
-                Text(label, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            DotLabel(label, accent)
+            // Shrinks to fit so large amounts in a half-width tile stay whole.
+            val amountStyle = MaterialTheme.typography.titleLarge
+            BasicText(
+                text = value,
+                style = amountStyle.copy(color = if (alert || warning) accent else MaterialTheme.colorScheme.onSurface),
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(minFontSize = 12.sp, maxFontSize = amountStyle.fontSize),
+            )
+            if (detail != null) {
+                Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Text(value, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (detail != null) Text(detail, style = MaterialTheme.typography.bodySmall)
         }
     }
     if (onClick != null) {
-        Card(onClick = onClick, colors = colors, modifier = modifier) { content() }
+        Card(onClick = onClick, colors = colors, border = border, modifier = modifier) { content() }
     } else {
-        Card(colors = colors, modifier = modifier) { content() }
+        Card(colors = colors, border = border, modifier = modifier) { content() }
     }
 }
 
@@ -286,14 +287,27 @@ private fun TodayCard(
     onClockOut: () -> Unit,
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painterResource(Res.drawable.ic_schedule), contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(
+                    painterResource(Res.drawable.ic_schedule),
+                    contentDescription = null,
+                    tint = LocalStatusColors.current.success,
+                    modifier = Modifier.size(18.dp),
+                )
                 Spacer(Modifier.width(6.dp))
-                Text(stringResource(Res.string.home_today), style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = stringResource(Res.string.home_today),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             if (summary != null) {
                 val job = summary.job

@@ -8,9 +8,6 @@ import android.text.format.DateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -69,10 +66,3 @@ actual fun RequestNotificationPermission() {
 
 @Composable
 actual fun is24HourClock(): Boolean = DateFormat.is24HourFormat(LocalContext.current)
-
-@Composable
-actual fun wallpaperColorScheme(dark: Boolean): ColorScheme? {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
-    val context = LocalContext.current
-    return if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-}

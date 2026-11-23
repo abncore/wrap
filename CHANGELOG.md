@@ -15,6 +15,14 @@ All notable changes to Wrap are listed here. The format follows
 ### Changed
 - The screens moved into a shared `sharedUi` module so Android and iOS use the same UI code.
   Nothing changes for Android users.
+- New look: near-black and warm off-white with green for money paid and amber for money owed,
+  plus a matching light theme that follows the phone's setting. Text uses the Inter typeface,
+  and cards and status pills are rounder. Wrap no longer takes its colours from the wallpaper,
+  so it looks the same on every phone (the Night shoot theme is unchanged).
+- Home and Money open with a Paid / Owed card: both totals side by side, with a green and amber
+  bar showing how much of your billed work has been paid. Home's stat tiles are quieter, with a
+  coloured dot and only the amount turning red or amber when something needs attention.
+- New app icon: an open ring with a green dot.
 
 ## [0.5.0] - 2026-11-14
 

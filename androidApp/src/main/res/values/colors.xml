@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#1E5B4F</color>
+    <color name="ic_launcher_background">#0D0D0F</color>
     <!-- Home-screen widget -->
-    <color name="widget_background">#F4FBF8</color>
-    <color name="widget_text">#171D1B</color>
-    <color name="widget_muted">#3F4946</color>
-    <color name="widget_accent">#1E5B4F</color>
-    <color name="widget_on_accent">#FFFFFF</color>
+    <color name="widget_background">#FFFFFF</color>
+    <color name="widget_text">#141416</color>
+    <color name="widget_muted">#63636B</color>
+    <color name="widget_accent">#141416</color>
+    <color name="widget_on_accent">#F6F5F1</color>
 </resources>

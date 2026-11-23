@@ -1,6 +1,5 @@
 package com.abaan.wrap.ui.platform
 
-import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 
 // Screens and pickers owned by the phone. Each returns a function that opens it; the result
@@ -33,7 +32,3 @@ expect fun RequestNotificationPermission()
 /** True when the phone shows times on a 24-hour clock. */
 @Composable
 expect fun is24HourClock(): Boolean
-
-/** Colours taken from the wallpaper where the phone supports it, otherwise null. */
-@Composable
-expect fun wallpaperColorScheme(dark: Boolean): ColorScheme?

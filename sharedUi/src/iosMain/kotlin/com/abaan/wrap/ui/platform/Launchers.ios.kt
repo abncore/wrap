@@ -1,6 +1,5 @@
 package com.abaan.wrap.ui.platform
 
-import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
@@ -33,7 +32,3 @@ actual fun RequestNotificationPermission() = Unit
 @Composable
 actual fun is24HourClock(): Boolean =
     NSDateFormatter.dateFormatFromTemplate("j", options = 0u, locale = NSLocale.currentLocale)?.contains('a') == false
-
-// iOS has no wallpaper colours; Wrap uses its own palette.
-@Composable
-actual fun wallpaperColorScheme(dark: Boolean): ColorScheme? = null
