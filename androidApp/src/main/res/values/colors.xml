@@ -7,4 +7,6 @@
     <color name="widget_muted">#63636B</color>
     <color name="widget_accent">#141416</color>
     <color name="widget_on_accent">#F6F5F1</color>
+    <!-- Behind the opening animation, so the launch blends into it -->
+    <color name="launch_background">#F6F5F1</color>
 </resources>

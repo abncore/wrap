@@ -19,6 +19,9 @@ Wrap 2 is a new design and the first version for iPhone.
   or AltStore (see the README). Receipt photos, PDF invoices, backups, calendar sync, app lock
   and reminders are Android-only for now and come to iPhone next.
 
+- Opening animation: the Wrap ring draws itself, the green dot pops into the gap and the name
+  slides in, then the app fades in. The phone's launch screen now matches the app's background.
+
 ### Changed
 - The screens moved into a shared `sharedUi` module so Android and iOS use the same UI code.
 - New look: near-black and warm off-white with green for money paid and amber for money owed,

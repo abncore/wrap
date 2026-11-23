@@ -21,7 +21,9 @@ targets:
         CFBundleDisplayName: Wrap
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
-        UILaunchScreen: {}
+        # Plain background in the app's colour; the app then plays its opening animation.
+        UILaunchScreen:
+          UIColorName: LaunchBackground
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         # Compose renders at the screen's full refresh rate.
         CADisableMinimumFrameDurationOnPhone: true

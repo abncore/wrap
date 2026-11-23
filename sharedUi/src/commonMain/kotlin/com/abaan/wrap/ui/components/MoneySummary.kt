@@ -34,26 +34,35 @@ import androidx.compose.ui.unit.dp
 import com.abaan.wrap.shared.money.MoneyFormat
 import com.abaan.wrap.ui.theme.LocalStatusColors
 
-/** Wrap's logo mark: an open ring with a green dot closing the gap at the top. */
+/**
+ * Wrap's logo mark: an open ring with a green dot closing the gap at the top. [ring] and [dot]
+ * (0 to 1) draw part of the ring and grow the dot, for the opening animation.
+ */
 @Composable
 fun WrapMark(
     modifier: Modifier = Modifier,
     ringColor: Color = MaterialTheme.colorScheme.onSurface,
     dotColor: Color = LocalStatusColors.current.success,
+    ring: Float = 1f,
+    dot: Float = 1f,
 ) {
     Canvas(modifier) {
         val stroke = size.minDimension * 0.17f
         val radius = (size.minDimension - stroke) / 2f
-        drawArc(
-            color = ringColor,
-            startAngle = -58.5f,
-            sweepAngle = 297f,
-            useCenter = false,
-            topLeft = Offset(center.x - radius, center.y - radius),
-            size = Size(radius * 2, radius * 2),
-            style = Stroke(width = stroke, cap = StrokeCap.Round),
-        )
-        drawCircle(dotColor, radius = stroke * 0.62f, center = Offset(center.x, center.y - radius))
+        if (ring > 0f) {
+            drawArc(
+                color = ringColor,
+                startAngle = -58.5f,
+                sweepAngle = 297f * ring,
+                useCenter = false,
+                topLeft = Offset(center.x - radius, center.y - radius),
+                size = Size(radius * 2, radius * 2),
+                style = Stroke(width = stroke, cap = StrokeCap.Round),
+            )
+        }
+        if (dot > 0f) {
+            drawCircle(dotColor, radius = stroke * 0.62f * dot, center = Offset(center.x, center.y - radius))
+        }
     }
 }
 

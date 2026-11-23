@@ -1,6 +1,8 @@
 package com.abaan.wrap.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -22,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.abaan.wrap.ui.platform.RequestNotificationPermission
+import com.abaan.wrap.ui.components.OpeningAnimation
 import com.abaan.wrap.ui.clients.ClientEditScreen
 import com.abaan.wrap.ui.clients.ClientsScreen
 import com.abaan.wrap.ui.navigation.AddAction
@@ -78,6 +81,24 @@ fun WrapApp(
     openMoney: Boolean = false,
     onMoneyOpened: () -> Unit = {},
     openTab: TopLevelDestination? = null,
+) {
+    // The opening animation plays once per launch, over the first screen as it loads.
+    var showOpening by rememberSaveable { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        WrapAppContent(openJobId, onJobOpened, openMoney, onMoneyOpened, openTab)
+        if (showOpening) {
+            OpeningAnimation(onFinished = { showOpening = false })
+        }
+    }
+}
+
+@Composable
+private fun WrapAppContent(
+    openJobId: Long?,
+    onJobOpened: () -> Unit,
+    openMoney: Boolean,
+    onMoneyOpened: () -> Unit,
+    openTab: TopLevelDestination?,
 ) {
     val navController = rememberNavController()
     RequestNotificationPermission()
