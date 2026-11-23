@@ -15,6 +15,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.mp.KoinPlatform
+import com.abaan.wrap.ui.navigation.TopLevelDestination
+import platform.Foundation.NSProcessInfo
 import platform.UIKit.UIViewController
 
 private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -36,6 +38,12 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
     val nightShoot = koinInject<NightShoot>()
     val night by nightShoot.enabled.collectAsState()
     WrapTheme(nightShoot = night) {
-        WrapApp()
+        WrapApp(openTab = startTab())
     }
+}
+
+/** Opens a tab on launch when WRAP_OPEN_TAB is set (CI uses it to take screenshots). */
+private fun startTab(): TopLevelDestination? {
+    val name = NSProcessInfo.processInfo.environment["WRAP_OPEN_TAB"] as? String ?: return null
+    return TopLevelDestination.entries.firstOrNull { it.name == name }
 }

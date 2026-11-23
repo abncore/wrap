@@ -89,6 +89,36 @@ jobs:
             --predicate 'process == "Wrap" OR eventMessage CONTAINS "com.abaan.wrap"' > app-system.log || true
           # Fails the step if the app crashed instead of staying open.
           xcrun simctl spawn "$udid" launchctl list | grep com.abaan.wrap | grep -qv '^-'
+      # Screenshots for the README: the demo data (docs/demo) on a few tabs, light and dark.
+      - name: Take screenshots with demo data
+        run: |
+          udid=$(xcrun simctl list devices booted -j | jq -r '[.devices[][]][0].udid')
+          xcrun simctl terminate "$udid" com.abaan.wrap || true
+          data=$(xcrun simctl get_app_container "$udid" com.abaan.wrap data)
+          db=$(find "$data" -name wrap.db | head -n 1)
+          echo "database: $db"
+          rm -f "$db-wal" "$db-shm"
+          cp docs/demo/wrap-demo.db "$db"
+          xcrun simctl spawn "$udid" defaults write com.abaan.wrap onboarding.tutorial_seen -bool YES
+          xcrun simctl status_bar "$udid" override --time 9:41 --batteryState charged --batteryLevel 100 \
+            --cellularBars 4 --wifiBars 3 || true
+          mkdir -p ios-screens
+          shoot() {
+            xcrun simctl ui "$udid" appearance "$2"
+            SIMCTL_CHILD_WRAP_OPEN_TAB="$1" xcrun simctl launch --terminate-running-process "$udid" com.abaan.wrap
+            sleep 12
+            xcrun simctl io "$udid" screenshot "ios-screens/$3.png"
+          }
+          shoot HOME light home
+          shoot JOBS light jobs
+          shoot MONEY light money
+          shoot REPORTS light reports
+          shoot HOME dark dark-mode
+      - name: Keep the screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrap-ios-screenshots
+          path: ios-screens
       - name: App logs
         if: always()
         run: |

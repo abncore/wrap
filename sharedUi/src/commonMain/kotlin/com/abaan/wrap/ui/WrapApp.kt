@@ -77,6 +77,7 @@ fun WrapApp(
     onJobOpened: () -> Unit = {},
     openMoney: Boolean = false,
     onMoneyOpened: () -> Unit = {},
+    openTab: TopLevelDestination? = null,
 ) {
     val navController = rememberNavController()
     RequestNotificationPermission()
@@ -99,6 +100,12 @@ fun WrapApp(
             navController.awaitGraph()
             navController.navigateToTab(TopLevelDestination.MONEY)
             onMoneyOpened()
+        }
+    }
+    LaunchedEffect(openTab) {
+        if (openTab != null) {
+            navController.awaitGraph()
+            navController.navigateToTab(openTab)
         }
     }
     val backStackEntry by navController.currentBackStackEntryAsState()
