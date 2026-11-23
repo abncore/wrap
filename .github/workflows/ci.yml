@@ -59,6 +59,21 @@ jobs:
           xcodebuild -project iosApp/Wrap.xcodeproj -scheme Wrap -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath iosApp/build CODE_SIGNING_ALLOWED=NO build
+      # Unsigned, so it can be signed with your own Apple ID by a sideloading tool
+      # (Sideloadly or AltStore on Windows) and installed on a real iPhone.
+      - name: Build the app for iPhone (unsigned .ipa)
+        run: |
+          xcodebuild -project iosApp/Wrap.xcodeproj -scheme Wrap -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath iosApp/build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+          mkdir -p ipa/Payload
+          cp -R iosApp/build/Build/Products/Release-iphoneos/Wrap.app ipa/Payload/
+          (cd ipa && zip -qry ../Wrap.ipa Payload)
+      - name: Keep the iPhone app
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrap-ios-ipa
+          path: Wrap.ipa
       - name: Run it in the simulator and take a screenshot
         run: |
           udid=$(xcrun simctl list devices available -j \
