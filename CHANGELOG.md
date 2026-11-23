@@ -7,14 +7,20 @@ All notable changes to Wrap are listed here. The format follows
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-23
+
+Wrap 2 is a new design and the first version for iPhone.
+
 ### Added
-- iOS app (in progress): the same screens as Android, built with Compose Multiplatform and
-  checked on every push by CI, which builds the app and runs it in the iPhone simulator.
-  Receipts, invoices, backups, calendar sync, app lock and reminders come to iOS next.
+- **iPhone app.** The same screens and money rules as Android, built from the same code with
+  Compose Multiplatform. It follows iOS conventions: a tab bar, large titles, "‹ Back"
+  navigation, the iOS switch, segmented controls, grouped Settings, Apple's system font and
+  colours, and a light and dark look that follows the phone. Install the `.ipa` with Sideloadly
+  or AltStore (see the README). Receipt photos, PDF invoices, backups, calendar sync, app lock
+  and reminders are Android-only for now and come to iPhone next.
 
 ### Changed
 - The screens moved into a shared `sharedUi` module so Android and iOS use the same UI code.
-  Nothing changes for Android users.
 - New look: near-black and warm off-white with green for money paid and amber for money owed,
   plus a matching light theme that follows the phone's setting. Text uses the Inter typeface,
   and cards and status pills are rounder. Wrap no longer takes its colours from the wallpaper,
@@ -23,6 +29,7 @@ All notable changes to Wrap are listed here. The format follows
   bar showing how much of your billed work has been paid. Home's stat tiles are quieter, with a
   coloured dot and only the amount turning red or amber when something needs attention.
 - New app icon: an open ring with a green dot.
+- Large amounts on Home's small tiles shrink to fit instead of being cut off.
 
 ## [0.5.0] - 2026-11-14
 
@@ -82,7 +89,8 @@ First release.
 ### Fixed
 - Clocking in on finished jobs, and other issues found while testing on a device.
 
-[Unreleased]: ../../compare/v0.5.0...HEAD
+[Unreleased]: ../../compare/v2.0.0...HEAD
+[2.0.0]: ../../compare/v0.5.0...v2.0.0
 [0.5.0]: ../../compare/v0.4.0...v0.5.0
 [0.4.0]: ../../compare/v0.3.0...v0.4.0
 [0.3.0]: ../../compare/v0.2.0...v0.3.0

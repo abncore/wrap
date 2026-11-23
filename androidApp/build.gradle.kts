@@ -12,8 +12,8 @@ android {
         applicationId = "com.abaan.wrap"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 6
-        versionName = "0.5.1"
+        versionCode = 7
+        versionName = "2.0.0"
     }
 
     buildTypes {

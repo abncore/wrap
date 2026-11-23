@@ -7,8 +7,8 @@ options:
     iOS: "16.0"
 settings:
   base:
-    MARKETING_VERSION: "0.5.1"
-    CURRENT_PROJECT_VERSION: "6"
+    MARKETING_VERSION: "2.0.0"
+    CURRENT_PROJECT_VERSION: "7"
 targets:
   Wrap:
     type: application
