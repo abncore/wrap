@@ -378,12 +378,8 @@ private fun ReportScaffold(title: String, onBack: (() -> Unit)?, content: @Compo
         topBar = {
             WrapTopBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                navigationIcon = {
-                    // Sub-reports have a back arrow; the Reports tab itself doesn't.
-                    if (onBack != null) {
-                        BackButton(onClick = onBack)
-                    }
-                },
+                // Sub-reports have a back button; the Reports tab itself doesn't (a large title on iOS).
+                navigationIcon = onBack?.let { back -> { BackButton(onClick = back) } },
             )
         },
     ) { padding ->

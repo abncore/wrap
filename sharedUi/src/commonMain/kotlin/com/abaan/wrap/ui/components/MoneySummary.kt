@@ -31,6 +31,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import com.abaan.wrap.shared.money.MoneyFormat
 import com.abaan.wrap.ui.theme.LocalStatusColors
 
@@ -164,12 +167,13 @@ private fun AmountColumn(
     Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         DotLabel(label, dot)
         Spacer(Modifier.height(2.dp))
-        Text(
+        // Shrinks to fit so the whole amount shows on narrow phones.
+        val style = MaterialTheme.typography.headlineMedium
+        BasicText(
             text = figure,
-            style = if (figure.length > 10) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.headlineMedium,
-            color = amountColor,
+            style = style.copy(color = amountColor),
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            autoSize = TextAutoSize.StepBased(minFontSize = 14.sp, maxFontSize = style.fontSize),
         )
         Text(currency, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
