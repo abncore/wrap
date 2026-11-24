@@ -5,13 +5,13 @@
 **Jobs, hours and payments for film-set freelancers.**
 
 Track upcoming bookings, clock your hours on set, chase late payments and see what you
-actually kept, all offline on your phone.
+actually kept, all offline on your Android phone or iPhone.
 
 [![Latest release](https://img.shields.io/github/v/release/abncore/wrap?include_prereleases&label=release)](../../releases/latest)
 ![Android](https://img.shields.io/badge/Android-available-3DDC84?logo=android&logoColor=white)
-![iOS](https://img.shields.io/badge/iOS-coming%20soon-lightgrey?logo=apple&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-available-000000?logo=apple&logoColor=white)
 ![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack-Compose-4285F4?logo=jetpackcompose&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose-Multiplatform-4285F4?logo=jetpackcompose&logoColor=white)
 
 [Download](#download) · [Screenshots](#screenshots) · [Features](#features) · [Changelog](CHANGELOG.md) · [Build from source](#build-from-source)
 
@@ -29,11 +29,23 @@ all of it in one place, works without an account or internet, and does the maths
 
 <div align="center">
 
+### Android
+
 | Home | Jobs | Money |
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/home.png" width="250" alt="Home dashboard"> | <img src="docs/screenshots/jobs.png" width="250" alt="Jobs list"> | <img src="docs/screenshots/money.png" width="250" alt="Money"> |
 | **Who owes you** | **Calendar** | **Dark mode** |
 | <img src="docs/screenshots/who-owes-you.png" width="250" alt="Who owes you report"> | <img src="docs/screenshots/calendar.png" width="250" alt="Calendar"> | <img src="docs/screenshots/dark-mode.png" width="250" alt="Dark mode"> |
+
+### iPhone
+
+Same app, made to feel at home on iOS: tab bar, large titles, iOS switches and Apple's own font.
+
+| Home | Jobs | Money |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/ios/home.png" width="250" alt="Home on iPhone"> | <img src="docs/screenshots/ios/jobs.png" width="250" alt="Jobs on iPhone"> | <img src="docs/screenshots/ios/money.png" width="250" alt="Money on iPhone"> |
+| **Reports** | **Dark mode** | |
+| <img src="docs/screenshots/ios/reports.png" width="250" alt="Reports on iPhone"> | <img src="docs/screenshots/ios/dark-mode.png" width="250" alt="Dark mode on iPhone"> | |
 
 <sub>Screenshots use made-up demo data.</sub>
 
@@ -44,15 +56,27 @@ all of it in one place, works without an account or internet, and does the maths
 | Platform | Status |
 |----------|--------|
 | 🤖 Android 8.0+ | ✅ Available ([download](../../releases/latest)) |
-| 🍎 iOS | 🚧 **Coming soon.** All business logic already lives in the shared Kotlin Multiplatform module; the SwiftUI app is next. |
+| 🍎 iOS 16+ | ✅ Available ([download the .ipa](../../releases/latest)). Receipt photos, PDF invoices, backups, calendar sync, app lock and reminders are Android-only for now. |
 
 ## Download
 
-Grab the latest APK from [**Releases**](../../releases/latest), open it on your phone and
-allow installing from your browser or file manager when asked. Installing a newer version
-over an older one keeps all your data.
+Everything is on the [**latest release**](../../releases/latest) page.
 
-> Builds are currently pre-release (`0.x`). Expect changes before 1.0.
+**Android:** download `Wrap-vX.Y.Z.apk`, open it on your phone and allow installing from your
+browser or file manager when asked. Installing a newer version over an older one keeps all
+your data.
+
+**iPhone:** Wrap isn't on the App Store yet, so you install the `.ipa` yourself from a Windows
+PC or Mac with a free Apple ID:
+
+1. Install [iTunes from apple.com](https://www.apple.com/itunes/) (on Windows, not the
+   Microsoft Store version) and [Sideloadly](https://sideloadly.io/).
+2. Plug in the iPhone, unlock it and tap **Trust**.
+3. Drag `Wrap-vX.Y.Z.ipa` into Sideloadly, enter your Apple ID and press **Start**.
+4. On the iPhone, turn on Settings > Privacy & Security > **Developer Mode**, then trust your
+   Apple ID in Settings > General > VPN & Device Management.
+
+With a free Apple ID the app has to be re-installed every 7 days (your data stays).
 
 ## Features
 
@@ -127,9 +151,13 @@ so installing a new build over an old one keeps all data. `MigrationTest` checks
 | Module        | What lives there                                                                 |
 |---------------|----------------------------------------------------------------------------------|
 | `shared/`     | Kotlin Multiplatform (`commonMain`): models, database, money rules, repositories. All business logic. |
-| `androidApp/` | Jetpack Compose UI, Material 3 with dynamic color. Never calculates money.       |
+| `sharedUi/`   | Compose Multiplatform screens for both phones. Adaptive building blocks give Android Material 3 and iOS its own tab bar, navigation bars, switches and system font. Never calculates money. |
+| `androidApp/` | Android shell: activity, widget, notifications, PDF invoices, backups, receipts. |
+| `iosApp/`     | iOS shell: a SwiftUI app hosting the shared screens. Project generated with XcodeGen. |
 
-iOS targets (`iosArm64`, `iosSimulatorArm64`) are only registered when building on macOS.
+iOS code compiles on any machine; linking the iPhone app needs macOS, so
+[CI](.github/workflows/ci.yml) builds it on a GitHub Mac, runs it in the iPhone simulator,
+takes screenshots and produces an unsigned `.ipa`.
 
 ## Build from source
 
@@ -175,7 +203,9 @@ adb logcat AndroidRuntime:E com.abaan.wrap:V *:S
 
 - [x] Android app
 - [x] Reports, invoices, backups and app lock
-- [ ] iOS app (SwiftUI)
+- [x] iOS app
+- [ ] Receipts, invoices, backups and reminders on iOS
+- [ ] App Store release
 - [ ] Play Store release
 
 See the [changelog](CHANGELOG.md) for what changed in each version.
